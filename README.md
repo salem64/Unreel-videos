@@ -34,6 +34,8 @@ Wan 2.2 5B turns calm, photo-like descriptions into near-static images. Every cl
 4. Prefer daylight or clearly lit scenes; avoid night-sky/star scenes (they render as long-exposure star trails).
 5. Never write calm/still/serene/quiet/peaceful scenes. No people's faces or hands in close-up.
 6. Use 2–3 clips per video with different camera moves, each clip a different angle on the same idea.
+7. The MAIN SUBJECT itself must move or change, not only the background (otherwise it looks pasted on): let the camera move so the subject travels through the frame, let light sweep/glitter across it, let clouds/particles pass in front of AND behind it, let it rotate, grow, crack, flow etc.
+8. Anchor huge sky objects (rings, planets, moons, structures) in the scene in the image_prompt: describe them rising from behind and disappearing behind real foreground objects ("partly hidden behind the rooftops and trees at both ends"), never as a free-floating shape.
 
 ## ComfyUI workflow file
 `pc/unreel_workflow_v2_api.json` (best quality) and `pc/unreel_workflow_api.json` (v1) are the exact graphs the worker sends to ComfyUI (Wan 2.2 5B text-to-video → MMAudio sound → SaveVideo), exported in API format. Drag it into the ComfyUI window to open it, edit the prompt and press Run to experiment manually. The worker builds this same graph in code (`workflow()` in pc/worker.py); keep both in sync if you change settings.
