@@ -37,6 +37,16 @@ The script prints the winner – never reveal it in caption/title.
 - Innovation day (every Sunday, or any night a trend clearly fits): build ONE new variant – a new physics mode (new file tools/<name>.py or a new mode in tools/arena.py, e.g. ball race, gravity maze, colour takeover, clock/hourglass, marble run, "every bounce = +1 ball") or a new quiz layout in tools/quiz.py (e.g. "odd one out", "guess the price", "would you rather", "finish the pattern"). Never break existing modes: test-render the old example + the new one, look at frames, and only commit if both work; otherwise revert (git checkout) and use an existing variant. Add the new variant to the variant list above and to state/ideas.md as "built".
 - Humor: every video gets at least one funny touch – a cheeky hook ("Your teacher would be ashamed if you miss #1"), a funny reveal line ("Sydney is crying right now"), funny fighters/sets (🥔 vs 🍟, 🐌 vs 🐢), funny tiers ("0 = certified potato 🥔"), meme-style captions. Keep it friendly, no insults of groups, nothing political/sexual/tragic.
 
+## Caption & comment style (must NOT sound AI-written) – overrides any example wording elsewhere
+Write like a real 19-year-old running a meme/quiz page, not like a marketer:
+- Short. Caption 1 line (max ~12 words) + hashtags. First comment max ~8 words.
+- Mostly lowercase, casual, slang allowed sparingly (ngl, lowkey, fr, bro, nah, 💀). Max 1 emoji per text, sometimes none.
+- NO typical AI phrases/patterns: no "Be honest…", "Did you know", "Can you guess", "mind-blowing", "Let's see", "Drop your answer below", "Test your knowledge", "Only true geniuses", no em dashes (—), no "…" at the end of every line, no rhetorical triple questions, no exclamation-mark spam.
+- Sound like an opinion or reaction, not an instruction. Good: "q4 is actually evil", "i got 2/5 and im not ok", "blue got robbed fr", "nobody gets the last one", "the turnip one is cursed 💀", "pick a country before it starts". Bad: "Be honest… did you know the turnip one? 👀", "Comment your score below and challenge your friends! 🧠🔥".
+- 3–5 hashtags only, no #fyp/#viral spam (#unreel + 2–4 specific ones).
+- Vary wording every day; never reuse a caption or comment from the last 30 days (check performance.json / git log).
+- YouTube title can be a bit cleaner but still casual ("only 3% get the last one #shorts").
+
 ## Learning what works (state/performance.json)
 List of posts: {"date", "file", "format" (quiz|physics), "variant" (quiz category or physics mode), "hook", "theme", "metrics": {platform: {views, likes, comments, shares, saves}}}.
 Night task: update metrics of posts from the last 14 days (Metricool analytics, vidIQ Instagram insights), then choose today's format: with < 6 measured posts alternate quiz/quiz/physics with different categories/variants; afterwards ~70 % the format/variant with the best average views (and shares/comments) per post, ~30 % something else to keep testing. Never the same quiz category twice in a row. Use at most one vidIQ trending call per night for topic ideas.
