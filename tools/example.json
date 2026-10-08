@@ -1,0 +1,71 @@
+{
+ "voice": "af_heart",
+ "speed": 1.1,
+ "accent": "#FF8A1F",
+ "accent2": "#7CFF4F",
+ "scenes": [
+  {
+   "type": "hook",
+   "title": "Halloween facts nobody gets right",
+   "sub": "keep score",
+   "say": "Halloween facts nobody gets right. Keep score.",
+   "emoji": "🎃"
+  },
+  {
+   "type": "question",
+   "label": "Q1",
+   "title": "A pumpkin is technically a...",
+   "say": "Question one. A pumpkin is technically a...",
+   "think": 2.0
+  },
+  {
+   "type": "reveal",
+   "title": "Fruit",
+   "sub": "It grows from a flower and carries seeds.",
+   "say": "A fruit! It grows from a flower and carries its seeds.",
+   "emoji": "🎃"
+  },
+  {
+   "type": "question",
+   "label": "Q2",
+   "title": "The first jack-o'-lanterns were carved from...",
+   "say": "Question two. The first jack-o-lanterns were carved from...",
+   "think": 2.0
+  },
+  {
+   "type": "reveal",
+   "title": "Turnips",
+   "sub": "People in Ireland carved scary faces into them.",
+   "say": "Turnips! People in Ireland carved scary faces into them.",
+   "emoji": "👻"
+  },
+  {
+   "type": "question",
+   "label": "Q3",
+   "title": "The fear of Halloween is called...",
+   "say": "Question three. The fear of Halloween is called...",
+   "think": 2.0
+  },
+  {
+   "type": "reveal",
+   "title": "Samhainophobia",
+   "sub": "Yes, it's a real word.",
+   "say": "Samhainophobia. Yes, that's real.",
+   "emoji": "😱"
+  },
+  {
+   "type": "twist",
+   "label": "BONUS",
+   "title": "Candy corn was first sold as \"Chicken Feed\"",
+   "say": "Bonus. Candy corn was first sold as Chicken Feed.",
+   "emoji": "🍬"
+  },
+  {
+   "type": "outro",
+   "title": "How many did you get?",
+   "sub": "Comment your score 0–3",
+   "say": "How many did you get? Comment your score.",
+   "emoji": "🤔"
+  }
+ ]
+}
