@@ -33,7 +33,7 @@
  "z5": {
   "class_type": "CLIPTextEncode",
   "inputs": {
-   "text": "Photorealistic wide-angle photo, vertical 9:16, bright sunny afternoon. A tree-lined suburban street with colorful houses and parked cars, seen from the middle of the road. In the clear blue sky above, Earth's planetary rings are clearly visible: one gigantic, solid, flat band of bright white, cream and beige stripes with thin dark gaps, exactly like Saturn's rings, arching across the entire sky from the left edge to the right edge of the frame. A few fluffy white clouds float in front of the ring band. Sharp, highly detailed, vivid colors, cinematic.",
+   "text": "Photorealistic wide-angle photo, vertical 9:16, bright sunny afternoon. A tree-lined suburban street with colorful houses and parked cars, seen from the middle of the road, low camera angle looking slightly upward. Earth's planetary ring is a gigantic arch: one solid, flat band of bright white, cream and beige stripes with thin dark gaps, exactly like Saturn's rings seen edge-on from the ground. The arch rises from behind the rooftops and trees on the left, curves high across the blue sky and sinks back down behind the rooftops and trees on the right, partly hidden behind the rooftops and trees at both ends, so it clearly sits far away in the sky beyond the horizon, not floating in front of it. Fluffy white clouds float both in front of and behind the ring band. Sharp, highly detailed, vivid colors, cinematic.",
    "clip": [
     "z2",
     0
@@ -158,7 +158,7 @@
  "w9": {
   "class_type": "CLIPTextEncode",
   "inputs": {
-   "text": "The camera drives smoothly forward down the street toward the giant ring band in the sky. Clouds drift quickly across the sky in front of the rings, tree branches sway strongly in the wind, a flock of birds flies across the frame from left to right, a car drives past. Continuous forward camera motion, lively, dynamic.",
+   "text": "The camera slowly tilts upward and pushes forward along the street, so the giant ring arch moves through the frame and rises higher into view. Clouds drift past both in front of and behind the ring band, partly covering it and revealing it again. Bright sunlight travels across the ring stripes, making them glitter and shimmer. Tree branches sway in the wind, a flock of birds flies across the frame in front of the rings, a car drives past. Continuous smooth camera motion, lively, dynamic.",
    "clip": [
     "w7",
     0
@@ -319,7 +319,7 @@
     "61",
     0
    ],
-   "duration": 5.06,
+   "duration": 5.03,
    "steps": 25,
    "cfg": 4.5,
    "seed": 1,
@@ -328,7 +328,7 @@
    "mask_away_clip": false,
    "force_offload": true,
    "images": [
-    "w14",
+    "r1",
     0
    ]
   }

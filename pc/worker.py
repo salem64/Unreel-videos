@@ -101,7 +101,9 @@ def v2_available():
 
 
 def workflow_v2(clip, negative, seed):
-    dur = round(V2_LEN / V2_FPS, 2)
+    # MMAudio reads the frame batch as if it were 25 fps and cuts the audio to len(frames)/25 s,
+    # so give it the RIFE output (32 fps, 161 frames) -> full-length audio.
+    dur = round((2 * V2_LEN - 1) / (2 * V2_FPS), 2)
     fast = V2_MODE == "fast"
     steps, split, cfg = (4, 2, 1) if fast else (20, 10, 3.5)
     wf = {
@@ -150,7 +152,7 @@ def workflow_v2(clip, negative, seed):
         "62": {"class_type": "MMAudioSampler", "inputs": {"mmaudio_model": ["60", 0], "feature_utils": ["61", 0], "duration": dur, "steps": 25,
                                                           "cfg": 4.5, "seed": seed, "prompt": clip.get("audio_prompt", ""),
                                                           "negative_prompt": "music, speech, voice, talking, noise, hum",
-                                                          "mask_away_clip": False, "force_offload": True, "images": ["w14", 0]}},
+                                                          "mask_away_clip": False, "force_offload": True, "images": ["r1", 0]}},
         "57": {"class_type": "CreateVideo", "inputs": {"images": ["r1", 0], "fps": V2_FPS * 2, "audio": ["62", 0]}},
         "58": {"class_type": "SaveVideo", "inputs": {"video": ["57", 0], "filename_prefix": "unreel/clip", "format": "auto", "codec": "auto"}},
     }
@@ -217,6 +219,14 @@ def hook_png(text, path):
     img.save(path)
 
 
+def video_duration(ff, path):
+    """Duration of the video stream in seconds (parsed from ffmpeg's stream info)."""
+    import re
+    r = subprocess.run([ff, "-i", str(path)], capture_output=True, text=True, **NOWIN)
+    m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", r.stderr)
+    return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3)) if m else 5.0
+
+
 def assemble(clips, out, hook):
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
@@ -224,7 +234,9 @@ def assemble(clips, out, hook):
     for c in clips:
         args += ["-i", str(c)]
     n = len(clips)
-    parts = "".join(f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,unsharp=5:5:0.5,setsar=1,fps=30[v{i}];[{i}:a]aresample=44100[a{i}];" for i in range(n))
+    durs = [video_duration(ff, c) for c in clips]
+    parts = "".join(f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,unsharp=5:5:0.5,setsar=1,fps=30[v{i}];"
+                    f"[{i}:a]aresample=44100,apad=whole_dur={durs[i]:.3f},atrim=0:{durs[i]:.3f},asetpts=PTS-STARTPTS[a{i}];" for i in range(n))
     concat = "".join(f"[v{i}][a{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=1[vc][ac]"
     fc = parts + concat
     vout = "[vc]"
