@@ -1,0 +1,9 @@
+{
+ "id": "test-glass-kiwi",
+ "hook": "Glass kiwi ASMR 🥝",
+ "clips": [
+  {"prompt": "Extreme close-up macro shot, vertical frame. A sharp chef's knife slowly slices through a kiwi made entirely of translucent green glass on a dark walnut cutting board. The glass kiwi cracks into clean shiny slices revealing glowing glass seeds inside. Soft studio lighting, shallow depth of field, photorealistic, satisfying, slow motion, 4k detail.", "audio_prompt": "crisp glass cracking and crunching as a knife slices, satisfying ASMR crunch, close microphone", "seed": 1234},
+  {"prompt": "Extreme close-up macro shot, vertical frame. The knife presses down on a slice of translucent green glass kiwi on a dark walnut cutting board, the glass slice shatters into tiny sparkling pieces. Soft studio lighting, shallow depth of field, photorealistic, satisfying slow motion.", "audio_prompt": "glass crunching and tiny shards tinkling, satisfying ASMR, close microphone", "seed": 5678}
+ ],
+ "meta": {"topic": "Glass kiwi slicing ASMR", "caption": "This sound is illegal 🥝🔊 Sound ON", "first_comment": "Which fruit should we slice next? 👇", "youtube_title": "Cutting a GLASS kiwi 🥝 (sound on) #shorts", "tiktok_title": "Glass kiwi ASMR 🥝"}
+}
