@@ -154,6 +154,8 @@ def workflow_v2(clip, negative, seed):
 
 def render_clip(clip, negative, seed):
     use_v2 = bool(clip.get("image_prompt")) and v2_available()
+    if not use_v2 and clip.get("image_prompt"):
+        clip = dict(clip, prompt=clip["image_prompt"] + " " + clip["prompt"])  # v1 fallback: scene + motion in one prompt
     wf = workflow_v2(clip, negative, seed) if use_v2 else workflow(clip, negative, seed)
     log(f"  Pipeline {'v2 (Z-Image + Wan 14B + RIFE)' if use_v2 else 'v1 (Wan 5B)'}")
     pid = http("/prompt", {"prompt": wf, "client_id": str(uuid.uuid4())})["prompt_id"]
