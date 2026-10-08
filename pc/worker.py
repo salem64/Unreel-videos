@@ -16,6 +16,7 @@ import argparse, json, os, random, subprocess, sys, time, traceback, urllib.requ
 from pathlib import Path
 
 HOST = "http://127.0.0.1:8188"
+NOWIN = {"creationflags": 0x08000000} if os.name == "nt" else {}  # CREATE_NO_WINDOW
 NEG_DEFAULT = ("static, still image, frozen frame, no motion, photo, slideshow, long exposure, star trails, timelapse streaks, "
                "blurry, low quality, distorted, deformed, watermark, text, subtitles, logo, jpeg artifacts, "
                "ugly, extra fingers, bad hands, faces")
@@ -45,7 +46,7 @@ def comfy_up():
 
 
 def git(*args, check=True):
-    r = subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True)
+    r = subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True, **NOWIN)
     if check and r.returncode != 0:
         raise RuntimeError(f"git {' '.join(args)} failed: {r.stderr.strip()}")
     return r.stdout.strip()
@@ -148,14 +149,29 @@ def assemble(clips, out, hook):
         vout = "[vo]"
     args += ["-filter_complex", fc, "-map", vout, "-map", "[ac]", "-c:v", "libx264", "-preset", "medium", "-crf", "19",
              "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out)]
-    subprocess.run(args, check=True)
+    subprocess.run(args, check=True, **NOWIN)
     if hook:
         out.with_suffix(".hook.png").unlink(missing_ok=True)
+
+
+def gpu_busy(threshold=35, samples=5):
+    """True if the GPU is in use (e.g. gaming) - average utilization over a few seconds."""
+    vals = []
+    for _ in range(samples):
+        try:
+            out = subprocess.run(["nvidia-smi", "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"],
+                                 capture_output=True, text=True, **NOWIN).stdout.strip().splitlines()
+            vals.append(max(int(v) for v in out if v.strip().isdigit()))
+        except Exception:
+            return False
+        time.sleep(1)
+    return sum(vals) / len(vals) >= threshold
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", required=True)
+    ap.add_argument("--auto", action="store_true", help="scheduled mode: quiet exit if nothing to do or GPU busy")
     a = ap.parse_args()
     global ROOT, REPO, COMFY, LOGFILE
     ROOT = Path(a.root)
@@ -164,19 +180,36 @@ def main():
     LOGFILE = ROOT / "worker.log"
     py = ROOT / "ComfyUI_windows_portable" / "python_embeded" / "python.exe"
 
-    log("=== Unreel Batch ===")
-    git("pull", "--rebase")
+    lock = ROOT / "worker.lock"
+    if lock.exists() and time.time() - lock.stat().st_mtime < 6 * 3600:
+        if not a.auto:
+            print("Es laeuft bereits ein Batch (worker.lock). Abbruch.")
+        return
+    try:
+        git("pull", "--rebase")
+    except Exception as e:
+        if not a.auto:
+            raise
+        return
     jobs = sorted((REPO / "jobs").glob("*.json"))
     if not jobs:
-        log("Keine Auftraege in jobs/ - nichts zu tun.")
+        if not a.auto:
+            log("Keine Auftraege in jobs/ - nichts zu tun.")
         return
+    if a.auto and gpu_busy():
+        log(f"{len(jobs)} Auftraege warten, aber die Grafikkarte ist gerade beschaeftigt - spaeter erneut.")
+        return
+    lock.write_text(str(os.getpid()))
+    global LOCK
+    LOCK = lock
+    log("=== Unreel Batch ===")
     log(f"{len(jobs)} Auftrag/Auftraege gefunden.")
 
     proc = None
     if not comfy_up():
         log("Starte ComfyUI ...")
         proc = subprocess.Popen([str(py), "-s", str(COMFY / "main.py"), "--windows-standalone-build", "--disable-auto-launch"],
-                                cwd=str(COMFY.parent), stdout=open(ROOT / "comfyui.log", "a"), stderr=subprocess.STDOUT)
+                                cwd=str(COMFY.parent), stdout=open(ROOT / "comfyui.log", "a"), stderr=subprocess.STDOUT, **NOWIN)
         for _ in range(120):
             if comfy_up():
                 break
@@ -216,12 +249,22 @@ def main():
     finally:
         if proc:
             proc.terminate()
+        lock.unlink(missing_ok=True)
     log(f"Fertig: {done}/{len(jobs)} Videos im Vorrat.")
 
+
+LOCK = None
 
 if __name__ == "__main__":
     try:
         main()
     except Exception:
         traceback.print_exc()
+        try:
+            log("FEHLER:\n" + traceback.format_exc())
+        except Exception:
+            pass
         sys.exit(1)
+    finally:
+        if LOCK is not None:
+            LOCK.unlink(missing_ok=True)
