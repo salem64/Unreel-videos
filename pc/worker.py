@@ -139,7 +139,8 @@ def workflow_v2(clip, negative, seed):
         "w14": {"class_type": "VAEDecode", "inputs": {"samples": ["w13", 0], "vae": ["w8", 0]}},
         # smoother motion
         "r1": {"class_type": "RIFE VFI", "inputs": {"ckpt_name": "rife49.pth", "frames": ["w14", 0], "clear_cache_after_n_frames": 10, "multiplier": 2,
-                                                     "fast_mode": True, "ensemble": True, "scale_factor": 1.0}},
+                                                     "fast_mode": True, "ensemble": True, "scale_factor": 1.0,
+                                                     "dtype": "float32", "torch_compile": False, "batch_size": 1}},
         # sound
         "60": {"class_type": "MMAudioModelLoader", "inputs": {"mmaudio_model": "mmaudio_large_44k_v2_fp16.safetensors", "base_precision": "fp16"}},
         "61": {"class_type": "MMAudioFeatureUtilsLoader", "inputs": {"vae_model": "mmaudio_vae_44k_fp16.safetensors",
