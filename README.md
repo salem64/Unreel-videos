@@ -39,3 +39,10 @@ Wan 2.2 5B turns calm, photo-like descriptions into near-static images. Every cl
 
 ## ComfyUI workflow file
 `pc/unreel_workflow_v2_api.json` (best quality) and `pc/unreel_workflow_api.json` (v1) are the exact graphs the worker sends to ComfyUI (Wan 2.2 5B text-to-video → MMAudio sound → SaveVideo), exported in API format. Drag it into the ComfyUI window to open it, edit the prompt and press Run to experiment manually. The worker builds this same graph in code (`workflow()` in pc/worker.py); keep both in sync if you change settings.
+
+## Stills-first pipeline (ALWAYS for new topics)
+The Z-Image start frame (~15 s) decides the result; full videos take a long time. So:
+1. New topic -> write a STILLS job: `{"id": "stills-<date>-<slug>", "mode": "stills", "topic": "...", "variants": [{"name": "...", "topic": "...", "image_prompt": "...", "seeds": [..3 seeds..]}, ...]}` with 2–4 different image_prompt variants per topic. The PC renders only start images into `queue/stills/<id>/` (JPEG + index.json with prompt and seed per file).
+2. Review: Claude looks at every still. Criteria: photorealistic, subject clearly recognizable and correct, believable scale, not cartoonish/plastic, anchored in the scene, vertical composition with room for motion.
+3. Approved still -> write the VIDEO job with `"start_image": "queue/stills/<id>/<file>.jpg"` on the clip (the worker loads that exact image, no re-generation), plus the motion "prompt" and "audio_prompt". Then delete the reviewed stills folder.
+4. Not good -> new stills round with changed prompts/seeds. If a topic still fails after 2–3 rounds, DROP it and pick a topic the models do well (real landscapes, weather, oceans, animals, space objects seen from space, big Moon/planets over cities, natural phenomena). Keep a list of dropped topics in state/dropped_topics.txt.

@@ -163,11 +163,81 @@ def workflow_v2(clip, negative, seed):
     return wf
 
 
+def run_prompt(wf, exts, timeout=3600):
+    """Queue a graph, wait, return list of output file paths with the given extensions."""
+    pid = http("/prompt", {"prompt": wf, "client_id": str(uuid.uuid4())})["prompt_id"]
+    t0 = time.time()
+    while True:
+        time.sleep(2)
+        hist = http(f"/history/{pid}")
+        if pid in hist:
+            h = hist[pid]
+            st = h.get("status", {})
+            if st.get("status_str") == "error":
+                msgs = [m for m in st.get("messages", []) if m[0] == "execution_error"]
+                raise RuntimeError(f"ComfyUI error: {json.dumps(msgs)[:800]}")
+            files = []
+            for out in h.get("outputs", {}).values():
+                for lst in out.values():
+                    if isinstance(lst, list):
+                        for it in lst:
+                            if isinstance(it, dict) and str(it.get("filename", "")).lower().endswith(exts) and it.get("type", "output") == "output":
+                                files.append(COMFY / "output" / it.get("subfolder", "") / it["filename"])
+            if not files:
+                raise RuntimeError(f"no {exts} in outputs: {json.dumps(h.get('outputs'))[:500]}")
+            return files, int(time.time() - t0)
+        if time.time() - t0 > timeout:
+            raise RuntimeError("timeout")
+
+
+ZIMG_FILES = ["models/diffusion_models/z_image_turbo_bf16.safetensors", "models/text_encoders/qwen_3_4b.safetensors", "models/vae/ae.safetensors"]
+
+
+def workflow_still(image_prompt, seed):
+    """Start-frame only (Z-Image Turbo), ~15 s."""
+    wf = workflow_v2({"image_prompt": image_prompt, "prompt": ""}, NEG_DEFAULT, seed)
+    return {k: v for k, v in wf.items() if k.startswith("z")}
+
+
+def render_stills(job):
+    """Stills mode: for each variant x seed render only the start image; save small JPEGs to queue/stills/<id>/."""
+    from PIL import Image
+    jid = job["id"]
+    outdir = REPO / "queue" / "stills" / jid
+    outdir.mkdir(parents=True, exist_ok=True)
+    index = []
+    for vi, var in enumerate(job["variants"]):
+        seeds = var.get("seeds") or [random.randint(1, 2**31) for _ in range(int(var.get("count", 3)))]
+        for seed in seeds:
+            files, secs = run_prompt(workflow_still(var["image_prompt"], int(seed)), (".png",), timeout=900)
+            name = f"{var.get('name', 'v' + str(vi + 1))}-{seed}.jpg"
+            im = Image.open(files[0]).convert("RGB")
+            im.thumbnail((720, 1280))
+            im.save(outdir / name, quality=88)
+            index.append({"file": name, "variant": var.get("name", f"v{vi + 1}"), "seed": int(seed),
+                          "image_prompt": var["image_prompt"], "topic": var.get("topic", job.get("topic", ""))})
+            log(f"  Startbild {name} in {secs} s")
+    (outdir / "index.json").write_text(json.dumps(index, ensure_ascii=False, indent=1), encoding="utf-8")
+    return len(index)
+
+
+def stage_start_image(rel_path):
+    """Copy an approved still from the repo into ComfyUI/input and return its file name for LoadImage."""
+    import shutil
+    src = REPO / rel_path
+    dst_name = "unreel_" + src.name
+    shutil.copyfile(src, COMFY / "input" / dst_name)
+    return dst_name
+
+
 def render_clip(clip, negative, seed):
     use_v2 = bool(clip.get("image_prompt")) and v2_available()
     if not use_v2 and clip.get("image_prompt"):
         clip = dict(clip, prompt=clip["image_prompt"] + " " + clip["prompt"])  # v1 fallback: scene + motion in one prompt
     wf = workflow_v2(clip, negative, seed) if use_v2 else workflow(clip, negative, seed)
+    if use_v2 and clip.get("start_image"):  # use the approved still exactly
+        wf = {k: v for k, v in wf.items() if not k.startswith("z")}
+        wf["z9"] = {"class_type": "LoadImage", "inputs": {"image": stage_start_image(clip["start_image"])}}
     log(f"  Pipeline {'v2 (Z-Image + Wan 14B + RIFE)' if use_v2 else 'v1 (Wan 5B)'}")
     pid = http("/prompt", {"prompt": wf, "client_id": str(uuid.uuid4())})["prompt_id"]
     t0 = time.time()
@@ -290,7 +360,8 @@ def main():
         if not a.auto:
             raise
         return
-    jobs = sorted((REPO / "jobs").glob("*.json"))
+    jobs = sorted((REPO / "jobs").glob("*.json"),
+                  key=lambda p: (0 if '"stills"' in p.read_text(encoding="utf-8") else 1, p.name))
     if not jobs:
         if not a.auto:
             log("Keine Auftraege in jobs/ - nichts zu tun.")
@@ -321,6 +392,22 @@ def main():
         for jf in jobs:
             job = json.loads(jf.read_text(encoding="utf-8"))
             jid = job.get("id", jf.stem)
+            if job.get("mode") == "stills":
+                if not all((COMFY / f).exists() for f in ZIMG_FILES):
+                    log(f"Auftrag {jid} (Startbilder) braucht Z-Image (install_v2.ps1) - uebersprungen.")
+                    continue
+                try:
+                    n = render_stills(job)
+                    jf.unlink()
+                    git("add", "-A")
+                    git("commit", "-m", f"PC stills: {jid} ({n} images)")
+                    git("pull", "--rebase")
+                    git("push")
+                    done += 1
+                    log(f"  -> queue/stills/{jid}/ ({n} Startbilder) hochgeladen")
+                except Exception:
+                    log(f"  Startbilder {jid} fehlgeschlagen:\n{traceback.format_exc()}")
+                continue
             if job.get("require_v2") and not v2_available():
                 log(f"Auftrag {jid} braucht Pipeline v2 (install_v2.ps1) - uebersprungen.")
                 continue
