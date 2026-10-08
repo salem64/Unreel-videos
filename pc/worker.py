@@ -92,7 +92,8 @@ V2_FILES = [
     "models/vae/wan_2.1_vae.safetensors",
     "custom_nodes/ComfyUI-Frame-Interpolation",
 ]
-V2_W, V2_H, V2_LEN, V2_FPS = 544, 960, 81, 16   # ~5 s, interpolated to 32 fps
+V2_W, V2_H, V2_LEN, V2_FPS = 576, 1024, 81, 16   # ~5 s, interpolated to 32 fps
+V2_MODE = os.environ.get("UNREEL_V2_MODE", "max")  # "max": full 20 steps, best motion (slow) | "fast": lightx2v 4-step LoRAs
 
 
 def v2_available():
@@ -101,7 +102,9 @@ def v2_available():
 
 def workflow_v2(clip, negative, seed):
     dur = round(V2_LEN / V2_FPS, 2)
-    return {
+    fast = V2_MODE == "fast"
+    steps, split, cfg = (4, 2, 1) if fast else (20, 10, 3.5)
+    wf = {
         # start image (Z-Image Turbo)
         "z1": {"class_type": "UNETLoader", "inputs": {"unet_name": "z_image_turbo_bf16.safetensors", "weight_dtype": "default"}},
         "z2": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen_3_4b.safetensors", "type": "lumina2", "device": "default"}},
@@ -127,12 +130,12 @@ def workflow_v2(clip, negative, seed):
         "w10": {"class_type": "CLIPTextEncode", "inputs": {"text": negative, "clip": ["w7", 0]}},
         "w11": {"class_type": "WanImageToVideo", "inputs": {"positive": ["w9", 0], "negative": ["w10", 0], "vae": ["w8", 0], "start_image": ["z9", 0],
                                                              "width": V2_W, "height": V2_H, "length": V2_LEN, "batch_size": 1}},
-        "w12": {"class_type": "KSamplerAdvanced", "inputs": {"model": ["w5", 0], "add_noise": "enable", "noise_seed": seed, "steps": 4, "cfg": 1,
+        "w12": {"class_type": "KSamplerAdvanced", "inputs": {"model": ["w5", 0], "add_noise": "enable", "noise_seed": seed, "steps": steps, "cfg": cfg,
                                                               "sampler_name": "euler", "scheduler": "simple", "positive": ["w11", 0], "negative": ["w11", 1],
-                                                              "latent_image": ["w11", 2], "start_at_step": 0, "end_at_step": 2, "return_with_leftover_noise": "enable"}},
-        "w13": {"class_type": "KSamplerAdvanced", "inputs": {"model": ["w6", 0], "add_noise": "disable", "noise_seed": 0, "steps": 4, "cfg": 1,
+                                                              "latent_image": ["w11", 2], "start_at_step": 0, "end_at_step": split, "return_with_leftover_noise": "enable"}},
+        "w13": {"class_type": "KSamplerAdvanced", "inputs": {"model": ["w6", 0], "add_noise": "disable", "noise_seed": 0, "steps": steps, "cfg": cfg,
                                                               "sampler_name": "euler", "scheduler": "simple", "positive": ["w11", 0], "negative": ["w11", 1],
-                                                              "latent_image": ["w12", 0], "start_at_step": 2, "end_at_step": 10000, "return_with_leftover_noise": "disable"}},
+                                                              "latent_image": ["w12", 0], "start_at_step": split, "end_at_step": 10000, "return_with_leftover_noise": "disable"}},
         "w14": {"class_type": "VAEDecode", "inputs": {"samples": ["w13", 0], "vae": ["w8", 0]}},
         # smoother motion
         "r1": {"class_type": "RIFE VFI", "inputs": {"ckpt_name": "rife49.pth", "frames": ["w14", 0], "clear_cache_after_n_frames": 10, "multiplier": 2,
@@ -150,6 +153,11 @@ def workflow_v2(clip, negative, seed):
         "57": {"class_type": "CreateVideo", "inputs": {"images": ["r1", 0], "fps": V2_FPS * 2, "audio": ["62", 0]}},
         "58": {"class_type": "SaveVideo", "inputs": {"video": ["57", 0], "filename_prefix": "unreel/clip", "format": "auto", "codec": "auto"}},
     }
+    if not fast:  # drop the speed LoRAs: base models directly into ModelSamplingSD3
+        del wf["w3"], wf["w4"]
+        wf["w5"]["inputs"]["model"] = ["w1", 0]
+        wf["w6"]["inputs"]["model"] = ["w2", 0]
+    return wf
 
 
 def render_clip(clip, negative, seed):
