@@ -16,8 +16,9 @@ import argparse, json, os, random, subprocess, sys, time, traceback, urllib.requ
 from pathlib import Path
 
 HOST = "http://127.0.0.1:8188"
-NEG_DEFAULT = ("blurry, low quality, distorted, deformed, watermark, text, subtitles, logo, jpeg artifacts, "
-               "static frame, ugly, extra fingers, bad hands, people, faces")
+NEG_DEFAULT = ("static, still image, frozen frame, no motion, photo, slideshow, long exposure, star trails, timelapse streaks, "
+               "blurry, low quality, distorted, deformed, watermark, text, subtitles, logo, jpeg artifacts, "
+               "ugly, extra fingers, bad hands, faces")
 W, H, LENGTH, FPS = 704, 1280, 121, 24  # Wan 2.2 5B native vertical, ~5 s per clip
 
 

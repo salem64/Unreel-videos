@@ -1,9 +1,0 @@
-{
- "id": "test-earth-rings",
- "hook": "What if Earth had rings?",
- "clips": [
-  {"prompt": "Cinematic wide shot, vertical frame, golden hour. A quiet suburban street with houses and trees, and enormous bright planetary rings like Saturn's stretch across the entire sky in a huge arc from horizon to horizon, casting a thin shadow band. Slow upward camera tilt, photorealistic, awe-inspiring, detailed clouds, 4k.", "audio_prompt": "gentle evening wind, distant birds, calm ambient atmosphere", "seed": 2468},
-  {"prompt": "Cinematic shot, vertical frame, night. A snowy mountain lake reflecting giant glowing planetary rings arching across a starry sky like Saturn's rings seen from Earth, the rings bright and icy, slow forward dolly over the calm water, photorealistic, epic, breathtaking.", "audio_prompt": "soft night ambience, gentle water lapping, quiet wind", "seed": 1357}
- ],
- "meta": {"topic": "What if Earth had rings like Saturn", "caption": "You'd see this every single night 🪐 Would you want it?", "first_comment": "Fun fact: Earth might have had rings 466 million years ago 👀", "youtube_title": "What if Earth had rings like Saturn? 🪐 #shorts", "tiktok_title": "What if Earth had rings? 🪐"}
-}

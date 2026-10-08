@@ -18,3 +18,12 @@ Videos in `videos/` are removed a few days after posting.
 - `jobs/<id>.json` – prompts/specs for the PC (written by Claude before the batch).
 - `queue/<id>.mp4` + `queue/<id>.json` – finished AI videos with metadata: {"topic", "caption", "first_comment", "youtube_title", "tiktok_title", "ai_label": true}.
 - Night task: ignore queue files starting with `test-` (Dimi reviews those first). If `queue/` has at least one other video, post the oldest one (move it to `videos/`, use its metadata, AI label true) – at most one per day. If the queue is empty, use the cloud formats (quiz/physics) as usual. Mention in the report how many queue videos are left. If the queue is now empty or has only 1 video left, start the German report with a clear reminder: "⚠️ KI-Vorrat leer/fast leer – bitte am PC den Wochen-Batch starten." (only once AI videos have ever been in the queue, i.e. after the PC setup).
+
+## Prompt rules for AI clips (jobs/*.json) – ALWAYS follow
+Wan 2.2 5B turns calm, photo-like descriptions into near-static images. Every clip prompt must:
+1. Start with "Dynamic cinematic shot, vertical frame" and describe a clear camera move (forward drive/flight, orbit, tracking shot, push-in) that lasts the whole clip.
+2. Contain at least 3 visible moving elements: e.g. clouds racing across the sky, trees/grass swaying strongly in wind, birds/animals moving, water waves, cars, particles, rotating objects.
+3. Describe the main subject very concretely (shape, size, colors, position in frame, what it looks like up close) – never rely on a name alone ("planetary rings" alone became star trails; "one huge solid flat band of white and beige stripes arching across the sky like Saturn's rings" is better).
+4. Prefer daylight or clearly lit scenes; avoid night-sky/star scenes (they render as long-exposure star trails).
+5. Never write calm/still/serene/quiet/peaceful scenes. No people's faces or hands in close-up.
+6. Use 2–3 clips per video with different camera moves, each clip a different angle on the same idea.

@@ -1,0 +1,28 @@
+{
+ "id": "test-earth-rings-v2",
+ "hook": "What if Earth had rings?",
+ "clips": [
+  {
+   "prompt": "Dynamic cinematic shot, vertical frame, bright daytime. The camera drives forward down a sunny suburban street. In the blue sky above, Earth's planetary ring system is clearly visible: one huge, solid, wide, flat band made of white, cream and beige stripes, shaped exactly like Saturn's rings, stretching in a giant arc across the whole sky from the left horizon to the right horizon. Fluffy white clouds drift quickly across the sky in front of the ring band, tree branches sway strongly in the wind, a flock of birds flies across the frame, a car passes by. Continuous forward camera movement, lively motion everywhere, photorealistic, sharp, vivid colors.",
+   "audio_prompt": "wind blowing through trees, birds chirping, a passing car, outdoor street ambience",
+   "seed": 24680
+  },
+  {
+   "prompt": "Dynamic cinematic shot, vertical frame. A camera flies fast low over a vast green meadow with tall grass waving strongly in the wind toward distant mountains. Above the mountains, a gigantic solid planetary ring band like Saturn's rings, wide flat stripes of white, gold and grey, spans the entire sky in a huge curved arc, with the bright sun reflecting off it. Clouds race across the sky, a flock of birds flies past the camera, the grass ripples in waves. Constant forward drone motion, epic scale, photorealistic, sharp details.",
+   "audio_prompt": "strong wind over grass, whooshing air, birds flying past",
+   "seed": 13579
+  },
+  {
+   "prompt": "Dynamic shot from space, vertical frame. The camera slowly orbits around planet Earth with blue oceans, white clouds and green continents clearly visible, surrounded by a wide, flat, bright ring system exactly like Saturn's rings, made of countless sparkling ice particles. The rings rotate visibly around the planet, the clouds on Earth move, the sun rises over the edge of the planet creating a bright flare. Smooth continuous camera orbit, photorealistic, cinematic, sharp.",
+   "audio_prompt": "deep cinematic space ambience, low rumble, subtle whoosh",
+   "seed": 97531
+  }
+ ],
+ "meta": {
+  "topic": "What if Earth had rings like Saturn",
+  "caption": "You'd see this every single day 🪐 Would you want it?",
+  "first_comment": "Fun fact: scientists think Earth may have had a ring about 466 million years ago 👀",
+  "youtube_title": "What if Earth had rings like Saturn? 🪐 #shorts",
+  "tiktok_title": "What if Earth had rings? 🪐"
+ }
+}
