@@ -20,7 +20,10 @@ Spec (see tools/quiz_example.json):
   "outro": {"title": "HOW MANY DID YOU GET?", "say": "How many did you get? Comment your score!",
             "tiers": [["0-2", "🥔", "Potato"], ["3-4", "🧠", "Smart"], ["5", "👑", "Genius"]]}   # optional
 }
-2-4 options per question (2 = true/false style). 4-6 questions -> ~30-50 s.
+2-4 options per question (2 = true/false or "which is bigger"). 4-10 questions -> ~30-55 s.
+Options may be plain strings or {"t": "Elephant", "e": "🐘"} (emoji shown in the answer row).
+"visual": true on a question = big picture layout (huge emoji/flag/emoji puzzle like "🐝🦵", short question).
+Speed round: 8-10 two-option questions with "think": 2.
 """
 import json, math, os, random, subprocess, sys
 import numpy as np
@@ -65,6 +68,14 @@ def font(path, size):
 def hex2rgb(h):
     h = h.lstrip("#")
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def opt_text(o):
+    return o if isinstance(o, str) else o.get("t", "")
+
+
+def opt_emoji(o):
+    return None if isinstance(o, str) else o.get("e")
 
 
 def clamp(x, a=0.0, b=1.0):
@@ -332,13 +343,14 @@ def render(spec, out):
     hook = spec.get("hook", {})
     outro = spec.get("outro", {})
     lo = max(1, (nq - 1) // 2)
-    tiers = outro.get("tiers") or [[f"0-{lo}", "🥔", "Potato"], [f"{lo + 1}-{nq - 1}", "🧠", "Smart"],
+    mid = f"{lo + 1}" if lo + 1 == nq - 1 else f"{lo + 1}-{nq - 1}"
+    tiers = outro.get("tiers") or [[f"0-{lo}", "🥔", "Potato"], [mid, "🧠", "Smart"],
                                    [f"{nq}/{nq}", "👑", "Genius"]]
 
     # ---------------- voice
     texts = [hook.get("say", hook.get("title", ""))]
     for q in qs:
-        texts += [q.get("say", q["q"]), q.get("reveal_say", q["options"][q["answer"]] + "!")]
+        texts += [q.get("say", q["q"]), q.get("reveal_say", opt_text(q["options"][q["answer"]]) + "!")]
     texts.append(outro.get("say", "How many did you get? Comment your score!"))
     vo = tts_all(texts, voice, speed)
     dur = lambda a: len(a) / SR
@@ -459,8 +471,11 @@ def render(spec, out):
     ROW_W = CW
     qspr = []
     for i, q in enumerate(qs):
+        vis = bool(q.get("visual"))           # big picture question (flags, emoji puzzles, "what is this?")
+        CARD_H, CARD_Y = (170, 790) if vis else (270, 690)
+        q_ry, q_rr, q_em = (612, 150, 250) if vis else (575, 112, 170)
         card = rrect(CARD_W, CARD_H, 42, (255, 255, 255, 255))
-        lines, f, s = fit(q["q"], F_XB, CARD_W - 110, CARD_H - 70, 66, 40, 1.12)
+        lines, f, s = fit(q["q"], F_XB, CARD_W - 110, CARD_H - 56, 66 if not vis else 58, 38, 1.12)
         txt = text_sprite(lines, f, s, INK + (255,), 1.12)
         card.alpha_composite(txt, ((CARD_W - txt.width) // 2, (CARD_H - txt.height) // 2 + 6))
         card_sh, card_pad = shadow_of(card, 26, 0.6)
@@ -491,9 +506,14 @@ def render(spec, out):
                 else:
                     lw = dr.textlength(letter, font=lf)
                     dr.text((15 + (row_h - 30 - lw) / 2, row_h / 2 - row_h * 0.27), letter, font=lf, fill=lcol)
-                ol, of, os_ = fit(o, F_XB, ROW_W - row_h - 70, row_h - 20, 58, 32, 1.05)
+                tx = row_h + 8
+                if opt_emoji(o):
+                    es = emoji_sprite(opt_emoji(o), int(row_h * 0.62))
+                    im.alpha_composite(es, (tx + 4, (row_h - es.height) // 2))
+                    tx += es.width + 22
+                ol, of, os_ = fit(opt_text(o), F_XB, ROW_W - tx - 60, row_h - 20, 58, 32, 1.05)
                 ot = text_sprite(ol, of, os_, WHITE + (255,), 1.05, align="left")
-                im.alpha_composite(ot, (row_h + 8, int((row_h - ot.height) / 2 + 4)))
+                im.alpha_composite(ot, (tx, int((row_h - ot.height) / 2 + 4)))
                 if st == "dim":
                     im.putalpha(im.getchannel("A").point(lambda v: int(v * 0.32)))
                 states[st] = im
@@ -506,7 +526,8 @@ def render(spec, out):
         lvl_col = LEVEL_COLORS.get(lvl, accent)
         chip_txt = f"QUESTION {i + 1}/{nq}" + (f"  ·  {lvl}" if lvl else "")
         qspr.append(dict(card=card, card_sh=card_sh, card_pad=card_pad, rows=rows, row_h=row_h, gap=gap, y0=y0,
-                         chip=chip(chip_txt, lvl_col), emoji=emoji_sprite(q.get("emoji", "❓"), 170)))
+                         card_y=CARD_Y, ry=q_ry, rr=q_rr,
+                         chip=chip(chip_txt, lvl_col), emoji=emoji_sprite(q.get("emoji", "❓"), q_em)))
 
     # hook sprites
     hk_lines, hk_f, hk_s = fit(hook.get("title", "ONLY 3% GET 5/5").upper(), F_BLACK, CW, 520, 150, 70, 1.02)
@@ -593,7 +614,7 @@ def render(spec, out):
             # chip
             paste_c(fr, sp["chip"], CX, 435, 0.6 + 0.4 * ease_out_back(lt / 0.3))
             # emoji / timer ring
-            ry, rr = 575, 112
+            ry, rr = sp["ry"], sp["rr"]
             ring = Image.new("RGBA", (2 * rr + 40, 2 * rr + 40), (0, 0, 0, 0))
             rd = ImageDraw.Draw(ring)
             box = (20, 20, 20 + 2 * rr, 20 + 2 * rr)
@@ -625,8 +646,8 @@ def render(spec, out):
             # card
             ce = ease_out_cubic(lt / 0.35)
             cy_off = 60 * (1 - ce)
-            paste(fr, sp["card_sh"], CX - CARD_W / 2 - sp["card_pad"], CARD_Y - sp["card_pad"] + 14 + cy_off, ce)
-            paste(fr, sp["card"], CX - CARD_W / 2, CARD_Y + cy_off, ce)
+            paste(fr, sp["card_sh"], CX - CARD_W / 2 - sp["card_pad"], sp["card_y"] - sp["card_pad"] + 14 + cy_off, ce)
+            paste(fr, sp["card"], CX - CARD_W / 2, sp["card_y"] + cy_off, ce)
             # options
             ans = seg["q"]["answer"]
             for k, states in enumerate(sp["rows"]):

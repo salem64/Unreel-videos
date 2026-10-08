@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Unreel satisfying physics shorts (neon look, note per bounce).
 
-Usage: python3 tools/physics.py <mode> out.mp4 [seed] ["HOOK LINE 1|HOOK LINE 2"] [palette]
+Usage: python3 tools/physics.py <mode> out.mp4 [seed] ["HOOK LINE 1|HOOK LINE 2"] [palette] [extra]
 Modes:
   escape    - a ball is trapped in 10-16 rotating rings with gaps; every escaped ring shatters.  Hook e.g. "CAN IT|ESCAPE?"
   multiply  - a rotating ring with a gap; every ball that escapes spawns 2 new ones inside.   Hook e.g. "EVERY ESCAPE|= 2 MORE BALLS"
   grow      - see tools/sim_ball.py (ball grows with every bounce)
+  battle    - ball vs ball with growing swords and HP bars (tools/arena.py), 6th arg fighters "red,blue" or "🐶,🐱"
+  elimination - last ball inside the ring wins (tools/arena.py), 6th arg set: flags|animals|food|fruits|colors
 Palettes: neon (default), sunset, ice, candy, lime
 The script tries seeds from the given one upward until the video is 15-45 s long and the first escape happens
 within 3.5 s (strong hook), and prints the seed used.
@@ -307,10 +309,13 @@ def render(mode, out, seed, hook, palette):
         d = ImageDraw.Draw(img)
         # hook
         y = 215
+        fb = font_big
+        while fb.size > 50 and max(d.textlength(l, font=fb) for l in hook) > 940:
+            fb = ImageFont.truetype(F, fb.size - 4)
         for line in hook:
-            tw = d.textlength(line, font=font_big)
-            d.text(((W - tw) / 2, y), line, font=font_big, fill=(255, 255, 255), stroke_width=7, stroke_fill=(0, 0, 0))
-            y += 112
+            tw = d.textlength(line, font=fb)
+            d.text(((W - tw) / 2, y), line, font=fb, fill=(255, 255, 255), stroke_width=7, stroke_fill=(0, 0, 0))
+            y += int(fb.size * 1.17)
         # counter
         s = str(f["count"])
         ccol = hue_col(h0 + 0.03 * t, 0.66)
@@ -339,7 +344,11 @@ if __name__ == "__main__":
     default = {"escape": "CAN IT|ESCAPE?", "multiply": "EVERY ESCAPE|= 2 MORE BALLS"}
     hook = (sys.argv[4] if len(sys.argv) > 4 else default.get(mode, "WAIT FOR|THE ENDING")).split("|")
     pal = sys.argv[5] if len(sys.argv) > 5 else "neon"
-    if mode == "grow":
+    if mode in ("battle", "elimination"):
+        extra = sys.argv[6] if len(sys.argv) > 6 else ""
+        subprocess.run([sys.executable, __file__.replace("physics.py", "arena.py"), mode, out, str(seed),
+                        sys.argv[4] if len(sys.argv) > 4 else "", pal, extra], check=True)
+    elif mode == "grow":
         subprocess.run([sys.executable, __file__.replace("physics.py", "sim_ball.py"), out, str(seed), "|".join(hook)], check=True)
     else:
         s, tot = render(mode, out, seed, hook, pal)
