@@ -32,6 +32,11 @@ PHYSICS variants (tools/physics.py <mode> …):
 - elimination (last ball inside wins; sets flags / animals / food / fruits / colors) – caption: "Pick your winner before it starts 👇"
 The script prints the winner – never reveal it in caption/title.
 
+## Trends, new ideas, humor
+- Trend scan every night: one vidIQ call (alternate: vidiq_trending_videos for shorts / vidiq_instagram_tiktok_outlier_search for "quiz", "ball battle", "satisfying physics", "flag quiz" …) + WebSearch for currently viral short formats. Note in state/ideas.md which trending formats/hooks/mechanics could be copied in OUR style (never copy their footage, music or branding – only the idea/mechanic).
+- Innovation day (every Sunday, or any night a trend clearly fits): build ONE new variant – a new physics mode (new file tools/<name>.py or a new mode in tools/arena.py, e.g. ball race, gravity maze, colour takeover, clock/hourglass, marble run, "every bounce = +1 ball") or a new quiz layout in tools/quiz.py (e.g. "odd one out", "guess the price", "would you rather", "finish the pattern"). Never break existing modes: test-render the old example + the new one, look at frames, and only commit if both work; otherwise revert (git checkout) and use an existing variant. Add the new variant to the variant list above and to state/ideas.md as "built".
+- Humor: every video gets at least one funny touch – a cheeky hook ("Your teacher would be ashamed if you miss #1"), a funny reveal line ("Sydney is crying right now"), funny fighters/sets (🥔 vs 🍟, 🐌 vs 🐢), funny tiers ("0 = certified potato 🥔"), meme-style captions. Keep it friendly, no insults of groups, nothing political/sexual/tragic.
+
 ## Learning what works (state/performance.json)
 List of posts: {"date", "file", "format" (quiz|physics), "variant" (quiz category or physics mode), "hook", "theme", "metrics": {platform: {views, likes, comments, shares, saves}}}.
 Night task: update metrics of posts from the last 14 days (Metricool analytics, vidIQ Instagram insights), then choose today's format: with < 6 measured posts alternate quiz/quiz/physics with different categories/variants; afterwards ~70 % the format/variant with the best average views (and shares/comments) per post, ~30 % something else to keep testing. Never the same quiz category twice in a row. Use at most one vidIQ trending call per night for topic ideas.
