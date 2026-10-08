@@ -29,3 +29,6 @@ Wan 2.2 5B turns calm, photo-like descriptions into near-static images. Every cl
 4. Prefer daylight or clearly lit scenes; avoid night-sky/star scenes (they render as long-exposure star trails).
 5. Never write calm/still/serene/quiet/peaceful scenes. No people's faces or hands in close-up.
 6. Use 2–3 clips per video with different camera moves, each clip a different angle on the same idea.
+
+## ComfyUI workflow file
+`pc/unreel_workflow_api.json` is the exact graph the worker sends to ComfyUI (Wan 2.2 5B text-to-video → MMAudio sound → SaveVideo), exported in API format. Drag it into the ComfyUI window to open it, edit the prompt and press Run to experiment manually. The worker builds this same graph in code (`workflow()` in pc/worker.py); keep both in sync if you change settings.
