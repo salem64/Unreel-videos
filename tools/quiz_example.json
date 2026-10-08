@@ -1,0 +1,21 @@
+{
+ "theme": "violet",
+ "title": "General Knowledge",
+ "voice": "af_heart",
+ "speed": 1.08,
+ "hook": {"title": "Only 3% get 5/5", "sub": "Each question gets harder", "emoji": "🧠",
+          "say": "Only three percent get all five right. Each one gets harder."},
+ "questions": [
+  {"q": "How many legs does a spider have?", "options": ["6", "8", "10", "12"], "answer": 1,
+   "emoji": "🕷️", "level": "EASY", "think": 3, "reveal_say": "Eight! Easy one."},
+  {"q": "What is the capital of Australia?", "options": ["Sydney", "Melbourne", "Canberra", "Perth"], "answer": 2,
+   "emoji": "🇦🇺", "level": "MEDIUM", "think": 3, "reveal_say": "Canberra! Not Sydney."},
+  {"q": "Which planet has the most known moons?", "options": ["Jupiter", "Saturn", "Uranus", "Neptune"], "answer": 1,
+   "emoji": "🪐", "level": "HARD", "think": 3, "reveal_say": "Saturn! It has over two hundred and seventy."},
+  {"q": "Which letter appears in no U.S. state name?", "options": ["J", "Z", "Q", "X"], "answer": 2,
+   "emoji": "🇺🇸", "level": "EXPERT", "think": 3, "reveal_say": "Q! Every other letter shows up."},
+  {"q": "How many hearts does an octopus have?", "options": ["1", "2", "3", "4"], "answer": 2,
+   "emoji": "🐙", "level": "IMPOSSIBLE", "think": 3, "reveal_say": "Three! And its blood is blue."}
+ ],
+ "outro": {"title": "How many did you get?", "say": "How many did you get? Comment your score!"}
+}

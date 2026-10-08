@@ -4,45 +4,27 @@ Rendered shorts for the Unreel channel, served to the scheduler via public raw l
 Videos in `videos/` are removed a few days after posting.
 
 - `tools/setup.sh` – install voice engine + model
-- `tools/render.py spec.json out.mp4` – render a 1080x1920 short (voice, captions, SFX)
-- `tools/example.json` – example spec
-- `tools/sim_ball.py out.mp4 [seed] ["LINE1|LINE2"]` – physics short: ball grows in a ring, note per bounce
+- `tools/quiz.py spec.json out.mp4` – MAIN FORMAT: multiple-choice quiz short (voice, 4 options, countdown, green reveal + confetti, music bed, SFX). Spec format in the file header, example `tools/quiz_example.json`.
+- `tools/physics.py <escape|multiply|grow> out.mp4 [seed] ["LINE1|LINE2"] [neon|sunset|ice|candy|lime]` – satisfying physics shorts (auto-picks a seed with 15–45 s length and an early first escape)
+- `tools/sim_ball.py` – the "grow" physics variant (used by physics.py grow)
+- `tools/render.py` – older text/fact renderer (not used any more)
 
 ## Posting flow (free tier)
 - Metricool free plan: 50 posts/month, tracked in `state/metricool_count.json` (month, count). Reset count when the month changes.
 - Night task (~03:53 Berlin): renders the video into `videos/`, then schedules via Metricool within budget: allowed today = floor((50 - count) / days left in month incl. today), max 2. Priority: TikTok, then YouTube. Instagram goes via vidIQ at midday (falls back to Metricool as 3rd priority if vidIQ has no Instagram account with publishingAvailable). Writes `videos/pending.json` (file, caption, first comment, titles) and sends Dimi the MP4 + YouTube title if YouTube was skipped (manual upload).
 - Instagram task (scheduled task id trig_01FCas76GxNu1YJNKdpDoRaX, one-shot): the night task sets its run time each day to Instagram's best hour (Metricool getBestTimeToPostByNetwork instagram) via update_trigger(run_once_at=<UTC>, enabled=true). It publishes `videos/pending.json` as an Instagram Reel via vidIQ (import raw URL with vidiq_video_upload, then vidiq_instagram_publish_reel), then deletes everything in `videos/` except `.gitkeep`.
 
-## AI video queue (rendered automatically on Dimi's PC, RTX 4080 Super)
-- PC side: Windows scheduled task "Unreel Worker" runs `pythonw.exe -s pc/worker.py --root <root> --auto` every 30 min while Dimi is logged in. It quietly exits when jobs/ is empty or the GPU is busy (gaming), otherwise renders all jobs and pushes them to queue/.
-- REFILL RULE (night task): after posting, count queue videos (excluding test-*) + jobs/*.json. If that total is ≤ 1, write new jobs right away so that queue + jobs = 7 (same rules as the weekly planner: verified facts, "What if"/fact visuals, follow "Prompt rules for AI clips", job format in pc/worker.py docstring), commit "Refill AI jobs: <n> new", push. The PC renders them automatically the next time it is on and idle.
-- Dimi's PC renders a weekly batch of 5–7 AI videos (ComfyUI: Wan 2.2 + MMAudio) in one session. Content direction: "What if…" and unbelievable-fact visuals (space, nature, animals, scale comparisons) that fit the Unreel niche – NOT glass/fruit ASMR (saturated), e.g. on Sunday. The PC never needs to run at night.
-- `jobs/<id>.json` – prompts/specs for the PC (written by Claude before the batch).
-- `queue/<id>.mp4` + `queue/<id>.json` – finished AI videos with metadata: {"topic", "caption", "first_comment", "youtube_title", "tiktok_title", "ai_label": true}.
-- Night task: ignore queue files starting with `test-` (Dimi reviews those first). If `queue/` has at least one other video, post the oldest one (move it to `videos/`, use its metadata, AI label true) – at most one per day. If the queue is empty, use the cloud formats (quiz/physics) as usual. Mention in the report how many queue videos are left. If the queue is now empty or has only 1 video left, start the German report with a clear reminder: "⚠️ KI-Vorrat leer/fast leer – bitte am PC den Wochen-Batch starten." (only once AI videos have ever been in the queue, i.e. after the PC setup).
+## Formats (decided 2026-10-08 by Dimi: no AI-generated video, only well-designed quizzes + physics)
+QUIZ (quiz.py) – categories rotate: general knowledge, geography/capitals, flags ("Which country's flag is this?" with the flag emoji), science, space, animals, food, inventions, history (nothing tragic), true-or-false (2 options), "which is bigger/older/faster".
+- 5 questions (sometimes 6), levels EASY → MEDIUM → HARD → EXPERT → IMPOSSIBLE ("each question gets harder").
+- Every answer verified with WebSearch; exactly one clearly correct option; 3 plausible wrong options; vary the correct letter (never the same letter twice in a row); question ≤ 70 chars, options ≤ 22 chars.
+- One fitting emoji per question; hook varies ("Only 3% get 5/5", "Average person gets 2/5", "Your brain age if you get all 5"); theme preset differs from the last quiz.
+- reveal_say: answer + a short surprising extra fact (≤ 10 words).
+PHYSICS (physics.py) – variants escape / multiply / grow, palette and hook vary.
 
-## Prompt rules for AI clips (jobs/*.json) – ALWAYS follow
-Pipeline v2 (preferred, used automatically when a clip has "image_prompt" and the v2 models are installed): Z-Image Turbo renders a start frame from "image_prompt", Wan 2.2 14B animates it with "prompt" (576x1024, default mode "max" = full 20 steps without speed LoRAs for the best motion; set env UNREEL_V2_MODE=fast for the 4-step LoRAs), RIFE doubles the frame rate, MMAudio adds sound. Every clip MUST therefore have:
-- "image_prompt": a detailed photorealistic still image description (vertical 9:16, lighting, every important object, the main subject exactly as it should look, its size and position in frame). This decides WHAT is seen.
-- "prompt": ONLY the motion – camera move + what moves in the scene (rules below). This decides HOW it moves.
-- "audio_prompt": natural sounds matching the scene.
-Rules for "prompt" (and for v1 clips without image_prompt):
-Wan 2.2 5B turns calm, photo-like descriptions into near-static images. Every clip prompt must:
-1. Start with "Dynamic cinematic shot, vertical frame" and describe a clear camera move (forward drive/flight, orbit, tracking shot, push-in) that lasts the whole clip.
-2. Contain at least 3 visible moving elements: e.g. clouds racing across the sky, trees/grass swaying strongly in wind, birds/animals moving, water waves, cars, particles, rotating objects.
-3. Describe the main subject very concretely (shape, size, colors, position in frame, what it looks like up close) – never rely on a name alone ("planetary rings" alone became star trails; "one huge solid flat band of white and beige stripes arching across the sky like Saturn's rings" is better).
-4. Prefer daylight or clearly lit scenes; avoid night-sky/star scenes (they render as long-exposure star trails).
-5. Never write calm/still/serene/quiet/peaceful scenes. No people's faces or hands in close-up.
-6. Use 2–3 clips per video with different camera moves, each clip a different angle on the same idea.
-7. The MAIN SUBJECT itself must move or change, not only the background (otherwise it looks pasted on): let the camera move so the subject travels through the frame, let light sweep/glitter across it, let clouds/particles pass in front of AND behind it, let it rotate, grow, crack, flow etc.
-8. Anchor huge sky objects (rings, planets, moons, structures) in the scene in the image_prompt: describe them rising from behind and disappearing behind real foreground objects ("partly hidden behind the rooftops and trees at both ends"), never as a free-floating shape.
+## Learning what works (state/performance.json)
+List of posts: {"date", "file", "format" (quiz|physics), "variant" (quiz category or physics mode), "hook", "theme", "metrics": {platform: {views, likes, comments, shares, saves}}}.
+Night task: update metrics of posts from the last 14 days (Metricool analytics, vidIQ Instagram insights), then choose today's format: with < 6 measured posts alternate quiz/quiz/physics with different categories/variants; afterwards ~70 % the format/variant with the best average views (and shares/comments) per post, ~30 % something else to keep testing. Never the same quiz category twice in a row. Use at most one vidIQ trending call per night for topic ideas.
 
-## ComfyUI workflow file
-`pc/unreel_workflow_v2_api.json` (best quality) and `pc/unreel_workflow_api.json` (v1) are the exact graphs the worker sends to ComfyUI (Wan 2.2 5B text-to-video → MMAudio sound → SaveVideo), exported in API format. Drag it into the ComfyUI window to open it, edit the prompt and press Run to experiment manually. The worker builds this same graph in code (`workflow()` in pc/worker.py); keep both in sync if you change settings.
-
-## Stills-first pipeline (ALWAYS for new topics)
-The Z-Image start frame (~15 s) decides the result; full videos take a long time. So:
-1. New topic -> write a STILLS job: `{"id": "stills-<date>-<slug>", "mode": "stills", "topic": "...", "variants": [{"name": "...", "topic": "...", "image_prompt": "...", "seeds": [..3 seeds..]}, ...]}` with 2–4 different image_prompt variants per topic. The PC renders only start images into `queue/stills/<id>/` (JPEG + index.json with prompt and seed per file).
-2. Review: Claude looks at every still. Criteria: photorealistic, subject clearly recognizable and correct, believable scale, not cartoonish/plastic, anchored in the scene, vertical composition with room for motion.
-3. Approved still -> write the VIDEO job with `"start_image": "queue/stills/<id>/<file>.jpg"` on the clip (the worker loads that exact image, no re-generation), plus the motion "prompt" and "audio_prompt". Then delete the reviewed stills folder.
-4. Not good -> new stills round with changed prompts/seeds. If a topic still fails after 2–3 rounds, DROP it and pick a topic the models do well (real landscapes, weather, oceans, animals, space objects seen from space, big Moon/planets over cities, natural phenomena). Keep a list of dropped topics in state/dropped_topics.txt.
+## AI video pipeline (retired)
+`pc/` (ComfyUI worker, installers) is no longer used; no new jobs are written. The PC is not needed for anything.
