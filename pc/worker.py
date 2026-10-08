@@ -308,6 +308,9 @@ def main():
         for jf in jobs:
             job = json.loads(jf.read_text(encoding="utf-8"))
             jid = job.get("id", jf.stem)
+            if job.get("require_v2") and not v2_available():
+                log(f"Auftrag {jid} braucht Pipeline v2 (install_v2.ps1) - uebersprungen.")
+                continue
             log(f"Auftrag {jid}: {len(job['clips'])} Clips")
             try:
                 clips = []
