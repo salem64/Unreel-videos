@@ -18,7 +18,7 @@ function Get-File($url, $out) {
 
 Step "Unreel PC Setup"
 $default = "C:\Unreel"
-$root = Read-Host "Installationsordner (Enter = $default, braucht ca. 45 GB)"
+if ($env:UNREEL_ROOT) { $root = $env:UNREEL_ROOT } else { $root = Read-Host "Installationsordner (Enter = $default, braucht ca. 45 GB)" }
 if ([string]::IsNullOrWhiteSpace($root)) { $root = $default }
 New-Item -ItemType Directory -Force -Path $root | Out-Null
 $freeGB = [math]::Round((Get-PSDrive ((Get-Item $root).PSDrive.Name)).Free / 1GB)
