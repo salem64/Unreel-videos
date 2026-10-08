@@ -1,0 +1,381 @@
+{
+ "z1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "z_image_turbo_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "z2": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen_3_4b.safetensors",
+   "type": "lumina2",
+   "device": "default"
+  }
+ },
+ "z3": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "ae.safetensors"
+  }
+ },
+ "z4": {
+  "class_type": "ModelSamplingAuraFlow",
+  "inputs": {
+   "shift": 3,
+   "model": [
+    "z1",
+    0
+   ]
+  }
+ },
+ "z5": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "Photorealistic wide-angle photo, vertical 9:16, bright sunny afternoon. A tree-lined suburban street with colorful houses and parked cars, seen from the middle of the road. In the clear blue sky above, Earth's planetary rings are clearly visible: one gigantic, solid, flat band of bright white, cream and beige stripes with thin dark gaps, exactly like Saturn's rings, arching across the entire sky from the left edge to the right edge of the frame. A few fluffy white clouds float in front of the ring band. Sharp, highly detailed, vivid colors, cinematic.",
+   "clip": [
+    "z2",
+    0
+   ]
+  }
+ },
+ "z6": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "z5",
+    0
+   ]
+  }
+ },
+ "z7": {
+  "class_type": "EmptySD3LatentImage",
+  "inputs": {
+   "width": 768,
+   "height": 1344,
+   "batch_size": 1
+  }
+ },
+ "z8": {
+  "class_type": "KSampler",
+  "inputs": {
+   "seed": 1234,
+   "steps": 8,
+   "cfg": 1,
+   "sampler_name": "res_multistep",
+   "scheduler": "simple",
+   "denoise": 1,
+   "model": [
+    "z4",
+    0
+   ],
+   "positive": [
+    "z5",
+    0
+   ],
+   "negative": [
+    "z6",
+    0
+   ],
+   "latent_image": [
+    "z7",
+    0
+   ]
+  }
+ },
+ "z9": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "z8",
+    0
+   ],
+   "vae": [
+    "z3",
+    0
+   ]
+  }
+ },
+ "z10": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "z9",
+    0
+   ],
+   "filename_prefix": "unreel/start"
+  }
+ },
+ "w1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "w2": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "w3": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "w1",
+    0
+   ],
+   "lora_name": "wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors",
+   "strength_model": 1.0
+  }
+ },
+ "w4": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "w2",
+    0
+   ],
+   "lora_name": "wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors",
+   "strength_model": 1.0
+  }
+ },
+ "w5": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 5,
+   "model": [
+    "w3",
+    0
+   ]
+  }
+ },
+ "w6": {
+  "class_type": "ModelSamplingSD3",
+  "inputs": {
+   "shift": 5,
+   "model": [
+    "w4",
+    0
+   ]
+  }
+ },
+ "w7": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+   "type": "wan",
+   "device": "default"
+  }
+ },
+ "w8": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "wan_2.1_vae.safetensors"
+  }
+ },
+ "w9": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "The camera drives smoothly forward down the street toward the giant ring band in the sky. Clouds drift quickly across the sky in front of the rings, tree branches sway strongly in the wind, a flock of birds flies across the frame from left to right, a car drives past. Continuous forward camera motion, lively, dynamic.",
+   "clip": [
+    "w7",
+    0
+   ]
+  }
+ },
+ "w10": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "static, still image, frozen frame, no motion, photo, slideshow, long exposure, star trails, timelapse streaks, blurry, low quality, distorted, deformed, watermark, text, subtitles, logo, jpeg artifacts, ugly, extra fingers, bad hands, faces",
+   "clip": [
+    "w7",
+    0
+   ]
+  }
+ },
+ "w11": {
+  "class_type": "WanImageToVideo",
+  "inputs": {
+   "positive": [
+    "w9",
+    0
+   ],
+   "negative": [
+    "w10",
+    0
+   ],
+   "vae": [
+    "w8",
+    0
+   ],
+   "start_image": [
+    "z9",
+    0
+   ],
+   "width": 544,
+   "height": 960,
+   "length": 81,
+   "batch_size": 1
+  }
+ },
+ "w12": {
+  "class_type": "KSamplerAdvanced",
+  "inputs": {
+   "model": [
+    "w5",
+    0
+   ],
+   "add_noise": "enable",
+   "noise_seed": 1234,
+   "steps": 4,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "positive": [
+    "w11",
+    0
+   ],
+   "negative": [
+    "w11",
+    1
+   ],
+   "latent_image": [
+    "w11",
+    2
+   ],
+   "start_at_step": 0,
+   "end_at_step": 2,
+   "return_with_leftover_noise": "enable"
+  }
+ },
+ "w13": {
+  "class_type": "KSamplerAdvanced",
+  "inputs": {
+   "model": [
+    "w6",
+    0
+   ],
+   "add_noise": "disable",
+   "noise_seed": 0,
+   "steps": 4,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "positive": [
+    "w11",
+    0
+   ],
+   "negative": [
+    "w11",
+    1
+   ],
+   "latent_image": [
+    "w12",
+    0
+   ],
+   "start_at_step": 2,
+   "end_at_step": 10000,
+   "return_with_leftover_noise": "disable"
+  }
+ },
+ "w14": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "w13",
+    0
+   ],
+   "vae": [
+    "w8",
+    0
+   ]
+  }
+ },
+ "r1": {
+  "class_type": "RIFE VFI",
+  "inputs": {
+   "ckpt_name": "rife49.pth",
+   "frames": [
+    "w14",
+    0
+   ],
+   "clear_cache_after_n_frames": 10,
+   "multiplier": 2,
+   "fast_mode": true,
+   "ensemble": true,
+   "scale_factor": 1.0
+  }
+ },
+ "60": {
+  "class_type": "MMAudioModelLoader",
+  "inputs": {
+   "mmaudio_model": "mmaudio_large_44k_v2_fp16.safetensors",
+   "base_precision": "fp16"
+  }
+ },
+ "61": {
+  "class_type": "MMAudioFeatureUtilsLoader",
+  "inputs": {
+   "vae_model": "mmaudio_vae_44k_fp16.safetensors",
+   "synchformer_model": "mmaudio_synchformer_fp16.safetensors",
+   "clip_model": "apple_DFN5B-CLIP-ViT-H-14-384_fp16.safetensors",
+   "mode": "44k",
+   "precision": "fp16"
+  }
+ },
+ "62": {
+  "class_type": "MMAudioSampler",
+  "inputs": {
+   "mmaudio_model": [
+    "60",
+    0
+   ],
+   "feature_utils": [
+    "61",
+    0
+   ],
+   "duration": 5.06,
+   "steps": 25,
+   "cfg": 4.5,
+   "seed": 1234,
+   "prompt": "wind blowing through trees, birds chirping, a passing car, outdoor street ambience",
+   "negative_prompt": "music, speech, voice, talking, noise, hum",
+   "mask_away_clip": false,
+   "force_offload": true,
+   "images": [
+    "w14",
+    0
+   ]
+  }
+ },
+ "57": {
+  "class_type": "CreateVideo",
+  "inputs": {
+   "images": [
+    "r1",
+    0
+   ],
+   "fps": 32,
+   "audio": [
+    "62",
+    0
+   ]
+  }
+ },
+ "58": {
+  "class_type": "SaveVideo",
+  "inputs": {
+   "video": [
+    "57",
+    0
+   ],
+   "filename_prefix": "unreel/clip",
+   "format": "auto",
+   "codec": "auto"
+  }
+ }
+}

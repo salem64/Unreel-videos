@@ -1,0 +1,31 @@
+{
+ "id": "test-earth-rings-v3",
+ "hook": "What if Earth had rings?",
+ "clips": [
+  {
+   "image_prompt": "Photorealistic wide-angle photo, vertical 9:16, bright sunny afternoon. A tree-lined suburban street with colorful houses and parked cars, seen from the middle of the road. In the clear blue sky above, Earth's planetary rings are clearly visible: one gigantic, solid, flat band of bright white, cream and beige stripes with thin dark gaps, exactly like Saturn's rings, arching across the entire sky from the left edge to the right edge of the frame. A few fluffy white clouds float in front of the ring band. Sharp, highly detailed, vivid colors, cinematic.",
+   "prompt": "The camera drives smoothly forward down the street toward the giant ring band in the sky. Clouds drift quickly across the sky in front of the rings, tree branches sway strongly in the wind, a flock of birds flies across the frame from left to right, a car drives past. Continuous forward camera motion, lively, dynamic.",
+   "audio_prompt": "wind blowing through trees, birds chirping, a passing car, outdoor street ambience",
+   "seed": 24681
+  },
+  {
+   "image_prompt": "Photorealistic aerial drone photo, vertical 9:16, golden hour. A vast green meadow with tall grass and wildflowers leading to snowy mountains. Above the mountains, a gigantic solid planetary ring band like Saturn's rings, wide flat stripes of white, gold and grey, spans the whole sky in a huge curved arc, lit by the low sun. Dramatic clouds, epic scale, ultra detailed.",
+   "prompt": "The drone flies fast and low over the meadow toward the mountains and the giant ring band. The tall grass ripples in strong waves of wind, clouds race across the sky, a flock of birds flies past close to the camera. Constant forward drone motion, epic, dynamic.",
+   "audio_prompt": "strong wind over grass, whooshing air, birds flying past",
+   "seed": 13580
+  },
+  {
+   "image_prompt": "Photorealistic space photo, vertical 9:16. Planet Earth seen from orbit, blue oceans, white swirling clouds and green-brown continents clearly visible, surrounded by a wide, flat, bright ring system exactly like Saturn's rings, made of countless sparkling ice particles, tilted diagonally across the frame. The sun is just behind the planet's edge creating a bright glow. Black space with a few stars. Ultra detailed, cinematic.",
+   "prompt": "The camera slowly orbits around Earth while the bright rings rotate visibly around the planet, sparkling ice particles drift past the camera, the clouds on Earth swirl, and the sun rises over the planet's edge with a growing lens flare. Smooth continuous orbit, dynamic.",
+   "audio_prompt": "deep cinematic space ambience, low rumble, subtle whoosh",
+   "seed": 97532
+  }
+ ],
+ "meta": {
+  "topic": "What if Earth had rings like Saturn",
+  "caption": "You'd see this every single day 🪐 Would you want it?",
+  "first_comment": "Fun fact: scientists think Earth may have had a ring about 466 million years ago 👀",
+  "youtube_title": "What if Earth had rings like Saturn? 🪐 #shorts",
+  "tiktok_title": "What if Earth had rings? 🪐"
+ }
+}

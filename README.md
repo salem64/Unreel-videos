@@ -22,6 +22,11 @@ Videos in `videos/` are removed a few days after posting.
 - Night task: ignore queue files starting with `test-` (Dimi reviews those first). If `queue/` has at least one other video, post the oldest one (move it to `videos/`, use its metadata, AI label true) – at most one per day. If the queue is empty, use the cloud formats (quiz/physics) as usual. Mention in the report how many queue videos are left. If the queue is now empty or has only 1 video left, start the German report with a clear reminder: "⚠️ KI-Vorrat leer/fast leer – bitte am PC den Wochen-Batch starten." (only once AI videos have ever been in the queue, i.e. after the PC setup).
 
 ## Prompt rules for AI clips (jobs/*.json) – ALWAYS follow
+Pipeline v2 (preferred, used automatically when a clip has "image_prompt" and the v2 models are installed): Z-Image Turbo renders a start frame from "image_prompt", Wan 2.2 14B animates it with "prompt", RIFE doubles the frame rate, MMAudio adds sound. Every clip MUST therefore have:
+- "image_prompt": a detailed photorealistic still image description (vertical 9:16, lighting, every important object, the main subject exactly as it should look, its size and position in frame). This decides WHAT is seen.
+- "prompt": ONLY the motion – camera move + what moves in the scene (rules below). This decides HOW it moves.
+- "audio_prompt": natural sounds matching the scene.
+Rules for "prompt" (and for v1 clips without image_prompt):
 Wan 2.2 5B turns calm, photo-like descriptions into near-static images. Every clip prompt must:
 1. Start with "Dynamic cinematic shot, vertical frame" and describe a clear camera move (forward drive/flight, orbit, tracking shot, push-in) that lasts the whole clip.
 2. Contain at least 3 visible moving elements: e.g. clouds racing across the sky, trees/grass swaying strongly in wind, birds/animals moving, water waves, cars, particles, rotating objects.
@@ -31,4 +36,4 @@ Wan 2.2 5B turns calm, photo-like descriptions into near-static images. Every cl
 6. Use 2–3 clips per video with different camera moves, each clip a different angle on the same idea.
 
 ## ComfyUI workflow file
-`pc/unreel_workflow_api.json` is the exact graph the worker sends to ComfyUI (Wan 2.2 5B text-to-video → MMAudio sound → SaveVideo), exported in API format. Drag it into the ComfyUI window to open it, edit the prompt and press Run to experiment manually. The worker builds this same graph in code (`workflow()` in pc/worker.py); keep both in sync if you change settings.
+`pc/unreel_workflow_v2_api.json` (best quality) and `pc/unreel_workflow_api.json` (v1) are the exact graphs the worker sends to ComfyUI (Wan 2.2 5B text-to-video → MMAudio sound → SaveVideo), exported in API format. Drag it into the ComfyUI window to open it, edit the prompt and press Run to experiment manually. The worker builds this same graph in code (`workflow()` in pc/worker.py); keep both in sync if you change settings.

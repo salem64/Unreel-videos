@@ -79,8 +79,84 @@ def workflow(clip, negative, seed):
     }
 
 
+# ---------------------------------------------------------------- pipeline v2 (best quality)
+# Z-Image Turbo start frame -> Wan 2.2 14B I2V (fp8, lightx2v 4-step LoRAs) -> RIFE x2 -> MMAudio
+V2_FILES = [
+    "models/diffusion_models/z_image_turbo_bf16.safetensors",
+    "models/text_encoders/qwen_3_4b.safetensors",
+    "models/vae/ae.safetensors",
+    "models/diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+    "models/diffusion_models/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+    "models/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors",
+    "models/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors",
+    "models/vae/wan_2.1_vae.safetensors",
+    "custom_nodes/ComfyUI-Frame-Interpolation",
+]
+V2_W, V2_H, V2_LEN, V2_FPS = 544, 960, 81, 16   # ~5 s, interpolated to 32 fps
+
+
+def v2_available():
+    return all((COMFY / f).exists() for f in V2_FILES)
+
+
+def workflow_v2(clip, negative, seed):
+    dur = round(V2_LEN / V2_FPS, 2)
+    return {
+        # start image (Z-Image Turbo)
+        "z1": {"class_type": "UNETLoader", "inputs": {"unet_name": "z_image_turbo_bf16.safetensors", "weight_dtype": "default"}},
+        "z2": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen_3_4b.safetensors", "type": "lumina2", "device": "default"}},
+        "z3": {"class_type": "VAELoader", "inputs": {"vae_name": "ae.safetensors"}},
+        "z4": {"class_type": "ModelSamplingAuraFlow", "inputs": {"shift": 3, "model": ["z1", 0]}},
+        "z5": {"class_type": "CLIPTextEncode", "inputs": {"text": clip["image_prompt"], "clip": ["z2", 0]}},
+        "z6": {"class_type": "ConditioningZeroOut", "inputs": {"conditioning": ["z5", 0]}},
+        "z7": {"class_type": "EmptySD3LatentImage", "inputs": {"width": 768, "height": 1344, "batch_size": 1}},
+        "z8": {"class_type": "KSampler", "inputs": {"seed": seed, "steps": 8, "cfg": 1, "sampler_name": "res_multistep", "scheduler": "simple",
+                                                     "denoise": 1, "model": ["z4", 0], "positive": ["z5", 0], "negative": ["z6", 0], "latent_image": ["z7", 0]}},
+        "z9": {"class_type": "VAEDecode", "inputs": {"samples": ["z8", 0], "vae": ["z3", 0]}},
+        "z10": {"class_type": "SaveImage", "inputs": {"images": ["z9", 0], "filename_prefix": "unreel/start"}},
+        # video (Wan 2.2 14B I2V, two experts, 4-step LoRAs)
+        "w1": {"class_type": "UNETLoader", "inputs": {"unet_name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors", "weight_dtype": "default"}},
+        "w2": {"class_type": "UNETLoader", "inputs": {"unet_name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors", "weight_dtype": "default"}},
+        "w3": {"class_type": "LoraLoaderModelOnly", "inputs": {"model": ["w1", 0], "lora_name": "wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors", "strength_model": 1.0}},
+        "w4": {"class_type": "LoraLoaderModelOnly", "inputs": {"model": ["w2", 0], "lora_name": "wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors", "strength_model": 1.0}},
+        "w5": {"class_type": "ModelSamplingSD3", "inputs": {"shift": 5, "model": ["w3", 0]}},
+        "w6": {"class_type": "ModelSamplingSD3", "inputs": {"shift": 5, "model": ["w4", 0]}},
+        "w7": {"class_type": "CLIPLoader", "inputs": {"clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors", "type": "wan", "device": "default"}},
+        "w8": {"class_type": "VAELoader", "inputs": {"vae_name": "wan_2.1_vae.safetensors"}},
+        "w9": {"class_type": "CLIPTextEncode", "inputs": {"text": clip["prompt"], "clip": ["w7", 0]}},
+        "w10": {"class_type": "CLIPTextEncode", "inputs": {"text": negative, "clip": ["w7", 0]}},
+        "w11": {"class_type": "WanImageToVideo", "inputs": {"positive": ["w9", 0], "negative": ["w10", 0], "vae": ["w8", 0], "start_image": ["z9", 0],
+                                                             "width": V2_W, "height": V2_H, "length": V2_LEN, "batch_size": 1}},
+        "w12": {"class_type": "KSamplerAdvanced", "inputs": {"model": ["w5", 0], "add_noise": "enable", "noise_seed": seed, "steps": 4, "cfg": 1,
+                                                              "sampler_name": "euler", "scheduler": "simple", "positive": ["w11", 0], "negative": ["w11", 1],
+                                                              "latent_image": ["w11", 2], "start_at_step": 0, "end_at_step": 2, "return_with_leftover_noise": "enable"}},
+        "w13": {"class_type": "KSamplerAdvanced", "inputs": {"model": ["w6", 0], "add_noise": "disable", "noise_seed": 0, "steps": 4, "cfg": 1,
+                                                              "sampler_name": "euler", "scheduler": "simple", "positive": ["w11", 0], "negative": ["w11", 1],
+                                                              "latent_image": ["w12", 0], "start_at_step": 2, "end_at_step": 10000, "return_with_leftover_noise": "disable"}},
+        "w14": {"class_type": "VAEDecode", "inputs": {"samples": ["w13", 0], "vae": ["w8", 0]}},
+        # smoother motion
+        "r1": {"class_type": "RIFE VFI", "inputs": {"ckpt_name": "rife49.pth", "frames": ["w14", 0], "clear_cache_after_n_frames": 10, "multiplier": 2,
+                                                     "fast_mode": True, "ensemble": True, "scale_factor": 1.0}},
+        # sound
+        "60": {"class_type": "MMAudioModelLoader", "inputs": {"mmaudio_model": "mmaudio_large_44k_v2_fp16.safetensors", "base_precision": "fp16"}},
+        "61": {"class_type": "MMAudioFeatureUtilsLoader", "inputs": {"vae_model": "mmaudio_vae_44k_fp16.safetensors",
+                                                                     "synchformer_model": "mmaudio_synchformer_fp16.safetensors",
+                                                                     "clip_model": "apple_DFN5B-CLIP-ViT-H-14-384_fp16.safetensors",
+                                                                     "mode": "44k", "precision": "fp16"}},
+        "62": {"class_type": "MMAudioSampler", "inputs": {"mmaudio_model": ["60", 0], "feature_utils": ["61", 0], "duration": dur, "steps": 25,
+                                                          "cfg": 4.5, "seed": seed, "prompt": clip.get("audio_prompt", ""),
+                                                          "negative_prompt": "music, speech, voice, talking, noise, hum",
+                                                          "mask_away_clip": False, "force_offload": True, "images": ["w14", 0]}},
+        "57": {"class_type": "CreateVideo", "inputs": {"images": ["r1", 0], "fps": V2_FPS * 2, "audio": ["62", 0]}},
+        "58": {"class_type": "SaveVideo", "inputs": {"video": ["57", 0], "filename_prefix": "unreel/clip", "format": "auto", "codec": "auto"}},
+    }
+
+
 def render_clip(clip, negative, seed):
-    pid = http("/prompt", {"prompt": workflow(clip, negative, seed), "client_id": str(uuid.uuid4())})["prompt_id"]
+    use_v2 = bool(clip.get("image_prompt")) and v2_available()
+    wf = workflow_v2(clip, negative, seed) if use_v2 else workflow(clip, negative, seed)
+    log(f"  Pipeline {'v2 (Z-Image + Wan 14B + RIFE)' if use_v2 else 'v1 (Wan 5B)'}")
+    pid = http("/prompt", {"prompt": wf, "client_id": str(uuid.uuid4())})["prompt_id"]
     t0 = time.time()
     while True:
         time.sleep(5)
@@ -137,7 +213,7 @@ def assemble(clips, out, hook):
     for c in clips:
         args += ["-i", str(c)]
     n = len(clips)
-    parts = "".join(f"[{i}:v]scale=1080:-2,crop=1080:1920,setsar=1,fps=30[v{i}];[{i}:a]aresample=44100[a{i}];" for i in range(n))
+    parts = "".join(f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,unsharp=5:5:0.5,setsar=1,fps=30[v{i}];[{i}:a]aresample=44100[a{i}];" for i in range(n))
     concat = "".join(f"[v{i}][a{i}]" for i in range(n)) + f"concat=n={n}:v=1:a=1[vc][ac]"
     fc = parts + concat
     vout = "[vc]"
