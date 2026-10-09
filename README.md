@@ -32,6 +32,7 @@ Rules for all quizzes: every answer verified with WebSearch; exactly one clearly
 PHYSICS variants (tools/physics.py <mode> …):
 - escape (rings with gaps shatter), multiply (every escape = 2 more balls), grow (ball grows each bounce)
 - battle (ball vs ball with WEAPONS + HP bars; every hit makes the attacker's weapon stronger): sword, spear, dagger, hammer, saws, spikes, bow. fighters arg e.g. "red:hammer,blue:bow", "🥔:saws,🍟:spikes", "🐌:dagger,🐢:spear". Vary the weapon matchup every time ("HAMMER VS BOW", "SAWS VS SPIKES" make great hooks).
+- LOOK: battle/powers balls are clean flat cartoon balls with eyes (look at the enemy, angry brows when low HP, X eyes when dead). Dimi said emoji-filled glossy balls look 'too AI' – so prefer colour fighters ("red:sword,blue:spear" / "fire,ice") and use emoji fighters only rarely.
 - powers (tools/powers.py via physics.py powers): ability balls that EVOLVE lv1→lv2→lv3 mid-fight with new look, crown and "EVOLVED" stickers: fire, ice, lightning, vampire, poison, ghost, clone, blackhole, bomb, giant, glitch. extra arg "fire,ice" or "🐉:fire,🐧:ice". Empty hook = "<A> VS <B>|WHO WINS?". Never copy known characters (e.g. from web series/games) – only our own ability balls. Rotate matchups; this is the most spectacular format, use it often.
 - elimination (last ball inside wins; sets flags / animals / food / fruits / colors) – caption: "Pick your winner before it starts 👇"
 The script prints the winner – never reveal it in caption/title.

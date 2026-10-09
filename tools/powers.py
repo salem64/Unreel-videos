@@ -393,13 +393,13 @@ def render(out, seed, hook, palette, extra):
     for k in range(2):
         info = ABIL[abil[k]]
         for lv in (1, 2, 3):
-            c = info["col"] if lv < 3 else tuple(int((a + b) / 2) for a, b in zip(info["col"], info["col3"]))
-            rr = 66
-            base = A.ball_sprite(rr, col=c, ring=(255, 255, 255) if lv < 3 else (255, 225, 90))
-            e = fxlib.emoji_img(emo[k] if emo else info["emoji"], int(rr * (1.1 if emo else 1.0)))
-            base.alpha_composite(e, ((base.width - e.width) // 2, (base.height - e.height) // 2))
+            c = info["col"] if lv == 1 else tuple(int(a + (b - a) * (0.3 if lv == 2 else 0.55)) for a, b in zip(info["col"], info["col3"]))
+            if emo:
+                base = A.ball_sprite(66, emoji=emo[k], ring=c)
+            else:
+                base = A.flat_ball(66, c)
             spr[(k, lv)] = base
-    white = A.ball_sprite(66, col=(255, 255, 255))
+    white = A.flat_ball(66, (255, 255, 255))
     crown = fxlib.emoji_img("👑", 56)
     flame_e = fxlib.emoji_img("🔥", 40)
     ice_e = fxlib.emoji_img("❄️", 40)
@@ -519,7 +519,7 @@ def render(out, seed, hook, palette, extra):
             # aura grows with level
             aura = r_ + 14 + 12 * lv + 6 * math.sin(t * 7 + k)
             gd.ellipse(((p[0] - aura) / 2, (p[1] - aura) / 2, (p[0] + aura) / 2, (p[1] + aura) / 2),
-                       fill=tuple(int(c * (0.35 + 0.2 * lv)) for c in info["col"]))
+                       fill=tuple(int(c * (0.12 + 0.12 * lv)) for c in info["col"]))
             if lv >= 2:
                 a0 = (t * 220 + 90 * k) % 360
                 ld.arc((p[0] - r_ - 16, p[1] - r_ - 16, p[0] + r_ + 16, p[1] + r_ + 16), a0, a0 + 120, fill=info["col"] + (230,), width=6)
@@ -562,8 +562,13 @@ def render(out, seed, hook, palette, extra):
                 s_ = s_.copy()
                 s_.putalpha(s_.getchannel("A").point(lambda v: int(v * 0.45)))
             lay.alpha_composite(s_, (int(p[0] - s_.width / 2), int(p[1] - s_.height / 2)))
+            if not emo and not b["intang"]:
+                ob = f["balls"][1 - k]["p"]
+                lk = ob - p
+                lk = lk / (np.linalg.norm(lk) + 1e-6)
+                A.draw_eyes(ld, p, r_ * pulse, lk, b["hp"], b["hp"] <= 0)
             if lv == 3:
-                lay.alpha_composite(crown, (int(p[0] - crown.width / 2), int(p[1] - r_ - crown.height + 8)))
+                A.draw_crown(ld, p, r_)
             if b["frozen"]:
                 ld.ellipse((p[0] - r_ - 6, p[1] - r_ - 6, p[0] + r_ + 6, p[1] + r_ + 6), fill=(170, 230, 255, 110), outline=(230, 250, 255, 255), width=4)
                 lay.alpha_composite(ice_e, (int(p[0] + r_ * 0.5), int(p[1] - r_ * 1.1)))

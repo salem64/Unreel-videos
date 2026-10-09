@@ -85,6 +85,53 @@ def ball_sprite(r, col=None, emoji=None, ring=(255, 255, 255)):
     return im
 
 
+def flat_ball(r, col):
+    """Clean cartoon ball: flat colour, soft shade, small highlight, thick dark outline (no emoji, no gloss)."""
+    ss = 3
+    d = 2 * r * ss
+    dark = tuple(int(c * 0.72) for c in col)
+    line = tuple(int(c * 0.28) for c in col)
+    im = Image.new("RGBA", (d, d), (0, 0, 0, 0))
+    mask = Image.new("L", (d, d), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, d - 1, d - 1), fill=255)
+    body = Image.new("RGBA", (d, d), dark + (255,))
+    bd = ImageDraw.Draw(body)
+    bd.ellipse((-d * 0.10, -d * 0.10, d * 0.94, d * 0.94), fill=col + (255,))
+    bd.ellipse((d * 0.20, d * 0.12, d * 0.42, d * 0.28), fill=(255, 255, 255, 70))
+    im.paste(body, (0, 0), mask)
+    ImageDraw.Draw(im).ellipse((ss * 3, ss * 3, d - 1 - ss * 3, d - 1 - ss * 3), outline=line + (255,), width=ss * 6)
+    return im.resize((2 * r, 2 * r), Image.LANCZOS)
+
+
+def draw_eyes(d, p, r, look, hp=100.0, dead=False):
+    """Cartoon eyes looking towards `look` (unit vector); angry brows when hp is low, X eyes when dead."""
+    lx, ly = look
+    for sgn in (-1, 1):
+        ex, ey = p[0] + sgn * r * 0.32, p[1] - r * 0.10
+        ew, eh = r * 0.27, r * 0.34
+        if dead:
+            w_ = max(3, int(r * 0.08))
+            d.line([(ex - ew * 0.7, ey - eh * 0.6), (ex + ew * 0.7, ey + eh * 0.6)], fill=(20, 20, 25), width=w_)
+            d.line([(ex - ew * 0.7, ey + eh * 0.6), (ex + ew * 0.7, ey - eh * 0.6)], fill=(20, 20, 25), width=w_)
+            continue
+        d.ellipse((ex - ew, ey - eh, ex + ew, ey + eh), fill=(255, 255, 255), outline=(20, 20, 25), width=max(2, int(r * 0.04)))
+        pr = r * 0.135
+        px, py = ex + lx * ew * 0.45, ey + ly * eh * 0.45
+        d.ellipse((px - pr, py - pr, px + pr, py + pr), fill=(20, 20, 25))
+        d.ellipse((px - pr * 0.35 + pr * 0.3, py - pr * 0.35 - pr * 0.3, px + pr * 0.35 + pr * 0.3, py + pr * 0.35 - pr * 0.3), fill=(255, 255, 255))
+        if hp < 35:
+            w_ = max(3, int(r * 0.07))
+            d.line([(ex - sgn * ew * 1.1, ey - eh * 1.35), (ex + sgn * ew * 0.9, ey - eh * 0.85)], fill=(20, 20, 25), width=w_)
+
+
+def draw_crown(d, p, r):
+    cx, top = p[0], p[1] - r - 6
+    w_, h_ = r * 0.9, r * 0.5
+    pts = [(cx - w_ / 2, top), (cx - w_ / 2, top - h_ * 0.6), (cx - w_ / 4, top - h_ * 0.25), (cx, top - h_),
+           (cx + w_ / 4, top - h_ * 0.25), (cx + w_ / 2, top - h_ * 0.6), (cx + w_ / 2, top)]
+    d.polygon(pts, fill=(255, 205, 40), outline=(90, 60, 0), width=4)
+
+
 def paste_c(base, spr, x, y):
     x0, y0 = int(x - spr.width / 2), int(y - spr.height / 2)
     l, t = max(0, -x0), max(0, -y0)
@@ -472,8 +519,8 @@ def render_battle(out, seed, hook, palette, fighters_arg):
         if emo:
             sprites.append(ball_sprite(74, emoji=emo[k], ring=names[k][1]))
         else:
-            sprites.append(ball_sprite(74, col=names[k][1]))
-    flash_spr = [ball_sprite(74, col=(255, 255, 255)) for _ in range(2)]
+            sprites.append(flat_ball(74, names[k][1]))
+    flash_spr = [flat_ball(74, (255, 255, 255)) for _ in range(2)]
     wname = (emo[winner] if emo else names[winner][0])
     print("seed", seed, "duration", round(total, 1), "weapons", weps, "winner", wname, f"({weps[winner]})")
     prng = random.Random(seed * 3 + 1)
@@ -540,7 +587,13 @@ def render_battle(out, seed, hook, palette, fighters_arg):
             draw_weapon(d, gd, b, col)
             spr = flash_spr[k] if b["fl"] else sprites[k]
             paste_c(img, spr, b["p"][0], b["p"][1])
-            gd.ellipse(((b["p"][0] - 82) / 2, (b["p"][1] - 82) / 2, (b["p"][0] + 82) / 2, (b["p"][1] + 82) / 2), fill=col)
+            if not emo:
+                ob = f["balls"][1 - k]["p"]
+                lv_ = ob - b["p"]
+                lv_ = lv_ / (np.linalg.norm(lv_) + 1e-6)
+                draw_eyes(d, b["p"], 74, lv_, b["hp"], b["hp"] <= 0)
+            gd.ellipse(((b["p"][0] - 80) / 2, (b["p"][1] - 80) / 2, (b["p"][0] + 80) / 2, (b["p"][1] + 80) / 2),
+                       fill=tuple(int(c * 0.25) for c in col))
         glow = glow.filter(ImageFilter.GaussianBlur(10)).resize((W, H), Image.BILINEAR)
         img = ImageChops.add(img, glow)
         d = ImageDraw.Draw(img)
