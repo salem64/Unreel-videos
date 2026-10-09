@@ -15,6 +15,11 @@ Abilities (lv1 / lv2 / lv3 names):
   bomb 💣      BOMBER / DEMOLISHER / NUKE    - drops bombs with growing blast radius
   giant 🦣     BIG / HUGE / TITAN            - grows with every hit, hits harder the bigger it is
   glitch 👾    GLITCH / CORRUPTED / ERROR 404 - glitch-teleports next to the enemy with an RGB-split static burst
+  laser 🔴     LASER / PLASMA / DEATH RAY    - rotating laser beams (1 / 2 / 3 beams, longer each level)
+  meteor ☄️    METEOR / COMET / ARMAGEDDON   - meteors crash down on the enemy (warning circle, huge blast, screen shake)
+  rocket 🚀    ROCKET / JET / HYPERSONIC     - rocket dashes at the enemy with a flame exhaust, massive ram damage
+  tornado 🌪️   WIND / CYCLONE / HURRICANE    - tornadoes chase the enemy and spin it around
+Most spectacular (use these most): laser, meteor, lightning, blackhole, bomb, glitch, rocket, tornado, clone, fire, ghost, ice.
 Each ball levels up from the damage it deals ("EVOLVED" sticker, flash, new look). Sudden death after 35 s.
 Prints seed, duration and winner (never reveal the winner in caption/title).
 """
@@ -41,8 +46,13 @@ ABIL = {
     "bomb":      dict(emoji="💣", names=("BOMBER", "DEMOLISHER", "NUKE"), col=(255, 80, 60), col3=(255, 200, 80)),
     "giant":     dict(emoji="🦣", names=("BIG", "HUGE", "TITAN"), col=(200, 140, 80), col3=(255, 210, 150)),
     "glitch":    dict(emoji="👾", names=("GLITCH", "CORRUPTED", "ERROR 404"), col=(255, 40, 200), col3=(120, 255, 255)),
+    "laser":     dict(emoji="🔴", names=("LASER", "PLASMA", "DEATH RAY"), col=(255, 45, 70), col3=(255, 200, 210)),
+    "meteor":    dict(emoji="☄️", names=("METEOR", "COMET", "ARMAGEDDON"), col=(170, 110, 255), col3=(255, 190, 120)),
+    "rocket":    dict(emoji="🚀", names=("ROCKET", "JET", "HYPERSONIC"), col=(235, 235, 245), col3=(255, 170, 60)),
+    "tornado":   dict(emoji="🌪️", names=("WIND", "CYCLONE", "HURRICANE"), col=(150, 210, 220), col3=(240, 255, 255)),
 }
-LV_XP = (0, 16, 40)          # damage dealt needed for level 2 and 3
+HYPE = ("laser", "meteor", "lightning", "blackhole", "bomb", "glitch", "rocket", "tornado", "clone", "fire", "ghost", "ice")
+LV_XP = (0, 14, 36)          # damage dealt needed for level 2 and 3
 
 
 def parse(extra, seed):
@@ -60,7 +70,7 @@ def parse(extra, seed):
         abil.append("")
     for k in range(2):
         if not abil[k]:
-            abil[k] = rng.choice([a for a in ABIL if a not in abil])
+            abil[k] = rng.choice([a for a in HYPE if a not in abil])
     emo = names if all(n and n.lower() not in ("red", "blue") for n in names) else None
     return emo, abil
 
@@ -75,8 +85,11 @@ def simulate(seed, abil):
         balls.append(dict(k=k, ab=abil[k], p=np.array([CX + (-180 if k == 0 else 180), CY + rng.uniform(-90, 90)]),
                           v=np.array([math.cos(a), math.sin(a)]) * 620, r=66.0, hp=100.0, lv=1, xp=0.0,
                           burn=0.0, burn_dps=0.0, frozen=0.0, poison=0.0, intang=0.0, flash=-9, lvl_t=-9,
-                          cd=rng.uniform(0.3, 0.9), cd2=1.0, touch_cd=0.0, acc=0.0, glt=-9))
+                          cd=rng.uniform(0.3, 0.9), cd2=1.0, touch_cd=0.0, acc=0.0, glt=-9,
+                          beam=rng.uniform(0, 6.28), dash=0.0, ex_t=0.0))
     flames, puddles, bolts, bombs, blasts, clones, shards = [], [], [], [], [], [], []
+    meteors, tornados, exhaust, flashes = [], [], [], []
+    last_laser = -9
     snd, nums, events = [], [], []
     frames = []
     t, end_t, winner = 0.0, None, None
@@ -91,7 +104,7 @@ def simulate(seed, abil):
             return 0.0
         if dst["intang"] > 0:
             return 0.0
-        amt *= 0.7 * (1.0 + max(0.0, t - 35) / 6)        # global scale + sudden death ramp
+        amt *= 0.62 * (1.0 + max(0.0, t - 35) / 6)        # global scale + sudden death ramp
         dst["hp"] = max(0.0, dst["hp"] - amt)
         src["xp"] += amt
         if kind == "hit":
@@ -133,6 +146,15 @@ def simulate(seed, abil):
                 if b["frozen"] > 0:
                     speed *= 0.25
                     b["frozen"] -= dt
+                if b["dash"] > 0:
+                    b["dash"] -= dt
+                    speed = (1500, 1750, 2050)[b["lv"] - 1]
+                    dv = o["p"] - b["p"]
+                    b["v"] = b["v"] * 0.88 + dv / (np.linalg.norm(dv) + 1e-6) * speed * 0.12
+                    b["ex_t"] -= dt
+                    if b["ex_t"] <= 0:
+                        b["ex_t"] = 0.025
+                        exhaust.append([b["p"] - b["v"] / (np.linalg.norm(b["v"]) + 1e-6) * b["r"], t])
                 # black hole pull on the enemy
                 if alive and b["ab"] == "blackhole":
                     dv = b["p"] - o["p"]
@@ -183,10 +205,57 @@ def simulate(seed, abil):
                     b["cd"] = (0.7, 0.55, 0.4)[lv - 1]
                     puddles.append([b["p"].copy(), t, 4.5, b["k"], (44, 56, 70)[lv - 1]])
                 elif ab == "lightning" and b["cd"] <= 0:
-                    b["cd"] = (2.0, 1.4, 0.9)[lv - 1]
-                    bolts.append((t, b["p"].copy(), o["p"].copy(), b["k"]))
-                    snd.append((t, zap(), 0.8))
-                    deal(b, o, (5, 7, 9)[lv - 1], "hit")
+                    b["cd"] = (2.0, 1.6, 1.25)[lv - 1]
+                    for i in range(lv):
+                        src = b["p"].copy() if i == 0 else np.array([CX + rng.uniform(-300, 300), CY - R_ARENA + 20])
+                        bolts.append((t + 0.05 * i, src, o["p"].copy(), b["k"]))
+                    snd.append((t, zap(), 0.9))
+                    if lv == 3:
+                        flashes.append(t)
+                    deal(b, o, (5, 4, 3.2)[lv - 1] * lv, "hit")
+                elif ab == "laser":
+                    b["beam"] += (1.7, 2.3, 2.9)[lv - 1] * dt
+                    L = (290, 370, 450)[lv - 1]
+                    for i in range(lv):
+                        a_ = b["beam"] + 2 * math.pi * i / lv
+                        u = np.array([math.cos(a_), math.sin(a_)])
+                        s0, s1 = b["p"] + u * b["r"], b["p"] + u * (b["r"] + L)
+                        ab_ = s1 - s0
+                        tt_ = max(0.0, min(1.0, np.dot(o["p"] - s0, ab_) / np.dot(ab_, ab_)))
+                        if np.linalg.norm(o["p"] - (s0 + tt_ * ab_)) < o["r"]:
+                            deal(b, o, (12, 15, 18)[lv - 1] * dt, "dot")
+                            o["flash"] = t
+                            if t - last_laser > 0.25:
+                                snd.append((t, sizzle(), 0.6))
+                                last_laser = t
+                elif ab == "meteor" and b["cd"] <= 0:
+                    b["cd"] = (2.2, 1.7, 1.2)[lv - 1]
+                    for i in range(1 if lv < 3 else 2):
+                        tgt = o["p"] + o["v"] * 0.45 + np.array([rng.uniform(-60, 60), rng.uniform(-60, 60)]) * i * 2
+                        dc = tgt - (CX, CY)
+                        if np.linalg.norm(dc) > R_ARENA - 60:
+                            tgt = np.array([CX, CY]) + dc / np.linalg.norm(dc) * (R_ARENA - 60)
+                        meteors.append([tgt, t + 0.9 + 0.15 * i, b["k"], (115, 145, 185)[lv - 1], (9, 12, 15)[lv - 1], t])
+                elif ab == "rocket" and b["cd"] <= 0:
+                    b["cd"] = (3.0, 2.5, 2.0)[lv - 1]
+                    b["dash"] = 0.55
+                    snd.append((t, zap(), 0.5))
+                    snd.append((t, A.tone(110, 0.6, 0.3, 0.3), 1.0))
+                elif ab == "tornado" and b["cd"] <= 0:
+                    b["cd"] = (3.0, 2.4, 1.8)[lv - 1]
+                    a = rng.uniform(0, 6.28)
+                    pos = o["p"] + np.array([math.cos(a), math.sin(a)]) * 170
+                    dc = pos - (CX, CY)
+                    if np.linalg.norm(dc) > R_ARENA - 90:
+                        pos = np.array([CX, CY]) + dc / np.linalg.norm(dc) * (R_ARENA - 90)
+                    tornados.append([pos, t, 3.2, b["k"], (95, 125, 155)[lv - 1]])
+                    snd.append((t, sizzle(), 0.5))
+                elif ab == "fire" and lv >= 2 and b["cd2"] <= 0:
+                    b["cd2"] = (1.3, 0.9)[lv - 2]
+                    dv = o["p"] - b["p"]
+                    u = dv / (np.linalg.norm(dv) + 1e-6)
+                    shards.append([b["p"] + u * (b["r"] + 6), u * 900, b["k"], "fire", 6])
+                    snd.append((t, A.tone(330, 0.2, 0.08, 0.2), 1.0))
                 elif ab == "ghost" and b["cd"] <= 0:
                     b["cd"] = (3.0, 2.4, 1.8)[lv - 1]
                     ov = o["v"] / (np.linalg.norm(o["v"]) + 1e-6)
@@ -228,7 +297,7 @@ def simulate(seed, abil):
                     base = math.atan2(dv[1], dv[0])
                     for s_ in (-0.25, 0, 0.25):
                         u = np.array([math.cos(base + s_), math.sin(base + s_)])
-                        shards.append([b["p"] + u * (b["r"] + 6), u * 950, b["k"]])
+                        shards.append([b["p"] + u * (b["r"] + 6), u * 950, b["k"], "ice", 3])
             if end_t is None:
                 A_, B_ = balls
                 dvec = B_["p"] - A_["p"]
@@ -258,6 +327,13 @@ def simulate(seed, abil):
                             vic["frozen"] = (0.8, 1.2, 1.6)[lv - 1]
                         elif att["ab"] == "fire":
                             vic["burn"], vic["burn_dps"] = 1.4, (3, 4.5, 6.5)[lv - 1]
+                        elif att["ab"] == "rocket" and att["dash"] > 0:
+                            base = (9, 11, 14)[lv - 1]
+                            kb = vic["p"] - att["p"]
+                            vic["v"] = vic["v"] + kb / (np.linalg.norm(kb) + 1e-6) * 1200
+                            blasts.append((t, (att["p"] + vic["p"]) / 2, 110, att["k"]))
+                            snd.append((t, fxlib.boom(SR), 0.6))
+                            att["dash"] = 0.0
                         deal(att, vic, base, "hit")
                 # fire trail burns
                 for fl in flames:
@@ -312,14 +388,48 @@ def simulate(seed, abil):
                     if np.linalg.norm(sh[0] - (CX, CY)) > R_ARENA:
                         continue
                     if np.linalg.norm(sh[0] - vic["p"]) < vic["r"]:
-                        vic["frozen"] = max(vic["frozen"], 0.7)
-                        deal(balls[sh[2]], vic, 3, "hit")
+                        if sh[3] == "ice":
+                            vic["frozen"] = max(vic["frozen"], 0.7)
+                        else:
+                            vic["burn"], vic["burn_dps"] = 1.5, 5
+                            blasts.append((t, sh[0].copy(), 70, sh[2]))
+                        deal(balls[sh[2]], vic, sh[4], "hit")
                         continue
                     keep.append(sh)
                 shards[:] = keep
+                # meteors
+                keep = []
+                for m in meteors:
+                    if t >= m[1]:
+                        blasts.append((t, m[0].copy(), m[3], m[2]))
+                        snd.append((t, fxlib.boom(SR), 1.0))
+                        vic = balls[1 - m[2]]
+                        if np.linalg.norm(vic["p"] - m[0]) < m[3] + vic["r"] * 0.5:
+                            kb = vic["p"] - m[0]
+                            vic["v"] = vic["v"] + kb / (np.linalg.norm(kb) + 1e-6) * 1000
+                            deal(balls[m[2]], vic, m[4], "hit")
+                        continue
+                    keep.append(m)
+                meteors[:] = keep
+                # tornados
+                keep = []
+                for tw in tornados:
+                    if t - tw[1] > tw[2]:
+                        continue
+                    vic = balls[1 - tw[3]]
+                    dv = vic["p"] - tw[0]
+                    dd3 = np.linalg.norm(dv) + 1e-6
+                    tw[0] = tw[0] + dv / dd3 * 170 * dt
+                    if dd3 < tw[4] + vic["r"] * 0.5:
+                        tang = np.array([-dv[1], dv[0]]) / dd3
+                        vic["v"] = vic["v"] + tang * 2600 * dt
+                        deal(balls[tw[3]], vic, (6, 8, 11)[balls[tw[3]]["lv"] - 1] * dt, "dot")
+                    keep.append(tw)
+                tornados[:] = keep
             # expire effects
             flames[:] = [f for f in flames if t - f[1] < f[2]]
             puddles[:] = [p_ for p_ in puddles if t - p_[1] < p_[2]]
+            exhaust[:] = [e for e in exhaust if t - e[1] < 0.45]
             t += dt
         # flush accumulated DoT numbers
         for b in balls:
@@ -336,10 +446,15 @@ def simulate(seed, abil):
             puddles=[(p_[0].copy(), t - p_[1], p_[2], p_[3], p_[4]) for p_ in puddles],
             clones=[(c[0].copy(), c[2]) for c in clones],
             bombs=[(bm[0].copy(), bm[1] - t, bm[2], bm[3]) for bm in bombs],
-            shards=[(sh[0].copy(), sh[1].copy()) for sh in shards]))
+            shards=[(sh[0].copy(), sh[1].copy(), sh[3]) for sh in shards],
+            beams=[(b["p"].copy(), b["beam"], b["lv"], b["r"], b["k"]) for b in balls if b["ab"] == "laser" and b["hp"] > 0
+                   and end_t is None],
+            meteors=[(m[0].copy(), m[1] - t, m[3], m[5]) for m in meteors],
+            tornados=[(tw[0].copy(), t - tw[1], tw[2], tw[4]) for tw in tornados],
+            exhaust=[(e[0].copy(), t - e[1]) for e in exhaust]))
         if end_t is not None and t > end_t + 2.4:
             break
-    return frames, snd, nums, events, end_t, winner, bolts, blasts
+    return frames, snd, nums, events, end_t, winner, bolts, blasts, flashes
 
 
 def sizzle():
@@ -373,7 +488,7 @@ def render(out, seed, hook, palette, extra):
     emo, abil = parse(extra, seed)
     tries = 0
     while True:
-        frames, snd, nums, events, end_t, winner, bolts, blasts = simulate(seed, abil)
+        frames, snd, nums, events, end_t, winner, bolts, blasts, flashes = simulate(seed, abil)
         total = frames[-1]["t"]
         lvls = [frames[-1]["balls"][k]["lv"] for k in range(2)]
         strict = end_t and 20 <= total <= 46 and frames[-1]["balls"][winner]["hp"] <= 55 and max(lvls) >= 3 and min(lvls) >= 2
@@ -434,6 +549,9 @@ def render(out, seed, hook, palette, extra):
         snd.append((tp, fxlib.pop(SR), 0.6))
         last_pop = tp
     audio = A.mix(snd, total)
+    HOLD = 0.55
+    if end_t:
+        audio = fxlib.insert_silence(audio, end_t, HOLD, SR)
     import soundfile as sf
     sf.write(out + ".wav", audio, SR)
 
@@ -442,6 +560,8 @@ def render(out, seed, hook, palette, extra):
     ff = A.open_ff(out)
     rng = random.Random(5)
     hist = [[], []]
+    hits = [(nt, tuple(np_), i * 7 + 3) for i, (nt, np_, txt, col) in enumerate(nums) if col == (255, 230, 80)]
+    ko_done = False
     for fi, f in enumerate(frames):
         t = f["t"]
         shake = (0, 0)
@@ -503,10 +623,59 @@ def render(out, seed, hook, palette, extra):
             ld.ellipse((cp[0] - 26, cp[1] - 26, cp[0] + 26, cp[1] + 26), fill=c + (255,), outline=(255, 255, 255, 255), width=3)
             gd.ellipse(((cp[0] - 30) / 2, (cp[1] - 30) / 2, (cp[0] + 30) / 2, (cp[1] + 30) / 2), fill=c)
         # ice shards
-        for (sp_, sv) in f["shards"]:
+        for (sp_, sv, kind) in f["shards"]:
             u = sv / (np.linalg.norm(sv) + 1e-6)
-            ld.line([tuple(sp_ - u * 34), tuple(sp_)], fill=(200, 240, 255, 255), width=8)
-            gd.line([tuple((sp_ - u * 34) / 2), tuple(sp_ / 2)], fill=(120, 200, 255), width=5)
+            if kind == "ice":
+                ld.line([tuple(sp_ - u * 34), tuple(sp_)], fill=(200, 240, 255, 255), width=8)
+                gd.line([tuple((sp_ - u * 34) / 2), tuple(sp_ / 2)], fill=(120, 200, 255), width=5)
+            else:
+                for j in range(6):
+                    q = j / 6
+                    pp = sp_ - u * 60 * q
+                    rr_ = 22 * (1 - q * 0.7)
+                    ld.ellipse((pp[0] - rr_, pp[1] - rr_, pp[0] + rr_, pp[1] + rr_), fill=(255, int(200 - 120 * q), 40, int(255 * (1 - q))))
+                gd.ellipse(((sp_[0] - 30) / 2, (sp_[1] - 30) / 2, (sp_[0] + 30) / 2, (sp_[1] + 30) / 2), fill=(255, 140, 30))
+        # rocket exhaust
+        for (ep, age) in f["exhaust"]:
+            q = age / 0.45
+            rr_ = 30 * (1 - q) + 6
+            ld.ellipse((ep[0] - rr_, ep[1] - rr_, ep[0] + rr_, ep[1] + rr_), fill=(255, int(220 - 160 * q), int(80 * (1 - q)), int(220 * (1 - q))))
+            gd.ellipse(((ep[0] - rr_) / 2, (ep[1] - rr_) / 2, (ep[0] + rr_) / 2, (ep[1] + rr_) / 2), fill=(int(255 * (1 - q)), int(120 * (1 - q)), 0))
+        # tornados
+        for (tp_, age, life, tr_) in f["tornados"]:
+            fade = min(1.0, age / 0.3, (life - age) / 0.4)
+            for i in range(5):
+                rr_ = tr_ * (0.35 + 0.16 * i)
+                a0 = (t * (520 - 60 * i) + i * 70) % 360
+                ld.arc((tp_[0] - rr_, tp_[1] - rr_ * 0.75, tp_[0] + rr_, tp_[1] + rr_ * 0.75), a0, a0 + 230,
+                       fill=(225, 245, 250, int(200 * fade)), width=7 - i)
+            gd.ellipse(((tp_[0] - tr_) / 2, (tp_[1] - tr_ * 0.7) / 2, (tp_[0] + tr_) / 2, (tp_[1] + tr_ * 0.7) / 2),
+                       fill=tuple(int(c * 0.35 * fade) for c in (150, 210, 220)))
+        # meteors (warning + falling rock)
+        for (mp, left, mr, t0) in f["meteors"]:
+            total_ = 0.9
+            q = max(0.0, min(1.0, 1 - left / total_))
+            ld.ellipse((mp[0] - mr * q, mp[1] - mr * q, mp[0] + mr * q, mp[1] + mr * q), outline=(255, 60, 60, 200), width=5)
+            ld.ellipse((mp[0] - mr, mp[1] - mr, mp[0] + mr, mp[1] + mr), outline=(255, 60, 60, 90), width=3)
+            st_ = mp + np.array([420, -1150])
+            pos = st_ + (mp - st_) * q
+            u = (mp - st_) / np.linalg.norm(mp - st_)
+            for j in range(8):
+                pp = pos - u * 26 * j
+                rr_ = 34 * (1 - j / 9)
+                ld.ellipse((pp[0] - rr_, pp[1] - rr_, pp[0] + rr_, pp[1] + rr_), fill=(255, int(210 - 18 * j), 60, int(240 * (1 - j / 8))))
+            ld.ellipse((pos[0] - 30, pos[1] - 30, pos[0] + 30, pos[1] + 30), fill=(120, 80, 60, 255), outline=(255, 180, 80, 255), width=4)
+            gd.ellipse(((pos[0] - 60) / 2, (pos[1] - 60) / 2, (pos[0] + 60) / 2, (pos[1] + 60) / 2), fill=(255, 120, 30))
+        # laser beams
+        for (bp, beam, lvb, br, bk) in f["beams"]:
+            L = (290, 370, 450)[lvb - 1]
+            for i in range(lvb):
+                a_ = beam + 2 * math.pi * i / lvb
+                u = np.array([math.cos(a_), math.sin(a_)])
+                s0, s1 = bp + u * br, bp + u * (br + L)
+                ld.line([tuple(s0), tuple(s1)], fill=(255, 40, 60, 220), width=20 + 4 * lvb)
+                ld.line([tuple(s0), tuple(s1)], fill=(255, 235, 240, 255), width=7)
+                gd.line([tuple(s0 / 2), tuple(s1 / 2)], fill=(255, 30, 60), width=14)
         # balls
         for k, b in enumerate(f["balls"]):
             hist[k].append((b["p"].copy(), b["intang"]))
@@ -530,6 +699,9 @@ def render(out, seed, hook, palette, extra):
                     q1 = (p[0] + math.cos(aa) * (r_ + 24), p[1] + math.sin(aa) * (r_ + 24))
                     q2 = (p[0] + math.cos(aa) * (r_ + 44), p[1] + math.sin(aa) * (r_ + 44))
                     ld.line([q1, q2], fill=info["col3"] + (220,), width=5)
+            # motion trail
+            if b["hp"] > 0 and not b["intang"]:
+                fxlib.draw_trail(ld, [h[0] for h in hist[k]], r_, info["col"])
             # ghost afterimages
             if b["ab"] == "ghost":
                 for j, (hp_, it) in enumerate(hist[k][:-1]):
@@ -562,11 +734,6 @@ def render(out, seed, hook, palette, extra):
                 s_ = s_.copy()
                 s_.putalpha(s_.getchannel("A").point(lambda v: int(v * 0.45)))
             lay.alpha_composite(s_, (int(p[0] - s_.width / 2), int(p[1] - s_.height / 2)))
-            if not emo and not b["intang"]:
-                ob = f["balls"][1 - k]["p"]
-                lk = ob - p
-                lk = lk / (np.linalg.norm(lk) + 1e-6)
-                A.draw_eyes(ld, p, r_ * pulse, lk, b["hp"], b["hp"] <= 0)
             if lv == 3:
                 A.draw_crown(ld, p, r_)
             if b["frozen"]:
@@ -590,10 +757,14 @@ def render(out, seed, hook, palette, extra):
         glow = glow.filter(ImageFilter.GaussianBlur(12)).resize((W, H), Image.BILINEAR)
         img = ImageChops.add(img, glow)
         img = img.convert("RGBA")
+        for ft in flashes:
+            if 0 <= t - ft < 0.08:
+                img.alpha_composite(Image.new("RGBA", (W, H), (255, 255, 230, 120)))
         if shake != (0, 0):
             lay = ImageChops.offset(lay, int(shake[0]), int(shake[1]))
         img.alpha_composite(lay)
         d = ImageDraw.Draw(img)
+        fxlib.draw_hit_fx(d, hits, t)
         # damage / heal numbers
         for (nt, npos, txt, col) in nums:
             age = t - nt
@@ -636,9 +807,14 @@ def render(out, seed, hook, palette, extra):
             d.text((W / 2 - d.textlength(msg, font=fz) / 2, CY - 60), msg, font=fz, fill=(255, 255, 255), stroke_width=9,
                    stroke_fill=(0, 0, 0))
         d.text((70, 150), "unreel", font=A.font(40), fill=(255, 255, 255))
-        ff.stdin.write(img.convert("RGB").tobytes())
+        rgb = img.convert("RGB")
+        ff.stdin.write(rgb.tobytes())
+        if end_t and not ko_done and t >= end_t:
+            ko_done = True
+            for kf in fxlib.ko_frames(rgb, f["balls"][1 - winner]["p"], int(HOLD * FPS)):
+                ff.stdin.write(kf.tobytes())
     A.close_ff(ff, out)
-    return seed, total, wname
+    return seed, total + HOLD, wname
 
 
 if __name__ == "__main__":

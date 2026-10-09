@@ -558,11 +558,17 @@ def render_battle(out, seed, hook, palette, fighters_arg):
     for c in sorted(cand, key=lambda c: c[0]):
         add_pop(*c)
     audio = mix(snd, total)
+    HOLD = 0.55
+    if end_t:
+        audio = fxlib.insert_silence(audio, end_t, HOLD, SR)
     import soundfile as sf
     sf.write(out + ".wav", audio, SR)
     h0 = PALETTES.get(palette, 0.55)
     bg = make_bg()
     ff = open_ff(out)
+    hits = [(pt, tuple(pp), i * 7 + 1) for i, (pt, pp, dmg) in enumerate(pops)]
+    hist = [[], []]
+    ko_done = False
     for f in frames:
         t = f["t"]
         img = bg.copy()
@@ -573,6 +579,17 @@ def render_battle(out, seed, hook, palette, fighters_arg):
         box = (CX - 430, CY - 430, CX + 430, CY + 430)
         d.ellipse(box, outline=ac, width=10)
         gd.ellipse(tuple(v / 2 for v in box), outline=ac, width=8)
+        tl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        tld = ImageDraw.Draw(tl)
+        for k, b in enumerate(f["balls"]):
+            hist[k].append(b["p"].copy())
+            hist[k] = hist[k][-9:]
+            if b["hp"] > 0:
+                fxlib.draw_trail(tld, hist[k], 74, names[k][1])
+        img = img.convert("RGBA")
+        img.alpha_composite(tl)
+        img = img.convert("RGB")
+        d = ImageDraw.Draw(img)
         for (ap, av, ow) in f["arrows"]:
             u = av / (np.linalg.norm(av) + 1e-6)
             tail = (ap[0] - u[0] * 46, ap[1] - u[1] * 46)
@@ -587,15 +604,16 @@ def render_battle(out, seed, hook, palette, fighters_arg):
             draw_weapon(d, gd, b, col)
             spr = flash_spr[k] if b["fl"] else sprites[k]
             paste_c(img, spr, b["p"][0], b["p"][1])
-            if not emo:
-                ob = f["balls"][1 - k]["p"]
-                lv_ = ob - b["p"]
-                lv_ = lv_ / (np.linalg.norm(lv_) + 1e-6)
-                draw_eyes(d, b["p"], 74, lv_, b["hp"], b["hp"] <= 0)
+
             gd.ellipse(((b["p"][0] - 80) / 2, (b["p"][1] - 80) / 2, (b["p"][0] + 80) / 2, (b["p"][1] + 80) / 2),
                        fill=tuple(int(c * 0.25) for c in col))
         glow = glow.filter(ImageFilter.GaussianBlur(10)).resize((W, H), Image.BILINEAR)
         img = ImageChops.add(img, glow)
+        hl = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        fxlib.draw_hit_fx(ImageDraw.Draw(hl), hits, t)
+        img = img.convert("RGBA")
+        img.alpha_composite(hl)
+        img = img.convert("RGB")
         d = ImageDraw.Draw(img)
         for (pt, pp, dmg) in pops:
             age = t - pt
@@ -643,8 +661,13 @@ def render_battle(out, seed, hook, palette, fighters_arg):
                 paste_c(img, emoji_img(emo[winner], 170), W / 2, CY - 110)
         d.text((70, 150), "unreel", font=font(40), fill=(255, 255, 255))
         ff.stdin.write(img.tobytes())
+        if end_t and not ko_done and t >= end_t:
+            ko_done = True
+            loser = f["balls"][1 - winner]["p"]
+            for kf in fxlib.ko_frames(img, loser, int(HOLD * FPS)):
+                ff.stdin.write(kf.tobytes())
     close_ff(ff, out)
-    return seed, total, f"{wname} ({weps[winner]})"
+    return seed, total + HOLD, f"{wname} ({weps[winner]})"
 
 
 # ------------------------------------------------------------------ elimination

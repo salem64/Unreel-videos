@@ -110,3 +110,60 @@ def pop(sr=44100):
     t = np.arange(int(sr * 0.08)) / sr
     f = 600 + 900 * (t / 0.08)
     return (np.sin(2 * np.pi * np.cumsum(f) / sr) * np.exp(-t / 0.025) * 0.5).astype(np.float32)
+
+
+# ------------------------------------------------------------------ battle juice
+def sparks(seed, n=16):
+    import random as _r
+    rr = _r.Random(seed)
+    return [(rr.uniform(0, 6.283), rr.uniform(350, 900), rr.uniform(3, 7)) for _ in range(n)]
+
+
+def draw_hit_fx(draw, hits, t, col=(255, 230, 120)):
+    """hits: list of (t0, (x, y), seed). Draws an expanding shockwave ring + flying sparks for 0.4 s."""
+    for (t0, pos, sd) in hits:
+        a = t - t0
+        if a < 0 or a > 0.4:
+            continue
+        q = a / 0.4
+        rr = 20 + 140 * q
+        draw.ellipse((pos[0] - rr, pos[1] - rr, pos[0] + rr, pos[1] + rr), outline=(255, 255, 255, int(220 * (1 - q))), width=max(1, int(8 * (1 - q))))
+        for (ang, sp, sz) in sparks(sd):
+            d_ = sp * a
+            x, y = pos[0] + math.cos(ang) * d_, pos[1] + math.sin(ang) * d_ + 500 * a * a
+            s_ = sz * (1 - q)
+            draw.line([(x, y), (x - math.cos(ang) * s_ * 4, y - math.sin(ang) * s_ * 4)], fill=col + (int(255 * (1 - q)),), width=max(1, int(s_)))
+
+
+def draw_trail(draw, hist, r, col):
+    """hist: list of recent positions (oldest first)."""
+    n = len(hist)
+    for i, p in enumerate(hist[:-1]):
+        f = (i + 1) / n
+        rad = r * (0.35 + 0.55 * f)
+        draw.ellipse((p[0] - rad, p[1] - rad, p[0] + rad, p[1] + rad), fill=col + (int(90 * f),))
+
+
+def ko_frames(img, center, n=16):
+    """Hit-stop frames for the final blow: zoom towards `center`, flash and big K.O. text."""
+    W_, H_ = img.size
+    out = []
+    ko = sticker("K.O.", "💥", bg=(255, 60, 60), fg=(255, 255, 255), size=110, angle=-6)
+    for i in range(n):
+        q = i / max(1, n - 1)
+        z = 1.0 + 0.18 * (1 - (1 - q) ** 2)
+        cw, ch = W_ / z, H_ / z
+        cx = min(max(center[0], cw / 2), W_ - cw / 2)
+        cy = min(max(center[1], ch / 2), H_ - ch / 2)
+        fr = img.crop((int(cx - cw / 2), int(cy - ch / 2), int(cx + cw / 2), int(cy + ch / 2))).resize((W_, H_), Image.BILINEAR)
+        fr = fr.convert("RGBA")
+        if i < 3:
+            fr.alpha_composite(Image.new("RGBA", (W_, H_), (255, 255, 255, int(170 * (1 - i / 3)))))
+        draw_popups(fr, [(0.0, ko, W_ / 2, H_ * 0.42, 99)], 0.05 + q * 0.6)
+        out.append(fr.convert("RGB"))
+    return out
+
+
+def insert_silence(audio, at_s, dur_s, sr=44100):
+    p = int(at_s * sr)
+    return np.concatenate([audio[:p], np.zeros(int(dur_s * sr), dtype=audio.dtype), audio[p:]])
