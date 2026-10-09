@@ -1,1 +1,17 @@
-[]
+[
+ {
+  "date": "2026-10-09",
+  "file": "2026-10-09-quiz-flags.mp4",
+  "format": "quiz",
+  "variant": "flags",
+  "hook": "ONLY 4% GET 5/5 FLAGS",
+  "theme": "ocean",
+  "caption": "q5 got me ngl",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "metrics": {}
+ }
+]

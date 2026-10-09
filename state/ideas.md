@@ -13,3 +13,5 @@
 - would you rather (poll style)
 
 ## Trend notes
+
+- 2026-10-09 (vidIQ IG/TikTok outliers, 'satisfying physics'): ball sims with on-screen labels/variables ('Hole 0.1cm', '0% vs 100% soft'), 'will the ball multiply? x1 gate' (2.9M TikTok, 251x median), flag-balls bouncing in a ring (2M), marble through increasingly wide holes (4.6M IG). Ideas for us: labelled-stage sims (hole-size marble drop, 'x1->x1000' gates), flag-ball ring with hook text 'will it multiply?'. Quiz+flags consistent with flag-ball trend; looped endings help.
