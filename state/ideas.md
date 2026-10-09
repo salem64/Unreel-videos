@@ -2,7 +2,7 @@
 
 ## Built
 - quiz: classic, flags/picture, emoji puzzle, this-or-that, true/false speed round, mixed
-- physics: escape, multiply, grow, battle, elimination
+- physics: escape, multiply, grow, battle (7 weapons), elimination, powers (11 evolving abilities)
 
 ## Ideas to try
 - ball race to the finish line (pick a colour)

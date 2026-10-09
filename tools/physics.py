@@ -7,6 +7,7 @@ Modes:
   multiply  - a rotating ring with a gap; every ball that escapes spawns 2 new ones inside.   Hook e.g. "EVERY ESCAPE|= 2 MORE BALLS"
   grow      - see tools/sim_ball.py (ball grows with every bounce)
   battle    - ball vs ball with growing swords and HP bars (tools/arena.py), 6th arg fighters "red,blue" or "🐶,🐱"
+  powers    - ability balls that EVOLVE (tools/powers.py): fire, ice, lightning, vampire, poison, ghost, clone, blackhole, bomb, giant, glitch; 6th arg e.g. "fire,ice" or "🐉:fire,🐧:ice"
   elimination - last ball inside the ring wins (tools/arena.py), 6th arg set: flags|animals|food|fruits|colors
 Palettes: neon (default), sunset, ice, candy, lime
 The script tries seeds from the given one upward until the video is 15-45 s long and the first escape happens
@@ -377,7 +378,11 @@ if __name__ == "__main__":
     default = {"escape": "CAN IT|ESCAPE?", "multiply": "EVERY ESCAPE|= 2 MORE BALLS"}
     hook = (sys.argv[4] if len(sys.argv) > 4 else default.get(mode, "WAIT FOR|THE ENDING")).split("|")
     pal = sys.argv[5] if len(sys.argv) > 5 else "neon"
-    if mode in ("battle", "elimination"):
+    if mode == "powers":
+        extra = sys.argv[6] if len(sys.argv) > 6 else ""
+        subprocess.run([sys.executable, __file__.replace("physics.py", "powers.py"), out, str(seed),
+                        sys.argv[4] if len(sys.argv) > 4 else "", pal, extra], check=True)
+    elif mode in ("battle", "elimination"):
         extra = sys.argv[6] if len(sys.argv) > 6 else ""
         subprocess.run([sys.executable, __file__.replace("physics.py", "arena.py"), mode, out, str(seed),
                         sys.argv[4] if len(sys.argv) > 4 else "", pal, extra], check=True)
