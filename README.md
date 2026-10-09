@@ -24,13 +24,14 @@ QUIZ variants (tools/quiz.py):
 - this or that: 2 options with emojis ({"t": "Blue whale", "e": "🐋"}) – which is bigger/heavier/older/faster/hotter.
 - true or false speed round: 8–10 questions, options ["True", "False"], "think": 2.
 - mixed: mix of the above in one video.
+MEME TRENDS (every night): WebSearch which memes/slang are trending on TikTok/Reels RIGHT NOW (e.g. "6-7", aura points, current brainrot phrases) and build them into hook, roasts and tiers in a natural way – e.g. a 7-question quiz with the hook "if you get 6/7 you're ..." and tier "6/7 = 🤷‍♂️ six seveeen", "+1000 aura", "-500 aura 💀". Only clean memes (no insults, nothing sexual/political), and drop a meme once it is clearly dead. Note the memes you used in state/ideas.md.
 FUN ELEMENTS (mandatory in every quiz): every question gets "roast" (short funny line shown as a tilted sticker after the reveal with a boom sound, ≤ 32 chars, e.g. "sydney fans in shambles", "toronto is not the capital bro", "pluto is crying rn") + "react" emoji (💀😭🤡😳🫠) and, where there is an obvious tempting wrong answer, "trap": <its index> (a 🤡 appears on it). Hook and outro tiers should be funny too ("certified potato 🥔", "geography god 👑"). Save the final quiz spec as state/specs/<date>.json.
 Physics videos add funny commentary stickers automatically (FIRST BLOOD, BRO IS COOKED, COMEBACK?!, SKILL ISSUE, FINAL TWO, IT'S MULTIPLYING …) – pick funny fighters/sets and cheeky hooks.
 Rules for all quizzes: every answer verified with WebSearch; exactly one clearly correct option; plausible wrong options; vary the correct letter; question ≤ 70 chars, options ≤ 22 chars; reveal_say = answer + short surprising extra (≤ 10 words); hooks vary ("Only 3% get 5/5", "Average person gets 2/5", "Name all 3 flags", "Bet you can't get 10/10").
 
 PHYSICS variants (tools/physics.py <mode> …):
 - escape (rings with gaps shatter), multiply (every escape = 2 more balls), grow (ball grows each bounce)
-- battle (ball vs ball, growing swords, HP bars; fighters "red,blue" or emoji pairs like "🐶,🐱", "🔥,💧", "🍕,🍔")
+- battle (ball vs ball with WEAPONS + HP bars; every hit makes the attacker's weapon stronger): sword, spear, dagger, hammer, saws, spikes, bow. fighters arg e.g. "red:hammer,blue:bow", "🥔:saws,🍟:spikes", "🐌:dagger,🐢:spear". Vary the weapon matchup every time ("HAMMER VS BOW", "SAWS VS SPIKES" make great hooks).
 - elimination (last ball inside wins; sets flags / animals / food / fruits / colors) – caption: "Pick your winner before it starts 👇"
 The script prints the winner – never reveal it in caption/title.
 
