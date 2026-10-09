@@ -13,6 +13,12 @@ and the winner (use it for the caption / report, never reveal it in the caption)
 import colorsys, math, random, subprocess, sys
 import numpy as np
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
+import os as _os
+sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import fx as fxlib  # noqa: E402  funny stickers + boom
+
+COOKED = ["IS COOKED", "IS IN DANGER", "NEEDS A MEDIC", "IS FINISHED"]
+OUT_LINES = ["BYE", "SKILL ISSUE", "SEE YA", "NOT LIKE THIS", "PACK YOUR BAGS", "TRIPPED", "GONE", "RIP"]
 
 W, H, FPS, SR = 1080, 1920, 30, 44100
 SUB = 8
@@ -250,6 +256,36 @@ def render_battle(out, seed, hook, palette, fighters):
     flash_spr = [ball_sprite(74, col=(255, 255, 255)) for _ in range(2)]
     wname = (emo[winner] if emo else names[winner][0])
     print("seed", seed, "duration", round(total, 1), "winner", wname)
+    # funny commentary stickers derived from the fight
+    prng = random.Random(seed * 3 + 1)
+    popups, last_pop = [], -9.0
+
+    def add_pop(tp, text, emoji, dur=1.4, loud=False):
+        nonlocal last_pop
+        if tp - last_pop < 1.2 or (end_t and tp > end_t - 0.3):
+            return
+        spr = fxlib.sticker(text, emoji, size=58, angle=prng.choice([-6, -4, 4, 6]))
+        popups.append((tp, spr, W / 2, CY - 300, dur))
+        snd.append((tp, fxlib.boom(SR) if loud else fxlib.pop(SR), 0.6 if loud else 0.8))
+        last_pop = tp
+    if pops:
+        add_pop(pops[0][0], "FIRST BLOOD", "🩸")
+    cooked = [False, False]
+    for f_ in frames:
+        for k in range(2):
+            hp = f_["balls"][k][3]
+            if not cooked[k] and 0 < hp <= 35:
+                cooked[k] = True
+                who = "BRO" if emo else names[k][0]
+                add_pop(f_["t"], f"{who} {prng.choice(COOKED)}", emo[k] if emo else "💀", 1.6, loud=True)
+    hp_hist = [(f_["t"], f_["balls"][0][3] - f_["balls"][1][3]) for f_ in frames]
+    lead = 0
+    for tt_, diff in hp_hist:
+        sgn = 1 if diff > 12 else (-1 if diff < -12 else 0)
+        if sgn and lead and sgn != lead:
+            add_pop(tt_, "COMEBACK?!", "😳")
+        if sgn:
+            lead = sgn
     audio = mix(snd, total)
     import soundfile as sf
     sf.write(out + ".wav", audio, SR)
@@ -310,6 +346,8 @@ def render_battle(out, seed, hook, palette, fighters):
                 d.text((tx, y0 - 62), nm, font=font(44), fill=names[k][1])
         d.text((W / 2 - d.textlength("VS", font=font(56)) / 2, 506), "VS", font=font(56), fill=(255, 255, 255))
         draw_hook(d, hook)
+        fxlib.draw_popups(img, popups, t)
+        d = ImageDraw.Draw(img)
         if end_t and t >= end_t + 0.3:
             msg = f"{names[winner][0]} WINS!" if not emo else "WINS!"
             fz = font(120)
@@ -433,6 +471,22 @@ def render_elim(out, seed, hook, palette, set_):
             sprites.append(ball_sprite(52, col=COLORS[k]))
     wname = items[winner] if pool else COLOR_NAMES[winner]
     print("seed", seed, "duration", round(total, 1), "balls", n, "winner", wname, "field", " ".join(map(str, items)) if pool else "colors")
+    prng = random.Random(seed * 5 + 2)
+    popups, last_pop = [], -9.0
+    outs_all = sorted((ot, k) for k, ot in enumerate(frames[-1]["out"]) if ot is not None)
+    for idx, (ot, k) in enumerate(outs_all):
+        if ot - last_pop < 1.1:
+            continue
+        left = n - idx - 1
+        if left == 2:
+            txt, em = "FINAL TWO", "😳"
+        elif pool:
+            txt, em = prng.choice(OUT_LINES), items[k]
+        else:
+            txt, em = f"{COLOR_NAMES[k]} {prng.choice(['IS OUT', 'GONE', 'SKILL ISSUE'])}", "💀"
+        popups.append((ot, fxlib.sticker(txt, em, size=56, angle=prng.choice([-6, -4, 4, 6])), W / 2, CY - 270, 1.3))
+        snd.append((ot, fxlib.pop(SR), 0.7))
+        last_pop = ot
     audio = mix(snd, total)
     import soundfile as sf
     sf.write(out + ".wav", audio, SR)
@@ -470,6 +524,8 @@ def render_elim(out, seed, hook, palette, set_):
             paste_c(img, spr, x, 600)
             d.line([(x - 22, 578), (x + 22, 622)], fill=(239, 68, 68), width=6)
             d.line([(x - 22, 622), (x + 22, 578)], fill=(239, 68, 68), width=6)
+        fxlib.draw_popups(img, popups, t)
+        d = ImageDraw.Draw(img)
         if end_t and t >= end_t + 0.2:
             msg = "WINS!"
             fz = font(130)

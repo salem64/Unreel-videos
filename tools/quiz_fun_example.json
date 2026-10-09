@@ -1,0 +1,6 @@
+{"theme": "sunset", "title": "Capitals", "hook": {"title": "Your teacher would cry if you miss #1", "sub": "3 questions", "emoji": "😭", "say": "Your teacher would cry if you miss number one."},
+ "questions": [
+  {"q": "What is the capital of Australia?", "options": ["Sydney", "Melbourne", "Canberra", "Perth"], "answer": 2, "trap": 0, "emoji": "🇦🇺", "level": "EASY", "think": 3, "reveal_say": "Canberra. Not Sydney.", "roast": "sydney fans in shambles", "react": "💀"},
+  {"q": "What is the capital of Canada?", "options": ["Toronto", "Ottawa", "Vancouver", "Montreal"], "answer": 1, "trap": 0, "emoji": "🇨🇦", "level": "MEDIUM", "think": 3, "reveal_say": "Ottawa!", "roast": "toronto is not the capital bro", "react": "😭"}
+ ],
+ "outro": {"title": "How many did you get?", "tiers": [["0", "🥔", "certified potato"], ["1", "🤏", "almost"], ["2/2", "👑", "geography god"]]}}

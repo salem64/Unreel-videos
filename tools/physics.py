@@ -15,6 +15,9 @@ within 3.5 s (strong hook), and prints the seed used.
 import colorsys, math, random, subprocess, sys
 import numpy as np
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
+import os as _os
+sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import fx as fxlib  # noqa: E402  funny stickers + boom
 
 W, H, FPS, SR = 1080, 1920, 30, 44100
 SUB = 16
@@ -228,6 +231,34 @@ def render(mode, out, seed, hook, palette):
             raise SystemExit("no seed in range")
     print("seed", seed, "duration", round(total, 1), "events", len(events))
     audio = make_audio(events, total, end_t, mode)
+    # funny milestone stickers
+    prng = random.Random(seed * 7 + 3)
+    popups, done = [], set()
+    if mode == "escape":
+        first = next((t for t, k in events if k == "escape"), None)
+        marks = [(first, "HE'S GETTING OUT", "😳")]
+        for f_ in frames:
+            if f_["count"] == n0 // 2 and "half" not in done:
+                done.add("half")
+                marks.append((f_["t"], "HALFWAY THERE", "👀"))
+            if f_["count"] == 1 and "one" not in done:
+                done.add("one")
+                marks.append((f_["t"], "ONE MORE...", "😬"))
+    else:
+        marks = []
+        for lim, txt, em in ((20, "IT'S MULTIPLYING", "😳"), (120, "THIS IS GETTING OUT OF HAND", "💀"), (280, "BRO STOP", "😭")):
+            tt_ = next((f_["t"] for f_ in frames if f_["count"] >= lim), None)
+            marks.append((tt_, txt, em))
+    last = -9
+    for tt_, txt, em in sorted((m for m in marks if m[0] is not None), key=lambda m: m[0]):
+        if tt_ - last < 1.5 or (end_t and tt_ > end_t - 0.3):
+            continue
+        popups.append((tt_, fxlib.sticker(txt, em, size=58, angle=prng.choice([-6, -4, 4, 6])), W / 2, CY - 250, 1.5))
+        p0 = int(tt_ * SR)
+        sfx = fxlib.pop(SR) * 0.8
+        audio[p0:p0 + len(sfx)] += sfx[:max(0, len(audio) - p0)]
+        last = tt_
+    audio = audio / max(np.max(np.abs(audio)), 1e-6) * 0.9
     import soundfile as sf
     sf.write(out + ".wav", audio, SR)
 
@@ -329,6 +360,8 @@ def render(mode, out, seed, hook, palette):
             ft = ImageFont.truetype(F, max(10, int(130 * (0.6 + 0.4 * sc))))
             tw = d.textlength(msg, font=ft)
             d.text(((W - tw) / 2, CY - 80), msg, font=ft, fill=(255, 255, 255), stroke_width=8, stroke_fill=(0, 0, 0))
+        fxlib.draw_popups(img, popups, t)
+        d = ImageDraw.Draw(img)
         d.text((70, 150), "unreel", font=font_wm, fill=(255, 255, 255))
         ff.stdin.write(img.tobytes())
     ff.stdin.close()

@@ -22,12 +22,16 @@ Spec (see tools/quiz_example.json):
 }
 2-4 options per question (2 = true/false or "which is bigger"). 4-10 questions -> ~30-55 s.
 Options may be plain strings or {"t": "Elephant", "e": "🐘"} (emoji shown in the answer row).
+"roast": "sydney fans in shambles" (+ optional "react": "💀") = funny sticker after the reveal (+ boom sound).
+"trap": <index of the most tempting WRONG option> = 🤡 appears on it at the reveal.
 "visual": true on a question = big picture layout (huge emoji/flag/emoji puzzle like "🐝🦵", short question).
 Speed round: 8-10 two-option questions with "think": 2.
 """
 import json, math, os, random, subprocess, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fx as fxlib  # noqa: E402  (stickers, boom)
 
 W, H, FPS = 1080, 1920, 30
 SR = 44100
@@ -366,7 +370,7 @@ def render(spec, out):
         n_opt = len(q["options"])
         ask = max(dur(ask_v) + 0.25, 0.45 + 0.13 * n_opt + 0.5)
         think = float(q.get("think", 3))
-        rev = max(dur(rev_v) + 0.45, 1.5)
+        rev = max(dur(rev_v) + 0.45, 2.5 if q.get("roast") else 1.5)
         tl.append(dict(kind="q", i=i, q=q, start=t, ask=ask, think=think, rev=rev, dur=ask + think + rev,
                        voice=ask_v, rvoice=rev_v))
         t += ask + think + rev
@@ -386,6 +390,8 @@ def render(spec, out):
         c = clip[:n - p]
         buf[p:p + len(c)] += c * g
 
+    fx_tr = fx
+    boomsnd = fxlib.boom(SR)
     pop, tick_hi, tick_lo, correct, whoosh, tada = sfx_pop(), sfx_tick(True), sfx_tick(False), sfx_correct(), sfx_whoosh(), sfx_tada()
     for seg in tl:
         add(voice_tr, seg["voice"], seg["start"] + (0.05 if seg["kind"] != "hook" else 0.0))
@@ -401,6 +407,8 @@ def render(spec, out):
             tr = t0 + seg["think"]
             add(fx, correct, tr, 0.8)
             add(voice_tr, seg["rvoice"], tr + 0.3)
+            if seg["q"].get("roast"):
+                add(fx_tr, boomsnd, tr + 0.55, 0.55)
         if seg["kind"] == "outro":
             add(fx, tada, seg["start"] + 0.1, 0.6)
     bed = np.zeros(n, dtype=np.float32)
@@ -527,7 +535,10 @@ def render(spec, out):
         chip_txt = f"QUESTION {i + 1}/{nq}" + (f"  ·  {lvl}" if lvl else "")
         qspr.append(dict(card=card, card_sh=card_sh, card_pad=card_pad, rows=rows, row_h=row_h, gap=gap, y0=y0,
                          card_y=CARD_Y, ry=q_ry, rr=q_rr,
-                         chip=chip(chip_txt, lvl_col), emoji=emoji_sprite(q.get("emoji", "❓"), q_em)))
+                         chip=chip(chip_txt, lvl_col), emoji=emoji_sprite(q.get("emoji", "❓"), q_em),
+                         roast=fxlib.sticker(q["roast"].upper(), q.get("react", "💀"), size=62, angle=-4, maxw=960)
+                         if q.get("roast") else None,
+                         trap=q.get("trap")))
 
     # hook sprites
     hk_lines, hk_f, hk_s = fit(hook.get("title", "ONLY 3% GET 5/5").upper(), F_BLACK, CW, 520, 150, 70, 1.02)
@@ -548,11 +559,15 @@ def render(spec, out):
         dr.text((40, 30), rng_, font=font(F_BLACK, 62), fill=accent)
         e = emoji_sprite(em, 84)
         im.alpha_composite(e, (300, (128 - e.height) // 2))
-        dr.text((420, 34), lab.upper(), font=font(F_BLACK, 56), fill=WHITE)
+        lsz = 56
+        while lsz > 30 and dr.textlength(lab.upper(), font=font(F_BLACK, lsz)) > CW - 450:
+            lsz -= 2
+        dr.text((420, (128 - lsz) / 2 - 4), lab.upper(), font=font(F_BLACK, lsz), fill=WHITE)
         tier_spr.append(im)
     cta = chip("COMMENT YOUR SCORE 👇".replace(" 👇", ""), accent, INK, 44)
     point = emoji_sprite("👇", 90)
     check_big = emoji_sprite("✅", 150)
+    clown = emoji_sprite("🤡", 80)
 
     # confetti generator
     def confetti(seed, cx, cy):
@@ -681,6 +696,12 @@ def render(spec, out):
                     ca, sa = math.cos(a), math.sin(a)
                     poly = [(x + ca * dx - sa * dy, y + sa * dx + ca * dy) for dx, dy in ((-w2, -h2), (w2, -h2), (w2, h2), (-w2, h2))]
                     d.polygon(poly, fill=col + (int(255 * clamp(1.4 - rev_t)),))
+            # funny bits: clown on the trap option, roast sticker over the card
+            if rev_t >= 0.3 and sp["trap"] is not None and sp["trap"] != ans and sp["trap"] < len(sp["rows"]):
+                yk = sp["y0"] + sp["trap"] * (sp["row_h"] + sp["gap"]) + sp["row_h"] / 2
+                paste_c(fr, clown, CX + ROW_W / 2 - 70, yk, 0.4 + 0.6 * ease_out_back((rev_t - 0.3) / 0.25))
+            if sp["roast"] is not None:
+                fxlib.draw_popups(fr, [(0.55, sp["roast"], CX, sp["card_y"] + sp["card"].height - 6, seg["rev"] - 0.55)], rev_t)
             # reveal flash
             if 0 <= rev_t < 0.12:
                 fl = Image.new("RGBA", (W, H), (255, 255, 255, int(70 * (1 - rev_t / 0.12))))
