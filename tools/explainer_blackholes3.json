@@ -1,0 +1,32 @@
+{
+  "series": "BLACK HOLES - PART 3",
+  "voice": "af_heart",
+  "speed": 1.0,
+  "scenes": [
+    {"kind": "hook", "title": "YOU FALL INTO A BLACK HOLE", "sub": "What actually kills you?",
+     "say": "You fall into a black hole. What actually kills you?"},
+    {"kind": "countdown", "title": "PAUSE AND GUESS", "count": 3,
+     "options": [["A", "You burn", "🔥"], ["B", "You stretch", "🍝"], ["C", "You freeze", "🥶"]],
+     "say": "Burn, stretch, or freeze? Pause and guess."},
+    {"kind": "answer", "letter": "B", "word": "SPAGHETTIFICATION", "sub": "Yes, that's the real science word", "emoji": "🍝",
+     "at": {"call": "spaghettification"},
+     "say": "It's B. You stretch. Scientists really call it spaghettification."},
+    {"kind": "step", "n": 1, "anim": "bars", "title": "Gravity gets stronger the closer you get",
+     "say": "Gravity gets stronger the closer you get."},
+    {"kind": "step", "n": 2, "anim": "forces", "title": "Your feet get pulled way harder than your head",
+     "at": {"feet": "feet"},
+     "say": "Fall in feet first, and your feet get pulled way harder than your head."},
+    {"kind": "step", "n": 3, "anim": "squeeze", "title": "Pulled long. Squeezed thin.",
+     "say": "So you get pulled long and squeezed thin. Like spaghetti.", "pad": 0.6},
+    {"kind": "compare", "at": {"giant": "giant"},
+     "left": {"title": "SMALL", "sub": "about 10 suns heavy", "verdict": "Stretched BEFORE the edge"},
+     "right": {"title": "GIANT", "sub": "millions of suns heavy", "verdict": "Cross the edge, feel almost nothing"},
+     "say": "Here's the twist. A small black hole stretches you before you even reach the edge. A giant one? You cross the edge and feel almost nothing."},
+    {"kind": "stat", "value": 13, "unit": " s", "label": "after you cross the edge",
+     "src": "NASA simulation of Sagittarius A*, the giant black hole in our galaxy",
+     "say": "In NASA's simulation of the giant one in our galaxy, it's over about thirteen seconds after you cross."},
+    {"kind": "quiz", "title": "WHICH ONE WOULD YOU FALL INTO?", "options": [["SMALL", "💀"], ["GIANT", "😌"]],
+     "next": "PART 4: Can anything ever escape?", "at": {"part": "part"},
+     "say": "Small or giant, which would you fall into? Comment small or giant. Part four: can anything ever escape?"}
+  ]
+}
