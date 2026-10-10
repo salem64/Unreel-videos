@@ -207,6 +207,32 @@ class R:
             r = 2 + (i % 3)
             d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 230, 170, int(200 * opacity)))
 
+    def sun_sprite(self, col):
+        k = ("sun", col)
+        if k not in self.cache:
+            R0 = 200
+            S = 4 * R0
+            yy, xx = np.mgrid[0:S, 0:S] - S / 2
+            d = np.sqrt(xx ** 2 + yy ** 2) / R0
+            core = np.clip(1 - d, 0, 1) ** 0.35
+            glow = np.exp(-np.maximum(d - 1, 0) / 0.25) * 0.6
+            a = np.where(d <= 1, 1.0, glow)
+            rng = np.random.default_rng(4)
+            noise = rng.normal(0, 1, (S // 16, S // 16))
+            noise = np.kron(noise, np.ones((16, 16)))[:S, :S]
+            light = np.clip(0.75 + 0.25 * core + 0.04 * noise * (d <= 1), 0, 1.15)
+            rgb = np.dstack([np.clip(col[c] * light + 60 * core * (d <= 1), 0, 255) for c in range(3)])
+            arr = np.dstack([rgb, np.clip(a, 0, 1) * 255]).astype(np.uint8)
+            self.cache[k] = Image.fromarray(arr, "RGBA")
+        return self.cache[k]
+
+    def draw_sun(self, img, cx, cy, r, t, col=(255, 196, 64), opacity=1.0):
+        if r < 1:
+            return
+        spr = self.sun_sprite(col)
+        sc = r * (1 + 0.015 * math.sin(t * 4)) / 200
+        paste_c(img, spr, cx, cy, scale=sc, opacity=opacity)
+
     def captions(self, img, sc, lt):
         words = sc["_words"]
         if not words:
@@ -268,6 +294,18 @@ class R:
     # -------- scenes
     def s_hook(self, img, sc, lt, t):
         sc_ = 0.6 + 0.5 * ease_out_cubic(clamp(lt / 1.2))
+        if sc.get("anim") == "sun":
+            self.draw_sun(img, CX - 120, 880, 150 * sc_, t)
+            self.draw_bh(img, CX + 200, 930, 0.55 * sc_, t)
+            self.pop_in(img, self.T("hq", "?", F_BLACK, 200, 200, 170, ORANGE, stroke=6), CX + 30, 700, lt, 0.6)
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
+            self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1250, lt, 0.5)
+            return
+        if sc.get("anim") == "star":
+            self.draw_sun(img, CX, 900, 220 * sc_, t, (120, 180, 255))
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
+            self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1250, lt, 0.5)
+            return
         self.draw_bh(img, CX, 900, sc_ * (1 + 0.02 * math.sin(t * 3)), t)
         # little astronaut falling in
         a = emoji_sprite("🧑‍🚀", 110)
@@ -409,6 +447,104 @@ class R:
             e = emoji_sprite("🍝", 150)
             self.pop_in(img, e, CX + 280, 640, lt, sc["_dur"] * 0.6)
 
+    def _radial_arrows(self, d, cx, cy, r0, r1, n, col, w, rot=0.0):
+        for i in range(n):
+            a = rot + i * 2 * math.pi / n
+            x0, y0 = cx + math.cos(a) * r0, cy + math.sin(a) * r0
+            x1, y1 = cx + math.cos(a) * r1, cy + math.sin(a) * r1
+            d.line((x0, y0, x1, y1), fill=col, width=w)
+            ux, uy = (x1 - x0), (y1 - y0)
+            L = math.hypot(ux, uy) or 1
+            ux, uy = ux / L, uy / L
+            hx, hy = -uy, ux
+            d.polygon([(x1 + ux * w * 1.6, y1 + uy * w * 1.6), (x1 + hx * w * 1.4, y1 + hy * w * 1.4),
+                       (x1 - hx * w * 1.4, y1 - hy * w * 1.4)], fill=col)
+
+    def a_balance(self, img, sc, lt, t):
+        cy = 980
+        self.draw_sun(img, CX, cy, 190, t, (120, 180, 255))
+        d = ImageDraw.Draw(img)
+        p1 = clamp((lt - 0.5) / 0.5)
+        p2 = clamp((lt - sc["_at"].get("out", 1.6)) / 0.5)
+        wob = 12 * math.sin(t * 7)
+        if p1 > 0:
+            self._radial_arrows(d, CX, cy, 400 + wob, 400 - 140 * ease_out_back(p1) + wob, 8, CYAN + (255,), 16, 0.39)
+            paste_c(img, self.T("bg", "GRAVITY", F_BLACK, 400, 70, 50, CYAN, stroke=3), CX - 250, 660, opacity=p1)
+        if p2 > 0:
+            self._radial_arrows(d, CX, cy, 210 - wob, 210 + 120 * ease_out_back(p2) - wob, 8, ORANGE + (255,), 16, 0.0)
+            paste_c(img, self.T("bf", "FUEL", F_BLACK, 400, 70, 50, ORANGE, stroke=3), CX + 260, 660, opacity=p2)
+
+    def a_collapse(self, img, sc, lt, t):
+        cy = 980
+        tc = sc["_at"].get("collapse", 2.0)
+        if lt < tc:
+            q = clamp(lt / tc)
+            r = 230 - 40 * q
+            shake = 6 * q * math.sin(t * 40)
+            self.draw_sun(img, CX + shake, cy, r, t, (int(120 + 135 * q), int(180 - 40 * q), int(255 - 175 * q)))
+            d = ImageDraw.Draw(img)
+            self._radial_arrows(d, CX, cy, r + 200, r + 40, 8, CYAN + (255,), 16, 0.39)
+            if lt > 0.4:
+                paste_c(img, self.T("cf", "FUEL: EMPTY", F_BLACK, 600, 70, 56, RED, stroke=3), CX, 1330, opacity=clamp((lt - 0.4) / 0.3))
+        else:
+            k = lt - tc
+            q = ease_out_cubic(clamp(k / 0.35))
+            if q < 1:
+                self.draw_sun(img, CX, cy, 190 * (1 - q) + 2, t, (255, 140, 80))
+            # flash ring
+            if k < 0.8:
+                d = ImageDraw.Draw(img)
+                rr = 60 + 900 * k
+                d.ellipse((CX - rr, cy - rr, CX + rr, cy + rr), outline=(255, 255, 255, int(220 * (1 - k / 0.8))), width=14)
+            self.draw_bh(img, CX, cy, 0.75 * ease_out_back(clamp((k - 0.15) / 0.5)) + 0.01, t, clamp((k - 0.15) / 0.3))
+
+    def a_escape(self, img, sc, lt, t):
+        cy = 1000
+        self.draw_bh(img, CX, cy, 0.9, t)
+        d = ImageDraw.Draw(img)
+        for i in range(10):
+            ang = -math.pi / 2 + (i - 4.5) * 0.28
+            ph = (lt * 0.7 + i * 0.13) % 1.0
+            dist = 160 + 330 * math.sin(math.pi * ph)
+            x = CX + math.cos(ang) * dist
+            y = cy + math.sin(ang) * dist / 1.1
+            for k in range(6):
+                pk = max(0.0, ph - k * 0.025)
+                dk = 160 + 330 * math.sin(math.pi * pk)
+                xk, yk = CX + math.cos(ang) * dk, cy + math.sin(ang) * dk / 1.1
+                r = 9 - k
+                d.ellipse((xk - r, yk - r, xk + r, yk + r), fill=(255, 245, 160, 255 - k * 38))
+        paste_c(img, self.T("el", "LIGHT CAN'T GET OUT", F_BLACK, 800, 70, 52, ORANGE, stroke=3), CX, 1300, opacity=clamp((lt - 0.8) / 0.4))
+
+    def a_redgiant(self, img, sc, lt, t):
+        cy = 1000
+        q = ease_out_cubic(clamp((lt - 0.6) / max(1.0, sc["_dur"] - 1.6)))
+        r = 90 + 330 * q
+        col = (255, int(196 - 110 * q), int(64 - 20 * q))
+        ex = CX + 360
+        e = emoji_sprite("🌍", 60)
+        self.draw_sun(img, CX - 120, cy, r, t, col)
+        swallowed = (CX - 120 + r) > ex + 10
+        if not swallowed:
+            paste_c(img, e, ex, cy)
+            paste_c(img, self.T("re", "EARTH", F_BLACK, 300, 60, 36, WHITE, stroke=3), ex, cy + 70)
+        else:
+            paste_c(img, e, ex, cy, opacity=0.25)
+        paste_c(img, self.T("rl", "RED GIANT", F_BLACK, 600, 80, 64, WHITE, stroke=5), CX, 1450 - 200, opacity=clamp((q - 0.4) * 3))
+
+    def a_whitedwarf(self, img, sc, lt, t):
+        cy = 1000
+        q = ease_out_cubic(clamp((lt - 0.3) / 1.6))
+        if q < 1:
+            self.draw_sun(img, CX, cy, 380 * (1 - q) + 30, t, (255, int(86 + 150 * q), int(44 + 210 * q)), opacity=1 - 0.3 * q)
+        d = ImageDraw.Draw(img)
+        if q > 0.3:
+            rr = 120 + 360 * q
+            d.ellipse((CX - rr, cy - rr * 0.9, CX + rr, cy + rr * 0.9), outline=(255, 120, 180, int(110 * (1 - q * 0.5))), width=30)
+        if q >= 0.99:
+            self.draw_sun(img, CX, cy, 30, t, (225, 235, 255))
+        paste_c(img, self.T("wl", "WHITE DWARF", F_BLACK, 600, 80, 64, (200, 220, 255), stroke=4), CX, 1250, opacity=clamp((q - 0.7) * 3))
+
     def s_compare(self, img, sc, lt, t):
         L, Rt = sc["left"], sc["right"]
         for side, c, cx, delay, key in ((L, RED, 290, 0.0, "l"), (Rt, GREEN, 790, sc["_at"].get("giant", 2.0), "r")):
@@ -434,7 +570,17 @@ class R:
                 self.cache[("cmp", key)] = card
             paste_c(img, card, cx, 960, scale=0.85 + 0.15 * ease_out_back(p), opacity=p)
             ls = lt - delay
-            if key == "l":
+            vis = side.get("visual", "stretch" if key == "l" else "calm")
+            if vis == "sun":
+                self.draw_sun(img, cx, 860, 55, t, opacity=p)
+                paste_c(img, self.T(("cx", key), side.get("big", ""), F_BLACK, 400, 120, 90, WHITE, stroke=4), cx, 1090, opacity=p)
+                continue
+            if vis == "bigstar":
+                q = clamp(ls / 1.6)
+                self.draw_sun(img, cx, 860, 140 * (0.8 + 0.2 * q), t, (120, 180, 255), opacity=p)
+                paste_c(img, self.T(("cx", key), side.get("big", ""), F_BLACK, 400, 120, 90, WHITE, stroke=4), cx, 1090, opacity=p)
+                continue
+            if vis == "stretch":
                 self.draw_bh(img, cx, 900, 0.42, t, p)
                 e = emoji_sprite("🧑‍🚀", 90)
                 q = clamp(ls / 1.5)
@@ -448,7 +594,17 @@ class R:
         self.pop_in(img, self.T("vs", "VS", F_BLACK, 200, 120, 90, ORANGE, stroke=5), 540, 960, lt, 0.3)
 
     def s_stat(self, img, sc, lt, t):
-        self.draw_bh(img, CX, 1080, 1.0, t, 0.55)
+        bg = sc.get("bg", "bh")
+        if bg == "bh":
+            self.draw_bh(img, CX, 1080, 1.0, t, 0.55)
+        elif bg == "earth":
+            e = emoji_sprite("🌍", 300)
+            q = clamp((lt - 0.8) / 1.5)
+            paste_c(img, e, CX, 1180, scale=1 - 0.88 * ease_out_cubic(q))
+            if q > 0.9:
+                self.draw_bh(img, CX, 1180, 0.12, t, (q - 0.9) * 10)
+        elif bg == "whitedwarf":
+            self.draw_sun(img, CX, 1100, 40, t, (225, 235, 255))
         p = clamp((lt - 0.2) / 1.6)
         v = float(sc["value"]) * ease_out_cubic(p)
         s = "~" + str(int(round(v))) + sc.get("unit", "")
@@ -459,18 +615,21 @@ class R:
 
     def s_quiz(self, img, sc, lt, t):
         self.pop_in(img, self.T("qt", sc["title"], F_BLACK, 900, 240, 90, WHITE, stroke=4), CX, 380, lt)
+        nopt = len(sc["options"])
+        cols = [RED, GREEN] if nopt == 2 else [(234, 88, 12), (37, 99, 235), (8, 145, 178)]
+        cw = 420 if nopt == 2 else 280
         for i, (txt, em) in enumerate(sc["options"]):
-            col = RED if i == 0 else GREEN
+            col = cols[i % len(cols)]
             card = self.cache.get(("qo", i))
             if card is None:
-                card = rrect(420, 300, 40, col + (255,))
+                card = rrect(cw, 300, 40, col + (255,))
                 dd = ImageDraw.Draw(card)
                 e = emoji_sprite(em, 120)
-                card.alpha_composite(e, ((420 - e.width) // 2, 30))
-                f = font(F_BLACK, 70)
-                dd.text((210 - dd.textlength(txt, font=f) / 2, 175), txt, font=f, fill=WHITE)
+                card.alpha_composite(e, ((cw - e.width) // 2, 30))
+                lines, f, fs = fit(txt, F_BLACK, cw - 30, 90, 70, 34)
+                dd.text((cw / 2 - dd.textlength(lines[0], font=f) / 2, 175 + (70 - fs) / 2), lines[0], font=f, fill=WHITE)
                 self.cache[("qo", i)] = card
-            cx = 300 + i * 480
+            cx = (300 + i * 480) if nopt == 2 else (CX - 300 + i * 300)
             wob = 1 + 0.04 * math.sin(t * 5 + i * 2)
             self.pop_in(img, card.resize((int(card.width * wob), int(card.height * wob))), cx, 760, lt, 0.3 + 0.2 * i)
         self.slide_in(img, self.T("qc", "COMMENT BELOW", F_BLACK, 900, 100, 70, ORANGE), CX, 1010, lt, 0.9)

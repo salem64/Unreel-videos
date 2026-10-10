@@ -1,0 +1,29 @@
+{
+  "series": "BLACK HOLES - PART 2",
+  "voice": "af_heart", "speed": 1.0,
+  "scenes": [
+    {"kind": "hook", "anim": "sun", "title": "CAN OUR SUN BECOME A BLACK HOLE?", "sub": "Part 1 asked. Here's the answer",
+     "say": "Can our Sun become a black hole?"},
+    {"kind": "countdown", "title": "PAUSE AND GUESS", "count": 3,
+     "options": [["A", "Yes, someday", "🕳️"], ["B", "No, too light", "🪶"], ["C", "If it explodes", "💥"]],
+     "say": "Yes someday, no it's too light, or only if it explodes? Pause and guess."},
+    {"kind": "answer", "letter": "B", "word": "TOO LIGHT", "sub": "It needs about 20x more mass", "emoji": "🪶",
+     "at": {"call": "light"},
+     "say": "It's B. Our Sun is too light. It would need about twenty times more mass."},
+    {"kind": "compare", "at": {"giant": "star"},
+     "left": {"title": "OUR SUN", "sub": "1 sun heavy", "verdict": "Not enough mass", "visual": "sun", "big": "1x"},
+     "right": {"title": "BIG STAR", "sub": "about 20 suns heavy", "verdict": "Can become a black hole", "visual": "bigstar", "big": "20x"},
+     "say": "Our Sun: one sun heavy. A star that can become a black hole: about twenty."},
+    {"kind": "step", "n": 1, "anim": "redgiant", "title": "It swells into a red giant",
+     "say": "In about five billion years, the Sun runs low on fuel and swells into a red giant. It might even swallow Earth.", "pad": 0.6},
+    {"kind": "step", "n": 2, "anim": "whitedwarf", "title": "Then it shrinks. A lot.",
+     "say": "Then it shrinks into a tiny, glowing leftover called a white dwarf.", "pad": 0.7},
+    {"kind": "stat", "value": 6, "unit": "B", "bg": "whitedwarf", "label": "years until the Sun is a white dwarf",
+     "src": "Source: NASA",
+     "say": "That takes about six billion years. So relax."},
+    {"kind": "quiz", "title": "WHAT HAPPENS IF YOU FALL INTO A BLACK HOLE?",
+     "options": [["BURN", "🔥"], ["STRETCH", "🍝"], ["FREEZE", "🥶"]],
+     "next": "PART 3: the answer", "at": {"part": "answer"},
+     "say": "What happens if you fall into a black hole? A, you burn. B, you stretch. C, you freeze. Answer in part three."}
+  ]
+}

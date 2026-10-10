@@ -1,0 +1,26 @@
+{
+  "series": "BLACK HOLES - PART 1",
+  "voice": "af_heart", "speed": 1.0,
+  "scenes": [
+    {"kind": "hook", "anim": "blackhole", "title": "BLACK HOLES ARE REAL", "sub": "But why do they exist?",
+     "say": "Black holes are real. But why do they even exist?"},
+    {"kind": "countdown", "title": "WHERE DO THEY COME FROM?", "count": 3,
+     "options": [["A", "A star dies", "⭐"], ["B", "Planet explodes", "🪐"], ["C", "Space rips", "🌌"]],
+     "say": "Where does a black hole come from? A star dies, a planet explodes, or space rips open? Pause and guess."},
+    {"kind": "answer", "letter": "A", "word": "A DYING STAR", "sub": "But only a really big one", "emoji": "⭐",
+     "at": {"call": "giant"},
+     "say": "It's A. A giant star dies."},
+    {"kind": "step", "n": 1, "anim": "balance", "title": "A star is a tug of war", "at": {"out": "burning"},
+     "say": "A star is a tug of war. Gravity pulls in, burning fuel pushes out."},
+    {"kind": "step", "n": 2, "anim": "collapse", "title": "Fuel runs out. Gravity wins.", "at": {"collapse": "core"},
+     "say": "When a huge star runs out of fuel, gravity wins. The core collapses in less than a second.", "pad": 0.7},
+    {"kind": "step", "n": 3, "anim": "escape", "title": "Not even light escapes",
+     "say": "It gets so dense that not even light is fast enough to escape. That's a black hole."},
+    {"kind": "stat", "value": 2, "unit": " cm", "bg": "earth", "label": "Earth squeezed into a black hole",
+     "src": "about the size of a marble",
+     "say": "Squeeze anything enough and it becomes one. Earth would shrink to about the size of a marble."},
+    {"kind": "quiz", "title": "CAN OUR SUN BECOME A BLACK HOLE?", "options": [["YES", "✅"], ["NO", "❌"]],
+     "next": "PART 2: the answer", "at": {"part": "answer"},
+     "say": "So can our Sun become a black hole? Comment yes or no. Answer in part two."}
+  ]
+}
