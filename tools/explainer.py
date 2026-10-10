@@ -6,13 +6,15 @@ Usage: python3 tools/explainer.py spec.json out.mp4 [--draft]
 Spec (example: tools/explainer_blackholes3.json):
 {
   "series": "BLACK HOLES - PART 3", "voice": "af_heart", "speed": 1.0,
+  "theme": "space",            # space (stars, orange/cyan) | money (dark green, gold/mint) | tech (dark violet, pink/blue)
   "scenes": [ {"kind": "<kind>", "say": "spoken text", ...fields}, ... ]
 }
 Scene kinds and fields:
-  hook      title, sub, anim ("blackhole")
+  hook      title, sub, anim ("blackhole" | "sun" | "star" | "emoji" + emoji)
   countdown title, options [[letter, text, emoji], ...], count (seconds, default 3)
   answer    letter, word, sub, emoji
-  step      n, title, anim ("bars" | "forces" | "squeeze")
+  step      n, title, anim: space/physics "bars" | "forces" | "squeeze" | "balance" | "collapse" | "escape" | "redgiant" | "whitedwarf";
+            generic (any topic) "emoji" (emojis [..], label) | "grow" (values [..], labels [..], prefix "$", suffix)
   compare   left {title, sub, emoji, verdict}, right {...}
   stat      value, unit, label, src
   quiz      title, options [[text, emoji], ...], next
@@ -76,10 +78,19 @@ def sfx_riser(d=0.6):
 
 
 # ------------------------------------------------------------------ visuals: static
-def make_background():
+THEMES = {
+    # name: (bg top, bg bottom, blob1, blob2, accent1, accent2, stars)
+    "space": ((10, 12, 30), (2, 2, 8), (90, 40, 160), (20, 90, 140), (255, 149, 56), (62, 230, 255), True),
+    "money": ((6, 30, 22), (2, 8, 6), (16, 120, 70), (180, 140, 20), (255, 200, 40), (52, 211, 153), False),
+    "tech":  ((14, 10, 34), (3, 2, 10), (120, 40, 200), (20, 120, 200), (244, 114, 182), (96, 165, 250), False),
+}
+
+
+def make_background(theme="space"):
+    th = THEMES[theme]
     yy = np.linspace(0, 1, H)[:, None, None]
-    top = np.array((10, 12, 30))
-    bot = np.array((2, 2, 8))
+    top = np.array(th[0])
+    bot = np.array(th[1])
     base = top * (1 - yy) + bot * yy
     base = np.broadcast_to(base, (H, W, 3)).copy()
     grain = np.random.default_rng(3).normal(0, 2.5, (H, W, 1))
@@ -93,8 +104,8 @@ def make_background():
         im = Image.new("RGBA", (2 * r, 2 * r), col + (0,))
         im.putalpha(Image.fromarray(al, "L"))
         return im
-    img.alpha_composite(blob((90, 40, 160), 600, 0.35), (-300, 200))
-    img.alpha_composite(blob((20, 90, 140), 520, 0.30), (500, 1100))
+    img.alpha_composite(blob(th[2], 600, 0.35), (-300, 200))
+    img.alpha_composite(blob(th[3], 520, 0.30), (500, 1100))
     return img
 
 
@@ -152,9 +163,13 @@ class R:
     def __init__(self, spec, draft):
         self.spec = spec
         self.draft = draft
-        self.bg = make_background()
-        self.stars1 = make_stars(1, 260, False)
-        self.stars2 = make_stars(2, 70, True)
+        theme = spec.get("theme", "space")
+        th = THEMES[theme]
+        global ORANGE, CYAN
+        ORANGE, CYAN = th[4], th[5]
+        self.bg = make_background(theme)
+        self.stars1 = make_stars(1, 260 if th[6] else 40, False)
+        self.stars2 = make_stars(2, 70 if th[6] else 0, True)
         self.bh_R = 150
         self.bh = make_blackhole(self.bh_R)
         self.disk = make_disk(self.bh_R)
@@ -301,6 +316,12 @@ class R:
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1250, lt, 0.5)
             return
+        if sc.get("anim") == "emoji":
+            e = emoji_sprite(sc.get("emoji", "💸"), 300)
+            self.pop_in(img, e, CX, 880 + 15 * math.sin(t * 3), lt, 0.1, 0.5)
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
+            self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1250, lt, 0.5)
+            return
         if sc.get("anim") == "star":
             self.draw_sun(img, CX, 900, 220 * sc_, t, (120, 180, 255))
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
@@ -387,6 +408,39 @@ class R:
     def s_step(self, img, sc, lt, t):
         self.step_header(img, sc, lt)
         getattr(self, "a_" + sc["anim"])(img, sc, lt, t)
+
+    def a_emoji(self, img, sc, lt, t):
+        # one or more emojis pop in one after another (e.g. "📱➡️💵"), with optional big label
+        ems = sc.get("emojis", ["💡"])
+        n = len(ems)
+        gap = 900 / max(n, 1)
+        size = min(260, int(gap * 0.8))
+        for i, em in enumerate(ems):
+            x = CX - 450 + gap * (i + 0.5)
+            self.pop_in(img, emoji_sprite(em, size), x, 960 + 12 * math.sin(t * 3 + i), lt, 0.3 + 0.35 * i, 0.45)
+        if sc.get("label"):
+            self.slide_in(img, self.T(("el", sc["n"]), sc["label"], F_BLACK, 880, 140, 64, ORANGE, stroke=4), CX, 1230, lt, 0.3 + 0.35 * n)
+
+    def a_grow(self, img, sc, lt, t):
+        # money/number growth: bars rising left to right with values ("values": [10, 20, 40], "prefix": "$")
+        vals = sc.get("values", [1, 2, 4, 8])
+        labels = sc.get("labels", [""] * len(vals))
+        n = len(vals)
+        mx = max(vals)
+        d = ImageDraw.Draw(img)
+        bw = 760 / n
+        for i, v in enumerate(vals):
+            p = clamp((lt - 0.3 - 0.3 * i) / 0.5)
+            if p <= 0:
+                continue
+            x = CX - 380 + bw * (i + 0.5)
+            h = 520 * (v / mx) * ease_out_back(p)
+            col = tuple(int(CYAN[c] + (ORANGE[c] - CYAN[c]) * i / max(1, n - 1)) for c in range(3))
+            d.rounded_rectangle((x - bw * 0.35, 1220 - h, x + bw * 0.35, 1220), radius=16, fill=col + (255,))
+            txt = sc.get("prefix", "") + f"{v:,}" + sc.get("suffix", "")
+            paste_c(img, self.T(("gv", sc["n"], i), txt, F_BLACK, int(bw), 60, 44, WHITE, stroke=3), x, 1190 - h, opacity=p)
+            if labels[i]:
+                paste_c(img, self.T(("gl", sc["n"], i), labels[i], F_BOLD, int(bw), 50, 34, (200, 210, 230)), x, 1260, opacity=p)
 
     def a_bars(self, img, sc, lt, t):
         # black hole on the left (small), bars of gravity rising towards it

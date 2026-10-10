@@ -1,6 +1,6 @@
 # Explainer videos (Unreel) – runbook for the scheduled task
 
-Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, English). Topics: **space & physics only**. Since 2026-10-10 explainers REPLACE the quiz format in the nightly task "Unreel Daily Short" (Dimi's decision). That task alternates EXPLAINER and PHYSICS days and posts directly (no approval). When run from the nightly task: do steps 2–6 and 8 here, but posting (platforms, budget, best times, captions, hosting, cleanup, report) follows the nightly task prompt instead of step 7/9.
+Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, English). Topics (Dimi 2026-10-10: "whatever performs better"): **space & physics** (theme space) and **money / side hustles / AI tools / tech** (theme money or tech), same style. The nightly analysis decides the mix by views/shares/comments per topic category. Since 2026-10-10 explainers REPLACE the quiz format in the nightly task "Unreel Daily Short" (Dimi's decision). That task alternates EXPLAINER and PHYSICS days and posts directly (no approval). When run from the nightly task: do steps 2–6 and 8 here, but posting (platforms, budget, best times, captions, hosting, cleanup, report) follows the nightly task prompt instead of step 7/9.
 
 **Series order:** a new explainer may only be posted at least 1 day AFTER the latest `post_time` in `state/explainer/log.json` (so Part N+1 never goes out before Part N). On days where that is not possible, the nightly task makes a PHYSICS video instead.
 
@@ -18,6 +18,8 @@ Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, En
    - Otherwise take the top entry of `state/explainer/topics.md`, or a trending space/physics question if it is clearly better.
    - Prefer series of 3–4 parts with a cliffhanger at the end, because those drive follows.
    - Every 2nd new series may be a one-off video.
+**Money / AI rules (strict):** only honest, realistic, concrete ways (skills, freelancing, selling things you make, saving, compound interest basics, how a business really earns). No get-rich-quick, no "passive income in 7 days", no crypto/forex/trading tips, no specific stocks, no gambling, no MLM/dropshipping hype, no fake income claims. Every number needs a source (e.g. official stats, platform payout pages) and realistic ranges ("most people earn little at first"). Never sound like financial advice; say "this is how it works", not "you should invest in X". No real persons as the main subject.
+
 4. **Research:**
    - Check every claim with WebSearch/WebFetch, preferring NASA, ESA, Wikipedia or university sources.
    - Write `notes/<name>.md` with a table (claim | checked value | source) plus the deliberate simplifications.
@@ -25,7 +27,7 @@ Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, En
 5. **Script:** write `tools/explainer_<name>.json` (scene kinds and fields are documented in the header of `tools/explainer.py`; the black holes parts 1–3 are the examples).
    - Structure: hook (0–2 s), countdown "pause and guess" with 3 options, answer, 2–4 steps each with its own animation, compare and/or stat (aha fact), quiz ending with "Comment X" + "PART N+1: …" teaser (or a question for one-offs).
    - Spoken lines short, every 3–6 s something new. Don't sound like AI: no "Did you know", no "mind-blowing", no em dashes.
-   - **Only use the existing animations:** hook anim blackhole/sun/star; step anims bars, forces, squeeze, balance, collapse, escape, redgiant, whitedwarf; compare visuals stretch/calm/sun/bigstar; stat bg bh/earth/whitedwarf. Emojis work for objects (🌍🪐☄️🌙🔭⚡🧲).
+   - **Only use the existing animations:** hook anim blackhole/sun/star/emoji; step anims bars, forces, squeeze, balance, collapse, escape, redgiant, whitedwarf (space) and emoji, grow (any topic, e.g. money growth); compare visuals stretch/calm/sun/bigstar; stat bg bh/earth/whitedwarf (or none: set "bg": "none"). Set "theme": "money" or "tech" for non-space topics. Emojis work for objects (🌍🪐☄️💸📱🧠💻).
    - A new animation only if a topic truly needs it, at most one per run. Add it to `tools/explainer.py` without breaking existing ones, and test it.
 6. **Render:**
    - Draft: `python3 tools/explainer.py tools/explainer_<name>.json /tmp/d.mp4 --draft`.
