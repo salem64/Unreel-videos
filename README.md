@@ -8,6 +8,7 @@ Videos in `videos/` are removed a few days after posting.
 - `tools/physics.py <escape|multiply|grow> out.mp4 [seed] ["LINE1|LINE2"] [neon|sunset|ice|candy|lime]` – satisfying physics shorts (auto-picks a seed with 15–45 s length and an early first escape)
 - `tools/sim_ball.py` – the "grow" physics variant (used by physics.py grow)
 - `tools/render.py` – older text/fact renderer (not used any more)
+- `tools/explainer.py spec.json out.mp4 [--draft]` – space/physics EXPLAINER videos (separate task every 2nd day, see EXPLAINER.md; state in state/explainer/)
 
 ## Posting flow (free tier)
 - Metricool free plan: 50 posts/month, tracked in `state/metricool_count.json` (month, count). Reset count when the month changes.
