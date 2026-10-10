@@ -19,6 +19,7 @@ Abilities (lv1 / lv2 / lv3 names):
   meteor ☄️    METEOR / COMET / ARMAGEDDON   - meteors crash down on the enemy (warning circle, huge blast, screen shake)
   rocket 🚀    ROCKET / JET / HYPERSONIC     - rocket dashes at the enemy with a flame exhaust, massive ram damage
   tornado 🌪️   WIND / CYCLONE / HURRICANE    - tornadoes chase the enemy and spin it around
+  shockwave 💥 PULSE / SHOCKWAVE / EARTHQUAKE - expanding shock rings (screen shake) that smack the enemy away  [NEW 2026-10-10]
 Most spectacular (use these most): laser, meteor, lightning, blackhole, bomb, glitch, rocket, tornado, clone, fire, ghost, ice.
 Each ball levels up from the damage it deals ("EVOLVED" sticker, flash, new look). Sudden death after 35 s.
 Prints seed, duration and winner (never reveal the winner in caption/title).
@@ -50,8 +51,9 @@ ABIL = {
     "meteor":    dict(emoji="☄️", names=("METEOR", "COMET", "ARMAGEDDON"), col=(170, 110, 255), col3=(255, 190, 120)),
     "rocket":    dict(emoji="🚀", names=("ROCKET", "JET", "HYPERSONIC"), col=(235, 235, 245), col3=(255, 170, 60)),
     "tornado":   dict(emoji="🌪️", names=("WIND", "CYCLONE", "HURRICANE"), col=(150, 210, 220), col3=(240, 255, 255)),
+    "shockwave": dict(emoji="💥", names=("PULSE", "SHOCKWAVE", "EARTHQUAKE"), col=(255, 170, 40), col3=(255, 245, 190)),
 }
-HYPE = ("laser", "meteor", "lightning", "blackhole", "bomb", "glitch", "rocket", "tornado", "clone", "fire", "ghost", "ice")
+HYPE = ("laser", "meteor", "lightning", "blackhole", "bomb", "glitch", "rocket", "tornado", "clone", "fire", "ghost", "ice", "shockwave")
 LV_XP = (0, 14, 36)          # damage dealt needed for level 2 and 3
 
 
@@ -89,6 +91,7 @@ def simulate(seed, abil):
                           beam=rng.uniform(0, 6.28), dash=0.0, ex_t=0.0))
     flames, puddles, bolts, bombs, blasts, clones, shards = [], [], [], [], [], [], []
     meteors, tornados, exhaust, flashes = [], [], [], []
+    waves = []                                   # shockwave rings: [center, t0, owner, hit_done]
     last_laser = -9
     snd, nums, events = [], [], []
     frames = []
@@ -250,6 +253,11 @@ def simulate(seed, abil):
                         pos = np.array([CX, CY]) + dc / np.linalg.norm(dc) * (R_ARENA - 90)
                     tornados.append([pos, t, 3.2, b["k"], (95, 125, 155)[lv - 1]])
                     snd.append((t, sizzle(), 0.5))
+                elif ab == "shockwave" and b["cd"] <= 0:
+                    b["cd"] = (2.3, 1.8, 1.4)[lv - 1]
+                    waves.append([b["p"].copy(), t, b["k"], False])
+                    snd.append((t, fxlib.boom(SR), 0.8))
+                    blasts.append((t, b["p"].copy(), 150, b["k"]))
                 elif ab == "fire" and lv >= 2 and b["cd2"] <= 0:
                     b["cd2"] = (1.3, 0.9)[lv - 2]
                     dv = o["p"] - b["p"]
@@ -411,6 +419,21 @@ def simulate(seed, abil):
                         continue
                     keep.append(m)
                 meteors[:] = keep
+                # shockwaves: ring expands at 900 px/s up to the arena edge, hits once
+                keep = []
+                for wv in waves:
+                    rad = (t - wv[1]) * 900
+                    if rad > 900:
+                        continue
+                    vic = balls[1 - wv[2]]
+                    if not wv[3] and vic["hp"] > 0 and abs(np.linalg.norm(vic["p"] - wv[0]) - rad) < vic["r"] + 14:
+                        wv[3] = True
+                        kb = vic["p"] - wv[0]
+                        vic["v"] = vic["v"] + kb / (np.linalg.norm(kb) + 1e-6) * (900, 1200, 1500)[balls[wv[2]]["lv"] - 1]
+                        deal(balls[wv[2]], vic, (9, 11, 14)[balls[wv[2]]["lv"] - 1], "hit")
+                        blasts.append((t, vic["p"].copy(), 160, wv[2]))
+                    keep.append(wv)
+                waves[:] = keep
                 # tornados
                 keep = []
                 for tw in tornados:
@@ -451,6 +474,7 @@ def simulate(seed, abil):
                    and end_t is None],
             meteors=[(m[0].copy(), m[1] - t, m[3], m[5]) for m in meteors],
             tornados=[(tw[0].copy(), t - tw[1], tw[2], tw[4]) for tw in tornados],
+            waves=[(wv[0].copy(), (t - wv[1]) * 900, wv[2]) for wv in waves],
             exhaust=[(e[0].copy(), t - e[1]) for e in exhaust]))
         if end_t is not None and t > end_t + 2.4:
             break
@@ -641,6 +665,17 @@ def render(out, seed, hook, palette, extra):
             rr_ = 30 * (1 - q) + 6
             ld.ellipse((ep[0] - rr_, ep[1] - rr_, ep[0] + rr_, ep[1] + rr_), fill=(255, int(220 - 160 * q), int(80 * (1 - q)), int(220 * (1 - q))))
             gd.ellipse(((ep[0] - rr_) / 2, (ep[1] - rr_) / 2, (ep[0] + rr_) / 2, (ep[1] + rr_) / 2), fill=(int(255 * (1 - q)), int(120 * (1 - q)), 0))
+        # shockwave rings
+        for (wp, wr, wk) in f["waves"]:
+            fade = max(0.0, 1 - wr / 900)
+            wc = ABIL["shockwave"]["col"]
+            wr = max(wr, 2.0)
+            ld.ellipse((wp[0] - wr, wp[1] - wr, wp[0] + wr, wp[1] + wr), outline=wc + (int(255 * fade),), width=16)
+            if wr > 30:
+                ld.ellipse((wp[0] - wr + 22, wp[1] - wr + 22, wp[0] + wr - 22, wp[1] + wr - 22),
+                           outline=(255, 245, 190, int(150 * fade)), width=6)
+            gd.ellipse(((wp[0] - wr) / 2, (wp[1] - wr) / 2, (wp[0] + wr) / 2, (wp[1] + wr) / 2),
+                       outline=tuple(int(c * fade) for c in wc), width=12)
         # tornados
         for (tp_, age, life, tr_) in f["tornados"]:
             fade = min(1.0, age / 0.3, (life - age) / 0.4)

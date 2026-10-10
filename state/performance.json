@@ -12,6 +12,42 @@
    "youtube": "manual",
    "instagram": "vidiq"
   },
+  "metrics": {
+   "instagram": {
+    "views": 125,
+    "likes": 1,
+    "comments": 0,
+    "shares": 0,
+    "saves": 0,
+    "avg_watch_s": 4.8,
+    "skip_rate": 86
+   },
+   "tiktok": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "shares": 0
+   },
+   "youtube": {
+    "views": 0
+   }
+  }
+ },
+ {
+  "date": "2026-10-10",
+  "file": "2026-10-10-powers.mp4",
+  "format": "physics",
+  "variant": "powers",
+  "details": "shockwave vs laser (seed 43, sunset)",
+  "new_feature": "shockwave ability",
+  "hook": "SHOCKWAVE VS LASER|PICK ONE. NO TAKEBACKS",
+  "theme": "sunset",
+  "caption": "laser guy looked so confident ngl",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
   "metrics": {}
  }
 ]
