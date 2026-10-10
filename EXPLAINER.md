@@ -1,6 +1,10 @@
 # Explainer videos (Unreel) – runbook for the scheduled task
 
-Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, English). Topics: **space & physics only**. Separate from the nightly quiz/physics task in README.md. Report to Dimi **in German**, short and simple, without technical jargon. Dimi decided on 2026-10-10: the task runs every 2nd day and **posts directly** (no approval step).
+Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, English). Topics: **space & physics only**. Since 2026-10-10 explainers REPLACE the quiz format in the nightly task "Unreel Daily Short" (Dimi's decision). That task alternates EXPLAINER and PHYSICS days and posts directly (no approval). When run from the nightly task: do steps 2–6 and 8 here, but posting (platforms, budget, best times, captions, hosting, cleanup, report) follows the nightly task prompt instead of step 7/9.
+
+**Series order:** a new explainer may only be posted at least 1 day AFTER the latest `post_time` in `state/explainer/log.json` (so Part N+1 never goes out before Part N). On days where that is not possible, the nightly task makes a PHYSICS video instead.
+
+**AI label:** explainers use an AI voice → TikTok isAigc true, Instagram isAiGenerated true, YouTube isAiGeneratedContent false (no realistic synthetic footage).
 
 ## Every run, in this order
 1. **Setup:** `bash tools/setup.sh` (installs the voice and downloads the model, takes about 1 min).
@@ -31,7 +35,7 @@ Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, En
    - Read `state/metricool_count.json`. If count < 50, post via Metricool. If count ≥ 50, Dimi posts himself (see below).
    - Time: Metricool getBestTimeToPostByNetwork tiktok for today (Europe/Berlin). Take the best hour that is at least 1 h from now and in the afternoon/evening (16–20 h); the morning slot belongs to the quiz task. If today is too late, use tomorrow 18:00.
    - Host: copy the MP4 to `videos/<date>-<name>.mp4`, commit and push to main. Media URL: `https://raw.githubusercontent.com/salem64/Unreel-videos/main/videos/<file>`. Check that it returns HTTP 200.
-   - Call createScheduledPost: providers tiktok, autoPublish true, tiktokData.title = short casual title, isAigc false.
+   - Call createScheduledPost: providers tiktok, autoPublish true, tiktokData.title = short casual title, isAigc true (AI voice).
    - Caption and first comment follow the caption rules in README.md (lowercase, max 1 emoji, "part N" at the end for series, 3–5 hashtags incl. #unreel).
    - Afterwards: increase count by 1, delete the MP4 from `videos/` again (Metricool has its own copy), commit and push.
    - If Metricool fails or the budget is used up: send the MP4 to Dimi + caption + first comment so he can upload it from his phone.
