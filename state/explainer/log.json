@@ -1,8 +1,50 @@
 {
  "next_promised": "Black holes PART 4: Can anything ever escape a black hole?",
  "posts": [
-  {"date": "2026-10-10", "name": "blackholes-part1", "title": "why do black holes even exist", "series": "black holes", "part": 1, "post_time": "2026-10-10T19:00 Europe/Berlin", "metricool_uuid": "-9151368258580365111", "caption": "earth as a black hole would fit in your hand 🤯 part 1", "metrics": {}},
-  {"date": "2026-10-10", "name": "blackholes-part2", "title": "can the sun become a black hole", "series": "black holes", "part": 2, "post_time": "2026-10-12T18:00 Europe/Berlin", "metricool_uuid": "-6487826130557711614", "caption": "our sun is basically too small to be scary 😭 part 2", "metrics": {}},
-  {"date": "2026-10-10", "name": "blackholes-part3", "title": "what happens if you fall into a black hole", "series": "black holes", "part": 3, "post_time": "2026-10-14T18:00 Europe/Berlin", "metricool_uuid": "-4779779059234746944", "caption": "turns out the giant one is the \"safe\" option 💀 part 3", "metrics": {}}
+  {
+   "date": "2026-10-10",
+   "name": "blackholes-part1",
+   "title": "why do black holes even exist",
+   "series": "black holes",
+   "part": 1,
+   "post_time": "2026-10-10T19:00 Europe/Berlin",
+   "metricool_uuid": "-9151368258580365111",
+   "caption": "earth as a black hole would fit in your hand 🤯 part 1",
+   "metrics": {}
+  },
+  {
+   "date": "2026-10-10",
+   "name": "blackholes-part2",
+   "title": "can the sun become a black hole",
+   "series": "black holes",
+   "part": 2,
+   "post_time": "2026-10-12T18:00 Europe/Berlin",
+   "metricool_uuid": "-6487826130557711614",
+   "caption": "our sun is basically too small to be scary 😭 part 2",
+   "metrics": {}
+  },
+  {
+   "date": "2026-10-10",
+   "name": "blackholes-part3",
+   "title": "what happens if you fall into a black hole",
+   "series": "black holes",
+   "part": 3,
+   "post_time": "2026-10-14T18:00 Europe/Berlin",
+   "metricool_uuid": "-4779779059234746944",
+   "caption": "turns out the giant one is the \"safe\" option 💀 part 3",
+   "metrics": {}
+  },
+  {
+   "date": "2026-10-11",
+   "name": "nextword",
+   "title": "how chatgpt actually picks words",
+   "series": null,
+   "part": null,
+   "category": "ai/tech",
+   "post_time": "2026-10-11T10:00 Europe/Berlin",
+   "metricool_uuid": "-556198298054865602",
+   "caption": "so chatgpt is basically really good autocomplete 🎲",
+   "metrics": {}
+  }
  ]
 }

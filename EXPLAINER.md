@@ -2,7 +2,8 @@
 
 Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, English). Topics (Dimi 2026-10-10: "whatever performs better"): **space & physics** (theme space) and **money / side hustles / AI tools / tech** (theme money or tech), same style. The nightly analysis decides the mix by views/shares/comments per topic category. Since 2026-10-10 explainers REPLACE the quiz format in the nightly task "Unreel Daily Short" (Dimi's decision). That task alternates EXPLAINER and PHYSICS days and posts directly (no approval). When run from the nightly task: do steps 2–6 and 8 here, but posting (platforms, budget, best times, captions, hosting, cleanup, report) follows the nightly task prompt instead of step 7/9.
 
-**Series order:** a new explainer may only be posted at least 1 day AFTER the latest `post_time` in `state/explainer/log.json` (so Part N+1 never goes out before Part N). On days where that is not possible, the nightly task makes a PHYSICS video instead.
+**Explainers only (Dimi 2026-10-11):** the nightly task makes ONE explainer EVERY day, no physics/battle videos any more.
+**Series order:** the next part of a series may only be posted at least 1 day AFTER the latest `post_time` of that SAME series in `state/explainer/log.json` (so Part N+1 never goes out before Part N). If the next series part can't go out yet, make a one-off explainer (or a part of another series) instead – never a physics video.
 
 **AI label:** explainers use an AI voice → TikTok isAigc true, Instagram isAiGenerated true, YouTube isAiGeneratedContent false (no realistic synthetic footage).
 

@@ -16,4 +16,6 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 13. MONEY/AI: "3 real ways people make money with AI (and what it actually pays)" - series of 3, theme tech, honest ranges
 14. MONEY: "Why are you broke at the end of the month? (the latte factor vs big costs)" - one-off, theme money
 15. MONEY: "How does a bank make money with your money?" - one-off, theme money
-16. TECH: "How does ChatGPT/AI actually guess the next word?" - one-off, theme tech
+16. ~~TECH: "How does ChatGPT/AI actually guess the next word?" - one-off, theme tech~~ (done 2026-10-11)
+17. TECH: "Why does AI make stuff up? (hallucinations)" - one-off, theme tech (good follow-up to #16)
+18. TECH: "Why is ChatGPT free? How AI companies pay for it" - one-off, theme tech/money
