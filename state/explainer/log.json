@@ -1,5 +1,8 @@
 {
- "next_promised": "Black holes PART 4: Can anything ever escape a black hole?",
+ "next_promised": [
+  "Black holes PART 4: Can anything ever escape a black hole? (after part 3 on 2026-10-14)",
+  "How AI works PART 2: Why AI makes stuff up with total confidence (hallucinations)"
+ ],
  "posts": [
   {
    "date": "2026-10-10",
@@ -38,12 +41,12 @@
    "date": "2026-10-11",
    "name": "nextword",
    "title": "how chatgpt actually picks words",
-   "series": null,
-   "part": null,
+   "series": "how ai works",
+   "part": 1,
    "category": "ai/tech",
    "post_time": "2026-10-11T10:00 Europe/Berlin",
    "metricool_uuid": "-556198298054865602",
-   "caption": "so chatgpt is basically really good autocomplete 🎲",
+   "caption": "so chatgpt is basically really good autocomplete 🎲 part 1",
    "metrics": {}
   }
  ]

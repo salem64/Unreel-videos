@@ -1,21 +1,21 @@
 {
- "series": "HOW AI WORKS",
+ "series": "HOW AI WORKS - PART 1",
  "voice": "af_heart",
- "speed": 1.0,
+ "speed": 1.07,
  "theme": "tech",
  "scenes": [
   {
    "kind": "hook",
    "anim": "chat",
    "emoji": "🤖",
-   "title": "CHATGPT IS DOING ONE TINY THING",
-   "sub": "over and over and over",
-   "say": "Every ChatGPT answer is one tiny trick, repeated over and over. What is it?",
+   "title": "EVERY WORD IT WRITES IS A GUESS",
+   "sub": "so why does it sound so smart?",
+   "say": "Every single word ChatGPT writes is a guess. So why does it sound so smart?",
    "chat": "Sure! Here is a short poem about the ocean, written one piece at a time..."
   },
   {
    "kind": "countdown",
-   "title": "PAUSE AND GUESS",
+   "title": "HOW DOES IT PICK?",
    "count": 3,
    "options": [
     [
@@ -34,7 +34,7 @@
      "🗄️"
     ]
    ],
-   "say": "Googling, guessing, or copying? Pause and guess."
+   "say": "Does it google it, guess the next word, or copy a database? Pause and guess."
   },
   {
    "kind": "answer",
@@ -107,8 +107,8 @@
     "clear",
     "so blue"
    ],
-   "title": "A bit of random on purpose",
-   "say": "Then it adds a little randomness on purpose. That's why the same question can get a different answer every time."
+   "title": "Random on purpose. Wrong sometimes.",
+   "say": "It adds a little randomness on purpose. Same question, different answer. And sometimes it guesses wrong, and sounds totally sure about it."
   },
   {
    "kind": "stat",
@@ -122,19 +122,22 @@
   },
   {
    "kind": "quiz",
-   "title": "IS THAT REAL THINKING?",
+   "title": "THINKING OR GUESSING?",
    "options": [
     [
-     "YES",
+     "THINKING",
      "🧠"
     ],
     [
-     "NO",
+     "GUESSING",
      "🎲"
     ]
    ],
-   "next": "",
-   "say": "So is that real thinking, or just insanely good guessing? Comment yes or no."
+   "next": "PART 2: Why AI makes stuff up with total confidence",
+   "say": "So, real thinking or insanely good guessing? Comment. Part two: why AI makes stuff up with total confidence.",
+   "at": {
+    "part": "part"
+   }
   }
  ]
 }

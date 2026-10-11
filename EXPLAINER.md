@@ -54,6 +54,9 @@ Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, En
 ## Motion (Dimi 2026-10-11: "more interactive, more happening on screen")
 Every video automatically gets the MOTION PACK (camera push-in + punch zoom on cuts, drifting particles, progress bar, word pop captions, sparkle bursts, pulsing glows, count-up numbers). On top of that, EVERY step must show the idea happening (like the Earth being crushed to show how small it must be for a black hole): use active scene types (absorb, split, dice, tokens, grow, forces, squeeze, collapse, compare, stat with bg) – a plain 'emoji' step at most once per video; aim for something visibly moving or changing every 2–3 s. When a topic needs a visual that doesn't exist yet, build it as today's NEW feature.
 
+## Story (Dimi 2026-10-11: black holes was 'almost gripping')
+Visuals alone are not enough. Every script needs: a hook that is a surprising true claim + question, stakes or a twist in the middle ("and sometimes it's wrong and sounds totally sure"), and a cliffhanger PART N+1 teaser at the end. Prefer series of 2–4 parts. Voice speed about 1.07.
+
 ## Rules
 - Never spend money; free tiers only.
 - Never touch the nightly quiz/physics state except `metricool_count.json`.

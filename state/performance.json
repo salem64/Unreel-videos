@@ -73,14 +73,14 @@
  },
  {
   "date": "2026-10-11",
-  "file": "2026-10-11-explainer-nextword-v3.mp4",
+  "file": "2026-10-11-explainer-ai-part1.mp4",
   "format": "explainer",
-  "variant": "tech / one-off: how ChatGPT guesses the next word",
+  "variant": "tech / series HOW AI WORKS part 1: how ChatGPT guesses the next word",
   "details": "52.7s, theme tech; replaced the planned flail-vs-spear battle after Dimi said explainers only (battle was rendered but never posted)",
   "new_feature": "motion pack + new anims tokens, absorb, split, dice, chat hook, dots stat",
-  "hook": "CHATGPT IS DOING ONE TINY THING",
+  "hook": "EVERY WORD IT WRITES IS A GUESS",
   "theme": "tech",
-  "caption": "so chatgpt is basically really good autocomplete 🎲",
+  "caption": "so chatgpt is basically really good autocomplete 🎲 part 1",
   "first_comment": "thinking or guessing, pick one",
   "posted_via": {
    "tiktok": "metricool",
