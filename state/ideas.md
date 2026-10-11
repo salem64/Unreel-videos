@@ -4,6 +4,7 @@
 - quiz: classic, flags/picture, emoji puzzle, this-or-that, true/false speed round, mixed
 - physics: escape, multiply, grow, battle (8 weapons), elimination, powers (15 evolving abilities incl. laser, meteor, rocket, tornado)
 
+- 2026-10-11: explainer MOTION PACK (camera push/punch zoom, particles, progress bar, word-pop captions, bursts, glows, count-up) + explainer anim 'tokens' (AI picks next word)
 - 2026-10-11: battle weapon 'flail' (spiked ball on chain, chain grows +14 and ball grows per hit, WRECKING BALL sticker at chain 150)
 - 2026-10-10: powers ability 'shockwave' (PULSE/SHOCKWAVE/EARTHQUAKE: expanding rings, knockback, shake)
 

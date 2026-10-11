@@ -73,11 +73,11 @@
  },
  {
   "date": "2026-10-11",
-  "file": "2026-10-11-explainer-nextword.mp4",
+  "file": "2026-10-11-explainer-nextword-v2.mp4",
   "format": "explainer",
   "variant": "tech / one-off: how ChatGPT guesses the next word",
   "details": "52.7s, theme tech; replaced the planned flail-vs-spear battle after Dimi said explainers only (battle was rendered but never posted)",
-  "new_feature": "flail weapon (battle, built but unused since battles stopped)",
+  "new_feature": "explainer motion pack + 'tokens' animation",
   "hook": "CHATGPT IS DOING ONE TINY THING",
   "theme": "tech",
   "caption": "so chatgpt is basically really good autocomplete 🎲",

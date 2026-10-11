@@ -15,10 +15,15 @@ Scene kinds and fields:
   answer    letter, word, sub, emoji
   step      n, title, anim: space/physics "bars" | "forces" | "squeeze" | "balance" | "collapse" | "escape" | "redgiant" | "whitedwarf";
             generic (any topic) "emoji" (emojis [..], label) | "grow" (values [..], labels [..], prefix "$", suffix)
+            | "tokens" (NEW 2026-10-11: chat box types "prompt", candidate words [[word, pct], ...] slide in with filling
+              bars, candidate "pick" gets highlighted and flies into the sentence - great for AI/"how it decides" topics)
   compare   left {title, sub, emoji, verdict}, right {...}
   stat      value, unit, label, src
   quiz      title, options [[text, emoji], ...], next
 Every scene shows auto captions of "say" (word timing estimated from text length).
+MOTION PACK (2026-10-11, applies to every scene automatically): slow camera push-in + punch-zoom on every cut,
+drifting glowing particles in the theme colours, video progress bar at the top, spoken word pops bigger in the
+captions, sparkle bursts when emojis/answers appear, pulsing glow behind step emojis, bar values count up.
 Look: dark space, starfield, orange + cyan accents.
 """
 import json, math, os, random, subprocess, sys
@@ -177,6 +182,49 @@ class R:
         ser = spec.get("series", "").upper()
         self.series = text_sprite([ser], font(F_BLACK, 34), 34, CYAN + (255,)) if ser else None
         self.cache = {}
+        prng = random.Random(7)
+        self.parts = [(prng.uniform(0, W), prng.uniform(0, H), prng.uniform(18, 60), prng.uniform(3, 9),
+                       prng.uniform(0, 6.28), prng.choice([ORANGE, CYAN, WHITE])) for _ in range(34)]
+        self.total = 1.0
+
+    def particles(self, img, t):
+        lay = Image.new("RGBA", (W // 2, H // 2), (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        for (x0, y0, sp, r, ph, col) in self.parts:
+            y = (y0 - t * sp) % H
+            x = x0 + 40 * math.sin(t * 0.7 + ph)
+            a = int(120 + 80 * math.sin(t * 2 + ph))
+            d.ellipse(((x - r * 2.2) / 2, (y - r * 2.2) / 2, (x + r * 2.2) / 2, (y + r * 2.2) / 2), fill=col + (a // 4,))
+            d.ellipse(((x - r) / 2, (y - r) / 2, (x + r) / 2, (y + r) / 2), fill=col + (a,))
+        lay = lay.filter(ImageFilter.GaussianBlur(1.5)).resize((W, H), Image.BILINEAR)
+        img.alpha_composite(lay)
+
+    def burst(self, img, cx, cy, lt, delay, rad=170, n=12):
+        """Sparkle ring that flies outwards when something appears."""
+        p = (lt - delay) / 0.55
+        if not 0 < p < 1:
+            return
+        d = ImageDraw.Draw(img)
+        e = ease_out_cubic(p)
+        for i in range(n):
+            a = i * 2 * math.pi / n + 0.3
+            rr = rad * (0.35 + 0.9 * e)
+            x, y = cx + math.cos(a) * rr, cy + math.sin(a) * rr
+            sz = 11 * (1 - p) + 2
+            col = (ORANGE if i % 2 else CYAN) + (int(255 * (1 - p)),)
+            d.ellipse((x - sz, y - sz, x + sz, y + sz), fill=col)
+
+    def glow(self, img, cx, cy, r, t, col=None, a=70):
+        k = ("glow", r, col or CYAN)
+        if k not in self.cache:
+            S = 2 * r
+            yy, xx = np.mgrid[0:S, 0:S] - r
+            dd = np.sqrt(xx ** 2 + yy ** 2) / r
+            al = (np.clip(1 - dd, 0, 1) ** 2 * 255).astype(np.uint8)
+            im = Image.new("RGBA", (S, S), (col or CYAN) + (0,))
+            im.putalpha(Image.fromarray(al, "L"))
+            self.cache[k] = im
+        paste_c(img, self.cache[k], cx, cy, scale=1 + 0.08 * math.sin(t * 4), opacity=a / 255)
 
     # -------- generic pieces
     def T(self, key, text, path, maxw, maxh, start, col, minsize=34, stroke=0):
@@ -273,11 +321,16 @@ class R:
         total = sum(d0.textlength(p + " ", font=f) for p in parts)
         im = Image.new("RGBA", (int(total) + 40, 100), (0, 0, 0, 0))
         dd = ImageDraw.Draw(im)
+        fb = font(F_BLACK, 74)
+        total = sum(d0.textlength(p + " ", font=(fb if (chunk_first + i) == idx else f)) for i, p in enumerate(parts))
+        im = Image.new("RGBA", (int(total) + 40, 110), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(im)
         x = 20
         for i, p in enumerate(parts):
             cur = (chunk_first + i) == idx
-            dd.text((x, 10), p, font=f, fill=(ORANGE if cur else WHITE) + (255,), stroke_width=6, stroke_fill=(0, 0, 0))
-            x += d0.textlength(p + " ", font=f)
+            ff_ = fb if cur else f
+            dd.text((x, 4 if cur else 14), p, font=ff_, fill=(ORANGE if cur else WHITE) + (255,), stroke_width=6, stroke_fill=(0, 0, 0))
+            x += d0.textlength(p + " ", font=ff_)
         if im.width > 940:
             im = im.resize((940, int(im.height * 940 / im.width)), Image.LANCZOS)
         paste_c(img, im, CX, 1500)
@@ -295,7 +348,25 @@ class R:
         s2.paste(self.stars2.crop((0, 0, W, H - off2)), (0, off2))
         s2.paste(self.stars2.crop((0, H - off2, W, H)), (0, 0))
         img.alpha_composite(s2)
-        getattr(self, "s_" + sc["kind"])(img, sc, lt, t)
+        self.particles(img, t)
+        fg = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        getattr(self, "s_" + sc["kind"])(fg, sc, lt, t)
+        # camera: slow push-in over the scene + punch zoom on the cut
+        z = 1 + 0.035 * clamp(lt / max(1.0, sc["_dur"]))
+        if sc["_i"] > 0:
+            z += 0.07 * (1 - ease_out_cubic(clamp(lt / 0.35)))
+        if z > 1.002:
+            nw, nh = int(W * z), int(H * z)
+            big = fg.resize((nw, nh), Image.BILINEAR)
+            fg = big.crop(((nw - W) // 2, (nh - H) // 2, (nw - W) // 2 + W, (nh - H) // 2 + H))
+        img.alpha_composite(fg)
+        # progress bar
+        d = ImageDraw.Draw(img)
+        pw = int(W * clamp(t / self.total))
+        d.rectangle((0, 0, W, 12), fill=(255, 255, 255, 40))
+        if pw > 0:
+            d.rectangle((0, 0, pw, 12), fill=ORANGE + (255,))
+            d.ellipse((pw - 10, -4, pw + 10, 16), fill=CYAN + (255,))
         if self.series:
             paste_c(img, self.series, CX, 150)
         paste_c(img, self.wm, CX, 1820)
@@ -318,7 +389,10 @@ class R:
             return
         if sc.get("anim") == "emoji":
             e = emoji_sprite(sc.get("emoji", "💸"), 300)
+            self.glow(img, CX, 880, 300, t, ORANGE, 90)
+            e = e.rotate(6 * math.sin(t * 2.5), resample=Image.BICUBIC, expand=True)
             self.pop_in(img, e, CX, 880 + 15 * math.sin(t * 3), lt, 0.1, 0.5)
+            self.burst(img, CX, 880, lt, 0.2, 230, 14)
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1250, lt, 0.5)
             return
@@ -371,7 +445,9 @@ class R:
 
     def s_answer(self, img, sc, lt, t):
         e = emoji_sprite(sc["emoji"], 260)
+        self.glow(img, CX, 640, 260, t, GREEN, 90)
         self.pop_in(img, e, CX, 640 + 12 * math.sin(t * 4), lt, 0.0, 0.5)
+        self.burst(img, CX, 640, lt, 0.1, 220, 16)
         badge = self.cache.get("badge")
         if badge is None:
             badge = rrect(520, 150, 75, GREEN + (255,))
@@ -417,7 +493,11 @@ class R:
         size = min(260, int(gap * 0.8))
         for i, em in enumerate(ems):
             x = CX - 450 + gap * (i + 0.5)
-            self.pop_in(img, emoji_sprite(em, size), x, 960 + 12 * math.sin(t * 3 + i), lt, 0.3 + 0.35 * i, 0.45)
+            if lt > 0.3 + 0.35 * i:
+                self.glow(img, x, 960, int(size * 0.85), t + i, CYAN if i % 2 else ORANGE, 75)
+            es = emoji_sprite(em, size).rotate(7 * math.sin(t * 2.2 + i * 1.3), resample=Image.BICUBIC, expand=True)
+            self.pop_in(img, es, x, 960 + 12 * math.sin(t * 3 + i), lt, 0.3 + 0.35 * i, 0.45)
+            self.burst(img, x, 960, lt, 0.35 + 0.35 * i, int(size * 0.75), 10)
         if sc.get("label"):
             self.slide_in(img, self.T(("el", sc["n"]), sc["label"], F_BLACK, 880, 140, 64, ORANGE, stroke=4), CX, 1230, lt, 0.3 + 0.35 * n)
 
@@ -437,10 +517,70 @@ class R:
             h = 520 * (v / mx) * ease_out_back(p)
             col = tuple(int(CYAN[c] + (ORANGE[c] - CYAN[c]) * i / max(1, n - 1)) for c in range(3))
             d.rounded_rectangle((x - bw * 0.35, 1220 - h, x + bw * 0.35, 1220), radius=16, fill=col + (255,))
-            txt = sc.get("prefix", "") + f"{v:,}" + sc.get("suffix", "")
-            paste_c(img, self.T(("gv", sc["n"], i), txt, F_BLACK, int(bw), 60, 44, WHITE, stroke=3), x, 1190 - h, opacity=p)
+            vv = int(round(v * ease_out_cubic(p))) if isinstance(v, int) else v
+            txt = sc.get("prefix", "") + f"{vv:,}" + sc.get("suffix", "")
+            paste_c(img, self.T(("gv", sc["n"], i), txt, F_BLACK, int(bw), 60, 44, WHITE, stroke=3), x, 1190 - h, opacity=min(1, p * 2))
             if labels[i]:
                 paste_c(img, self.T(("gl", sc["n"], i), labels[i], F_BOLD, int(bw), 50, 34, (200, 210, 230)), x, 1260, opacity=p)
+
+    def a_tokens(self, img, sc, lt, t):
+        """Chat box types the prompt, candidate next words slide in with filling bars, the picked one flies in."""
+        prompt = sc.get("prompt", "The sky is")
+        cands = sc.get("candidates", [["blue", 62], ["clear", 21], ["falling", 9]])
+        pick = sc.get("pick", 0)
+        tp = 0.3                                     # typing start
+        nch = int(clamp((lt - tp) / 1.0) * len(prompt))
+        t_c = tp + 1.15                              # candidates start
+        t_pick = t_c + 0.3 * len(cands) + 0.9
+        t_fly = t_pick + 0.5
+        box = self.cache.get("tokbox")
+        if box is None:
+            box = rrect(920, 190, 40, (255, 255, 255, 34), outline=CYAN + (200,), width=4)
+            self.cache["tokbox"] = box
+        self.pop_in(img, box, CX, 720, lt, 0.05)
+        d = ImageDraw.Draw(img)
+        f = font(F_BLACK, 70)
+        shown = prompt[:nch]
+        x0 = CX - 420
+        d.text((x0, 680), shown, font=f, fill=WHITE + (255,))
+        xe = x0 + d.textlength(shown + " ", font=f)
+        fly = clamp((lt - t_fly) / 0.45)
+        if fly >= 1:
+            d.text((xe, 680), cands[pick][0], font=f, fill=ORANGE + (255,))
+            xe += d.textlength(cands[pick][0], font=f)
+        if lt > tp and int(lt * 2.5) % 2 == 0:                     # blinking cursor
+            d.rectangle((xe + 6, 688, xe + 14, 752), fill=CYAN + (255,))
+        if lt > tp - 0.1:
+            self.slide_in(img, self.T("tklab", "NEXT WORD?", F_BLACK, 600, 70, 46, CYAN), CX, 600, lt, tp)
+        for i, (wd, pct) in enumerate(cands):
+            y = 930 + i * 140
+            p = clamp((lt - t_c - 0.3 * i) / 0.35)
+            if p <= 0:
+                continue
+            chosen = i == pick and lt >= t_pick
+            if i == pick and t_pick <= lt < t_fly + 0.45:
+                self.glow(img, CX, y, 300, t * 2, ORANGE, 110)
+            chip = rrect(880, 112, 30, (ORANGE + (255,)) if chosen else (255, 255, 255, 40))
+            dd = ImageDraw.Draw(chip)
+            dd.text((30, 22), wd, font=font(F_BLACK, 58), fill=INK if chosen else WHITE)
+            bp = clamp((lt - t_c - 0.3 * i - 0.2) / 0.7)
+            bx0, bx1 = 360, 360 + 380 * pct / 100 * ease_out_cubic(bp)
+            dd.rounded_rectangle((360, 38, 740, 74), radius=18, fill=(0, 0, 0, 90))
+            if bx1 > bx0 + 4:
+                dd.rounded_rectangle((bx0, 38, bx1, 74), radius=18, fill=(INK if chosen else CYAN) + (255,))
+            ps = f"{int(round(pct * ease_out_cubic(bp)))}%"
+            dd.text((860 - dd.textlength(ps, font=font(F_BLACK, 50)), 28), ps, font=font(F_BLACK, 50), fill=INK if chosen else WHITE)
+            x_off = 120 * (1 - ease_out_cubic(p)) * (1 if i % 2 else -1)
+            sc_ = 1 + (0.06 * math.sin(t * 8) if chosen and lt < t_fly + 0.6 else 0)
+            paste_c(img, chip, CX + x_off, y, scale=sc_, opacity=p)
+            if i == pick:
+                self.burst(img, CX + 380, y, lt, t_pick, 120, 12)
+        if 0 < fly < 1:                                             # picked word flies up into the sentence
+            sy = 930 + pick * 140
+            ex, ey = xe + 80, 715
+            fx_ = CX - 260 + (ex - (CX - 260)) * ease_out_cubic(fly)
+            fy_ = sy + (ey - sy) * ease_out_cubic(fly) - 120 * math.sin(math.pi * fly)
+            paste_c(img, self.T(("tkf", pick), cands[pick][0], F_BLACK, 400, 90, 70, ORANGE, stroke=4), fx_, fy_)
 
     def a_bars(self, img, sc, lt, t):
         # black hole on the left (small), bars of gravity rising towards it
@@ -789,6 +929,7 @@ def main():
     sf.write(wav, mix, SR)
 
     r = R(spec, draft)
+    r.total = total
     ow, oh = (540, 960) if draft else (W, H)
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{ow}x{oh}",
            "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast" if draft else "medium",

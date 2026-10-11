@@ -70,20 +70,25 @@
   {
    "kind": "step",
    "n": 3,
-   "anim": "grow",
-   "values": [
-    9,
-    21,
-    62
+   "anim": "tokens",
+   "title": "Example: it scores every option",
+   "prompt": "The sky is",
+   "candidates": [
+    [
+     "blue",
+     62
+    ],
+    [
+     "clear",
+     21
+    ],
+    [
+     "falling",
+     9
+    ]
    ],
-   "labels": [
-    "falling",
-    "clear",
-    "blue"
-   ],
-   "suffix": "%",
-   "title": "Example: \"the sky is ...\"",
-   "say": "Type 'the sky is', and it scores every possible next token. Blue gets a high score."
+   "pick": 0,
+   "say": "Type 'the sky is', and it scores every possible next token. Blue wins, so blue gets added. Then it does it all again."
   },
   {
    "kind": "step",
