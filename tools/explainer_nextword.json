@@ -1,0 +1,125 @@
+{
+ "series": "HOW AI WORKS",
+ "voice": "af_heart",
+ "speed": 1.0,
+ "theme": "tech",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "emoji",
+   "emoji": "🤖",
+   "title": "CHATGPT IS DOING ONE TINY THING",
+   "sub": "over and over and over",
+   "say": "Every ChatGPT answer is one tiny trick, repeated over and over. What is it?"
+  },
+  {
+   "kind": "countdown",
+   "title": "PAUSE AND GUESS",
+   "count": 3,
+   "options": [
+    [
+     "A",
+     "Googling it",
+     "🔎"
+    ],
+    [
+     "B",
+     "Next word guess",
+     "🎲"
+    ],
+    [
+     "C",
+     "A database",
+     "🗄️"
+    ]
+   ],
+   "say": "Googling, guessing, or copying? Pause and guess."
+  },
+  {
+   "kind": "answer",
+   "letter": "B",
+   "word": "NEXT WORD GUESSING",
+   "sub": "one little piece at a time",
+   "emoji": "🎲",
+   "say": "It's B. It guesses the next bit of text. Then the next. Then the next."
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "emoji",
+   "emojis": [
+    "📚",
+    "➡️",
+    "🧠"
+   ],
+   "label": "READ A GIANT PILE OF TEXT",
+   "title": "First it studies which words follow which",
+   "say": "First it reads a giant pile of text and learns which words usually follow which."
+  },
+  {
+   "kind": "step",
+   "n": 2,
+   "anim": "emoji",
+   "emojis": [
+    "🧩"
+   ],
+   "label": "TOKENS, NOT WORDS",
+   "title": "A token is about 3/4 of a word",
+   "say": "It doesn't even use whole words. It uses tokens. One token is about three quarters of a word."
+  },
+  {
+   "kind": "step",
+   "n": 3,
+   "anim": "grow",
+   "values": [
+    9,
+    21,
+    62
+   ],
+   "labels": [
+    "falling",
+    "clear",
+    "blue"
+   ],
+   "suffix": "%",
+   "title": "Example: \"the sky is ...\"",
+   "say": "Type 'the sky is', and it scores every possible next token. Blue gets a high score."
+  },
+  {
+   "kind": "step",
+   "n": 4,
+   "anim": "emoji",
+   "emojis": [
+    "🎲"
+   ],
+   "label": "A BIT OF RANDOM ON PURPOSE",
+   "title": "Same question, different answer",
+   "say": "Then it adds a little randomness on purpose. That's why the same question can get a different answer."
+  },
+  {
+   "kind": "stat",
+   "value": 300,
+   "unit": "B",
+   "label": "tokens GPT-3 learned from (B = billion)",
+   "src": "Brown et al. 2020, Language Models are Few-Shot Learners",
+   "say": "GPT-3, an older model, learned from about three hundred billion tokens.",
+   "bg": "none"
+  },
+  {
+   "kind": "quiz",
+   "title": "IS THAT REAL THINKING?",
+   "options": [
+    [
+     "YES",
+     "🧠"
+    ],
+    [
+     "NO",
+     "🎲"
+    ]
+   ],
+   "next": "",
+   "say": "So is that real thinking, or just insanely good guessing? Comment yes or no."
+  }
+ ]
+}
