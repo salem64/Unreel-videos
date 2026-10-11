@@ -6,7 +6,7 @@ Modes:
   escape    - a ball is trapped in 10-16 rotating rings with gaps; every escaped ring shatters.  Hook e.g. "CAN IT|ESCAPE?"
   multiply  - a rotating ring with a gap; every ball that escapes spawns 2 new ones inside.   Hook e.g. "EVERY ESCAPE|= 2 MORE BALLS"
   grow      - see tools/sim_ball.py (ball grows with every bounce)
-  battle    - ball vs ball with growing swords and HP bars (tools/arena.py), 6th arg fighters "red,blue" or "🐶,🐱"
+  battle    - ball vs ball with WEAPONS and HP bars (tools/arena.py), 6th arg e.g. "red:flail,blue:spear" (sword spear dagger hammer saws spikes bow flail)
   powers    - ability balls that EVOLVE (tools/powers.py): fire, ice, lightning, vampire, poison, ghost, clone, blackhole, bomb, giant, glitch; 6th arg e.g. "fire,ice" or "🐉:fire,🐧:ice"
   elimination - last ball inside the ring wins (tools/arena.py), 6th arg set: flags|animals|food|fruits|colors
 Palettes: neon (default), sunset, ice, candy, lime

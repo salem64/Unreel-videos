@@ -5,7 +5,8 @@ python3 tools/arena.py battle out.mp4 [seed] ["HOOK1|HOOK2"] [palette] [fighters
     Ball vs ball with WEAPONS; every hit = damage and the attacker's weapon gets stronger.
     Weapons: sword (longer), spear (longer, long reach), dagger (spins faster), hammer (bigger head, huge knockback),
              saws (one more orbiting saw), spikes (longer spikes, contact damage), bow (one more arrow per volley;
-             blade weapons can block arrows). Sudden death (damage ramps up) after 30 s.
+             blade weapons can block arrows), flail (NEW 2026-10-11: spiked ball on a chain, every hit = longer chain
+             + bigger ball, "WRECKING BALL" at long chain; chain can't block). Sudden death (damage ramps up) after 30 s.
     fighters: "red:sword,blue:bow" | "🥔:hammer,🍟:spikes" | "sword,bow" (colours) | "🐶,🐱" (random weapons) | "" (random).
 python3 tools/arena.py elimination out.mp4 [seed] ["HOOK1|HOOK2"] [palette] [set]
     Last one standing: 8-12 balls in a rotating ring with a gap; whoever falls out is eliminated.
@@ -190,6 +191,7 @@ WEAPONS = {
     "saws":   dict(n=2, dmg=4, w=3.6, cd=0.30, emoji="⚙️"),
     "spikes": dict(S=16, dmg=7, w=1.2, cd=0.40, emoji="🌵"),
     "bow":    dict(n=1, dmg=4, w=0.0, cd=0.00, period=1.1, emoji="🏹"),
+    "flail":  dict(L=80, dmg=7, w=3.2, cd=0.40, head=20, emoji="⛓️"),
 }
 SEG_WEAPONS = ("sword", "spear", "dagger", "hammer")
 
@@ -272,6 +274,10 @@ def sim_battle(seed, weps):
             b["S"] = min(b["S"] + 6, 54); b["dmg"] += 2
             if b["S"] >= 40 and not b.get("m1"):
                 b["m1"] = 1; events.append((t, "SPIKY BOY", "🌵", k))
+        elif ty == "flail":
+            b["L"] = min(b["L"] + 14, 210); b["head"] = min(b["head"] + 2.5, 40); b["dmg"] += 1
+            if b["L"] >= 150 and not b.get("m1"):
+                b["m1"] = 1; events.append((t, "WRECKING BALL", "⛓️", k))
         elif ty == "bow":
             b["n"] = min(b["n"] + 1, 6)
             if b["n"] == 3:
@@ -361,6 +367,11 @@ def sim_battle(seed, weps):
                         if np.linalg.norm(vic["p"] - hc) < r + att["head"] or dist_seg(vic["p"], s0, s1) < r * 0.7:
                             hit(att, vic, k_, mult, 1000)
                             att["cdt"] = WEAPONS[ty]["cd"]
+                    elif ty == "flail":
+                        hc = att["p"] + unit(att) * (r + att["L"] + att["head"])
+                        if np.linalg.norm(vic["p"] - hc) < r + att["head"]:
+                            hit(att, vic, k_, mult, 850)
+                            att["cdt"] = WEAPONS[ty]["cd"]
                     elif ty == "saws":
                         for i in range(int(att["n"])):
                             sc = att["p"] + unit(att, 2 * math.pi * i / att["n"]) * (r + 42)
@@ -430,6 +441,8 @@ def weapon_label(b):
         return f"SAWS  x{int(b['n'])}"
     if ty == "spikes":
         return f"SPIKES  DMG {int(b['dmg'])}"
+    if ty == "flail":
+        return f"FLAIL  CHAIN {int(b['L'])}"
     return f"BOW  x{int(b['n'])} ARROWS"
 
 
@@ -466,6 +479,28 @@ def draw_weapon(d, gd, b, col):
         hc = P(r + b["L"] + hr)
         d.rounded_rectangle((hc[0] - hr, hc[1] - hr, hc[0] + hr, hc[1] + hr), radius=int(hr * 0.35), fill=(170, 172, 185), outline=col, width=5)
         gd.ellipse(((hc[0] - hr) / 2, (hc[1] - hr) / 2, (hc[0] + hr) / 2, (hc[1] + hr) / 2), fill=col)
+    elif ty == "flail":
+        hr, L = b["head"], b["L"]
+        sag = 10 + L * 0.08                                  # chain bows behind the swing
+        links = max(6, int(L / 13))
+        prev = None
+        for i in range(links + 1):
+            f_ = i / links
+            pt = P(r - 4 + (L + 4) * f_, -sag * math.sin(math.pi * f_))
+            if prev is not None:
+                d.line([prev, pt], fill=(150, 152, 165), width=5)
+            d.ellipse((pt[0] - 5, pt[1] - 5, pt[0] + 5, pt[1] + 5), outline=(205, 208, 220), width=3)
+            prev = pt
+        hc = P(r + L + hr)
+        for j in range(10):                                   # spikes on the ball
+            aa = ang * 1.7 + j * math.pi / 5
+            tip = (hc[0] + math.cos(aa) * (hr + 12), hc[1] + math.sin(aa) * (hr + 12))
+            b1 = (hc[0] + math.cos(aa - 0.28) * hr, hc[1] + math.sin(aa - 0.28) * hr)
+            b2 = (hc[0] + math.cos(aa + 0.28) * hr, hc[1] + math.sin(aa + 0.28) * hr)
+            d.polygon([b1, tip, b2], fill=steel, outline=col)
+        d.ellipse((hc[0] - hr, hc[1] - hr, hc[0] + hr, hc[1] + hr), fill=(95, 98, 112), outline=col, width=5)
+        d.ellipse((hc[0] - hr * 0.5, hc[1] - hr * 0.6, hc[0] - hr * 0.05, hc[1] - hr * 0.15), fill=(160, 164, 180))
+        gd.ellipse(((hc[0] - hr - 8) / 2, (hc[1] - hr - 8) / 2, (hc[0] + hr + 8) / 2, (hc[1] + hr + 8) / 2), fill=col)
     elif ty == "saws":
         n = int(b["n"])
         for i in range(n):
