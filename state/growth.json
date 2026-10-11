@@ -26,5 +26,20 @@
   "instagram": {
    "followers": 0
   }
+ },
+ {
+  "date": "2026-10-11",
+  "tiktok": {
+   "followers": 0,
+   "views_30d": 513
+  },
+  "youtube": {
+   "subscribers": 0,
+   "shorts_views_90d": 160
+  },
+  "instagram": {
+   "followers": 0,
+   "views_30d": 381
+  }
  }
 ]

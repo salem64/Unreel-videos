@@ -14,13 +14,13 @@
   },
   "metrics": {
    "instagram": {
-    "views": 125,
+    "views": 142,
     "likes": 1,
     "comments": 0,
     "shares": 0,
     "saves": 0,
-    "avg_watch_s": 4.8,
-    "skip_rate": 86
+    "avg_watch_s": 4.4,
+    "skip_rate": 87.7
    },
    "tiktok": {
     "views": 0,
@@ -48,6 +48,51 @@
    "youtube": "manual",
    "instagram": "vidiq"
   },
+  "metrics": {
+   "instagram": {
+    "views": 214,
+    "likes": 0,
+    "comments": 0,
+    "shares": 0,
+    "saves": 0,
+    "avg_watch_s": 11.9,
+    "watched_pct": 54.3,
+    "skip_rate": 34.5
+   },
+   "tiktok": {
+    "views": 511,
+    "likes": 1,
+    "comments": 0,
+    "shares": 0
+   },
+   "youtube": {
+    "views": null,
+    "note": "manual upload, no data in Metricool"
+   }
+  }
+ },
+ {
+  "date": "2026-10-11",
+  "file": "2026-10-11-battle.mp4",
+  "format": "physics",
+  "variant": "battle",
+  "details": "flail vs spear (seed 4129, ice palette, 32s)",
+  "new_feature": "flail weapon",
+  "hook": "FLAIL VS SPEAR|WHO'S COOKED?",
+  "theme": "ice",
+  "caption": "nobody told me the chain grows every hit 💀",
+  "first_comment": "flail or spear, pick now",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-11T10:00",
+   "youtube": "2026-10-11T16:00",
+   "instagram": "2026-10-11T10:00"
+  },
+  "metricool_uuid": "-556198298054865602",
   "metrics": {}
  }
 ]

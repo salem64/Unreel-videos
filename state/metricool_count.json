@@ -1,6 +1,6 @@
 {
  "month": "2026-10",
- "count": 36,
+ "count": 37,
  "limit": 50,
  "note": "Metricool free plan: 50 posts/month. Increment by 1 per platform post scheduled via Metricool. 2026-10-08: Dimi saw only 19 left in the Metricool app (deleted/failed test posts from the setup also count), so count was corrected to 31. If createScheduledPost ever returns a plan/limit error, set count to 50 for the rest of the month."
 }
