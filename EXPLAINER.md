@@ -28,7 +28,7 @@ Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, En
 5. **Script:** write `tools/explainer_<name>.json` (scene kinds and fields are documented in the header of `tools/explainer.py`; the black holes parts 1–3 are the examples).
    - Structure: hook (0–2 s), countdown "pause and guess" with 3 options, answer, 2–4 steps each with its own animation, compare and/or stat (aha fact), quiz ending with "Comment X" + "PART N+1: …" teaser (or a question for one-offs).
    - Spoken lines short, every 3–6 s something new. Don't sound like AI: no "Did you know", no "mind-blowing", no em dashes.
-   - **Only use the existing animations:** hook anim blackhole/sun/star/emoji; step anims bars, forces, squeeze, balance, collapse, escape, redgiant, whitedwarf (space) and emoji, grow (any topic, e.g. money growth), tokens (NEW 2026-10-11: chat box + candidate words with filling bars, picked word flies in – for AI/decision topics); compare visuals stretch/calm/sun/bigstar; stat bg bh/earth/whitedwarf (or none: set "bg": "none"). Set "theme": "money" or "tech" for non-space topics. Emojis work for objects (🌍🪐☄️💸📱🧠💻).
+   - **Only use the existing animations:** hook anim blackhole/sun/star/emoji; step anims bars, forces, squeeze, balance, collapse, escape, redgiant, whitedwarf (space) and emoji, grow (any topic, e.g. money growth), tokens (chat box + candidate words with filling bars, picked word flies in), absorb (things fly into a target that grows + counter), split (a word/thing gets sliced into pieces), dice (tumbling dice, outcome changes every roll); hook anim chat (bubble types text); stat bg dots (grid of dots fills up) – all NEW 2026-10-11; compare visuals stretch/calm/sun/bigstar; stat bg bh/earth/whitedwarf (or none: set "bg": "none"). Set "theme": "money" or "tech" for non-space topics. Emojis work for objects (🌍🪐☄️💸📱🧠💻).
    - A new animation only if a topic truly needs it, at most one per run. Add it to `tools/explainer.py` without breaking existing ones, and test it.
 6. **Render:**
    - Draft: `python3 tools/explainer.py tools/explainer_<name>.json /tmp/d.mp4 --draft`.
@@ -52,7 +52,7 @@ Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, En
    - Mention any problems.
 
 ## Motion (Dimi 2026-10-11: "more interactive, more happening on screen")
-Every video automatically gets the MOTION PACK (camera push-in + punch zoom on cuts, drifting particles, progress bar, word pop captions, sparkle bursts, pulsing glows, count-up numbers). On top of that, prefer animated scene types (tokens, grow, forces, squeeze, compare, stat) over plain single-emoji steps; aim for something visibly moving or changing every 2–3 s. When a topic needs a visual that doesn't exist yet, build it as today's NEW feature.
+Every video automatically gets the MOTION PACK (camera push-in + punch zoom on cuts, drifting particles, progress bar, word pop captions, sparkle bursts, pulsing glows, count-up numbers). On top of that, EVERY step must show the idea happening (like the Earth being crushed to show how small it must be for a black hole): use active scene types (absorb, split, dice, tokens, grow, forces, squeeze, collapse, compare, stat with bg) – a plain 'emoji' step at most once per video; aim for something visibly moving or changing every 2–3 s. When a topic needs a visual that doesn't exist yet, build it as today's NEW feature.
 
 ## Rules
 - Never spend money; free tiers only.

@@ -17,6 +17,12 @@ Scene kinds and fields:
             generic (any topic) "emoji" (emojis [..], label) | "grow" (values [..], labels [..], prefix "$", suffix)
             | "tokens" (NEW 2026-10-11: chat box types "prompt", candidate words [[word, pct], ...] slide in with filling
               bars, candidate "pick" gets highlighted and flies into the sentence - great for AI/"how it decides" topics)
+            | "absorb" (NEW: streams of "emojis" fly into a "target" emoji that grows with every hit + "counter" counts up,
+              "counter_label", "prefix", "suffix", "n_items" (default 18) - e.g. books into a brain, coins into a piggy bank, gas into a star)
+            | "split" (NEW: big "word" gets sliced into "parts" that fly apart as coloured chips, "label" below)
+            | "dice" (NEW: dice tumble, the ending of "prompt" changes every roll through "endings" - randomness/luck topics)
+  hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
+  stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
   stat      value, unit, label, src
   quiz      title, options [[text, emoji], ...], next
@@ -396,6 +402,29 @@ class R:
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1250, lt, 0.5)
             return
+        if sc.get("anim") == "chat":
+            e = emoji_sprite(sc.get("emoji", "🤖"), 230)
+            self.glow(img, 230, 1000, 230, t, ORANGE, 80)
+            paste_c(img, e.rotate(8 * math.sin(t * 3), resample=Image.BICUBIC, expand=True), 230, 1000 - 25 * abs(math.sin(t * 3.5)))
+            words = sc.get("chat", "").split()
+            k = int(clamp((lt - 0.5) / max(0.5, sc["_dur"] - 1.2)) * len(words) + 0.999) if lt > 0.5 else 0
+            bub = rrect(640, 420, 50, (255, 255, 255, 235))
+            dd = ImageDraw.Draw(bub)
+            dd.polygon([(0, 330), (60, 300), (60, 370)], fill=(255, 255, 255, 235))
+            if k == 0:
+                for j in range(3):
+                    yy = 210 - 18 * max(0, math.sin(t * 8 - j))
+                    dd.ellipse((250 + j * 60, yy - 18, 286 + j * 60, yy + 18), fill=(120, 120, 140, 255))
+            else:
+                lines, f, fs = fit(" ".join(words[:k]), F_BLACK, 560, 360, 64, 34)
+                yy = 40
+                for ln in lines:
+                    dd.text((40, yy), ln, font=f, fill=INK)
+                    yy += int(fs * 1.12)
+            self.pop_in(img, bub, 650, 930, lt, 0.2)
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
+            self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1300, lt, 0.5)
+            return
         if sc.get("anim") == "star":
             self.draw_sun(img, CX, 900, 220 * sc_, t, (120, 180, 255))
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
@@ -581,6 +610,123 @@ class R:
             fx_ = CX - 260 + (ex - (CX - 260)) * ease_out_cubic(fly)
             fy_ = sy + (ey - sy) * ease_out_cubic(fly) - 120 * math.sin(math.pi * fly)
             paste_c(img, self.T(("tkf", pick), cands[pick][0], F_BLACK, 400, 90, 70, ORANGE, stroke=4), fx_, fy_)
+
+    def a_absorb(self, img, sc, lt, t):
+        """Streams of emojis fly into a target that grows with every hit; a counter counts up."""
+        ems = sc.get("emojis", ["📚"])
+        tgt = sc.get("target", "🧠")
+        N = sc.get("n_items", 18)
+        tx, ty = CX, 950
+        rng = random.Random(11)
+        hits = 0
+        last_hit = -9
+        flying = []
+        for i in range(N):
+            t0 = 0.35 + i * 0.16
+            ang = rng.uniform(0, 2 * math.pi)
+            sx, sy = tx + math.cos(ang) * 620, ty + math.sin(ang) * 520
+            q = (lt - t0) / 0.6
+            if q >= 1:
+                hits += 1
+                last_hit = max(last_hit, t0 + 0.6)
+            elif q > 0:
+                flying.append((ems[i % len(ems)], sx, sy, q, i))
+        frac = hits / N
+        bump = 0.18 * max(0, 1 - (lt - last_hit) / 0.18)
+        self.glow(img, tx, ty, int(230 + 120 * frac), t, ORANGE, int(70 + 80 * frac))
+        paste_c(img, emoji_sprite(tgt, 220), tx, ty, scale=0.8 + 0.55 * frac + bump)
+        for (em, sx, sy, q, i) in flying:
+            e = ease_out_cubic(q) if False else q * q
+            x = sx + (tx - sx) * e
+            y = sy + (ty - sy) * e - 90 * math.sin(math.pi * q)
+            spr = emoji_sprite(em, 110).rotate(q * 300 * (1 if i % 2 else -1), resample=Image.BICUBIC, expand=True)
+            paste_c(img, spr, x, y, scale=1 - 0.55 * q)
+        if last_hit > 0:
+            self.burst(img, tx, ty, lt, last_hit - 0.05, 180, 10)
+        cv = sc.get("counter")
+        if cv is not None:
+            val = int(round(float(cv) * frac))
+            txt = sc.get("prefix", "") + f"{val:,}" + sc.get("suffix", "")
+            paste_c(img, text_sprite([txt], font(F_BLACK, 110), 110, ORANGE + (255,), stroke=6, stroke_fill=(0, 0, 0)), CX, 1250,
+                    scale=1 + bump * 0.5)
+            if sc.get("counter_label"):
+                paste_c(img, self.T(("acl", sc["n"]), sc["counter_label"], F_BLACK, 880, 70, 44, WHITE, stroke=3), CX, 1345)
+
+    def a_split(self, img, sc, lt, t):
+        """A word gets sliced into pieces (e.g. tokens) that fly apart as coloured chips."""
+        word = sc.get("word", "unbelievable")
+        parts = sc.get("parts", [word])
+        cut = 1.1
+        fz = font(F_BLACK, 120)
+        d0 = ImageDraw.Draw(Image.new("L", (4, 4)))
+        widths = [d0.textlength(p_, font=fz) for p_ in parts]
+        totw = sum(widths)
+        scale = min(1.0, 900 / (totw + 60 * len(parts)))
+        p = clamp((lt - cut - 0.2) / 0.6)
+        x = CX - (totw * scale + p * 60 * (len(parts) - 1)) / 2
+        cols_ = [ORANGE, CYAN, (167, 139, 250), (52, 211, 153), (250, 204, 21)]
+        for i, (pt, w_) in enumerate(zip(parts, widths)):
+            col = cols_[i % len(cols_)] if p > 0 else WHITE
+            chip = text_sprite([pt], fz, 120, col + (255,), stroke=6, stroke_fill=(0, 0, 0))
+            cx = x + w_ * scale / 2
+            cy = 960 - 40 * math.sin(math.pi * p) * (1 if i % 2 else -1)
+            rot = 10 * math.sin(math.pi * p) * (1 if i % 2 else -1)
+            if abs(rot) > 0.5:
+                chip = chip.rotate(rot, resample=Image.BICUBIC, expand=True)
+            self.pop_in(img, chip, cx, cy, lt, 0.2, 0.4) if lt < 0.6 else paste_c(img, chip, cx, cy, scale=scale)
+            if p > 0.6:
+                tag = self.T(("spt", i), f"#{i + 1}", F_BLACK, 200, 60, 40, col)
+                paste_c(img, tag, cx, 1060, opacity=clamp((p - 0.6) / 0.4))
+            x += w_ * scale + p * 60
+        # the knife slash
+        s_ = clamp((lt - cut) / 0.25)
+        if 0 < s_ < 1 or (1 <= s_ and lt < cut + 0.45):
+            d = ImageDraw.Draw(img)
+            a_ = min(1, s_)
+            x0 = CX - 520 + 1040 * a_
+            alpha = int(255 * (1 - clamp((lt - cut - 0.25) / 0.2)))
+            d.line([(CX - 520, 1030), (x0, 890)], fill=WHITE + (alpha,), width=10)
+            d.line([(CX - 520, 1030), (x0, 890)], fill=CYAN + (alpha // 2,), width=26)
+        if sc.get("label"):
+            self.slide_in(img, self.T(("spl", sc["n"]), sc["label"], F_BLACK, 880, 140, 60, ORANGE, stroke=4), CX, 1230, lt, cut + 0.8)
+
+    def a_dice(self, img, sc, lt, t):
+        """Dice tumble; every roll the ending of the sentence changes."""
+        prompt = sc.get("prompt", "The sky is")
+        ends = sc.get("endings", ["blue", "clear", "huge"])
+        period = 1.25
+        k = int(max(0, lt - 0.3) / period)
+        ph = (max(0, lt - 0.3) % period) / period
+        rolling = ph < 0.55 and lt > 0.3
+        box = self.cache.get("dicebox")
+        if box is None:
+            box = rrect(920, 170, 40, (255, 255, 255, 34), outline=ORANGE + (200,), width=4)
+            self.cache["dicebox"] = box
+        paste_c(img, box, CX, 700)
+        d = ImageDraw.Draw(img)
+        f = font(F_BLACK, 70)
+        x0 = CX - 420
+        d.text((x0, 660), prompt, font=f, fill=WHITE + (255,))
+        xe = x0 + d.textlength(prompt + " ", font=f)
+        if not rolling and lt > 0.3:
+            end = ends[k % len(ends)]
+            pp = clamp((ph - 0.55) / 0.15)
+            spr = text_sprite([end], f, 70, ORANGE + (255,))
+            paste_c(img, spr, xe + spr.width / 2, 700 - 4, scale=0.5 + 0.5 * ease_out_back(pp))
+            if pp < 1:
+                self.burst(img, xe + spr.width / 2, 700, ph, 0.55, 110, 10)
+        else:
+            d.text((xe, 660), "???", font=f, fill=(255, 255, 255, 120))
+        # two dice tumbling
+        for j in range(2):
+            bx = CX - 150 + 300 * j
+            hop = abs(math.sin(math.pi * ph * 2)) * (1 - ph) * 260 if rolling else 0
+            rot = (ph * 720 + j * 90) if rolling else (j * 12 - 6)
+            de = emoji_sprite("🎲", 210).rotate(rot, resample=Image.BICUBIC, expand=True)
+            paste_c(img, de, bx, 1080 - hop)
+            d.ellipse((bx - 90 + hop * 0.1, 1180, bx + 90 - hop * 0.1, 1210), fill=(0, 0, 0, 110))
+        tag = self.T("dicecnt", "ROLL", F_BLACK, 400, 60, 40, CYAN)
+        paste_c(img, self.T(("dk", k), f"ROLL #{k + 1}", F_BLACK, 400, 60, 44, CYAN), CX, 1290)
 
     def a_bars(self, img, sc, lt, t):
         # black hole on the left (small), bars of gravity rising towards it
@@ -800,12 +946,28 @@ class R:
         elif bg == "whitedwarf":
             self.draw_sun(img, CX, 1100, 40, t, (225, 235, 255))
         p = clamp((lt - 0.2) / 1.6)
+        if bg == "dots":
+            nd = min(300, int(sc["value"]))
+            cols_ = 20
+            d = ImageDraw.Draw(img)
+            on = int(nd * ease_out_cubic(clamp((lt - 0.2) / 2.2)))
+            for i in range(nd):
+                gx, gy = i % cols_, i // cols_
+                x, y = CX - 19 * 22 + gx * 44, 1000 + gy * 24
+                if i < on:
+                    fresh = i > on - 12
+                    r_ = 13 if fresh else 10
+                    d.ellipse((x - r_, y - r_, x + r_, y + r_), fill=(WHITE if fresh else (ORANGE if (i // cols_) % 2 else CYAN)) + (255,))
+                else:
+                    d.ellipse((x - 4, y - 4, x + 4, y + 4), fill=(255, 255, 255, 40))
+            if sc.get("dot_label"):
+                self.slide_in(img, self.T("sdl", sc["dot_label"], F_BLACK, 860, 70, 44, CYAN), CX, 1385, lt, 1.0)
         v = float(sc["value"]) * ease_out_cubic(p)
         s = "~" + str(int(round(v))) + sc.get("unit", "")
         big = text_sprite([s], font(F_BLACK, 260), 260, ORANGE + (255,), stroke=8, stroke_fill=(0, 0, 0))
         paste_c(img, big, CX, 640, scale=1 + 0.05 * math.sin(t * 6) * (p >= 1))
         self.slide_in(img, self.T("sl", sc["label"], F_BLACK, 880, 220, 66, WHITE, stroke=4), CX, 900, lt, 0.6)
-        self.slide_in(img, self.T("ss", sc["src"], F_BOLD, 860, 80, 38, (180, 190, 210)), CX, 1300, lt, 1.0)
+        self.slide_in(img, self.T("ss", sc["src"], F_BOLD, 860, 80, 38, (180, 190, 210)), CX, 1300 if bg != "dots" else 1650, lt, 1.0)
 
     def s_quiz(self, img, sc, lt, t):
         self.pop_in(img, self.T("qt", sc["title"], F_BLACK, 900, 240, 90, WHITE, stroke=4), CX, 380, lt)

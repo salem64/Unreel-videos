@@ -6,11 +6,12 @@
  "scenes": [
   {
    "kind": "hook",
-   "anim": "emoji",
+   "anim": "chat",
    "emoji": "🤖",
    "title": "CHATGPT IS DOING ONE TINY THING",
    "sub": "over and over and over",
-   "say": "Every ChatGPT answer is one tiny trick, repeated over and over. What is it?"
+   "say": "Every ChatGPT answer is one tiny trick, repeated over and over. What is it?",
+   "chat": "Sure! Here is a short poem about the ocean, written one piece at a time..."
   },
   {
    "kind": "countdown",
@@ -46,26 +47,32 @@
   {
    "kind": "step",
    "n": 1,
-   "anim": "emoji",
+   "anim": "absorb",
    "emojis": [
     "📚",
-    "➡️",
-    "🧠"
+    "📰",
+    "💬",
+    "📖",
+    "🌐"
    ],
-   "label": "READ A GIANT PILE OF TEXT",
-   "title": "First it studies which words follow which",
+   "target": "🧠",
+   "n_items": 18,
+   "title": "First it reads a giant pile of text",
    "say": "First it reads a giant pile of text and learns which words usually follow which."
   },
   {
    "kind": "step",
    "n": 2,
-   "anim": "emoji",
-   "emojis": [
-    "🧩"
+   "anim": "split",
+   "word": "unbelievable",
+   "parts": [
+    "un",
+    "believ",
+    "able"
    ],
-   "label": "TOKENS, NOT WORDS",
-   "title": "A token is about 3/4 of a word",
-   "say": "It doesn't even use whole words. It uses tokens. One token is about three quarters of a word."
+   "title": "Text gets chopped into tokens",
+   "label": "AVG: 1 TOKEN ≈ 3/4 OF A WORD",
+   "say": "Then it chops text into tokens. Long words get cut into pieces. On average, one token is about three quarters of a word."
   },
   {
    "kind": "step",
@@ -93,22 +100,25 @@
   {
    "kind": "step",
    "n": 4,
-   "anim": "emoji",
-   "emojis": [
-    "🎲"
+   "anim": "dice",
+   "prompt": "The sky is",
+   "endings": [
+    "blue",
+    "clear",
+    "so blue"
    ],
-   "label": "A BIT OF RANDOM ON PURPOSE",
-   "title": "Same question, different answer",
-   "say": "Then it adds a little randomness on purpose. That's why the same question can get a different answer."
+   "title": "A bit of random on purpose",
+   "say": "Then it adds a little randomness on purpose. That's why the same question can get a different answer every time."
   },
   {
    "kind": "stat",
    "value": 300,
    "unit": "B",
-   "label": "tokens GPT-3 learned from (B = billion)",
+   "label": "tokens GPT-3 learned from",
    "src": "Brown et al. 2020, Language Models are Few-Shot Learners",
    "say": "GPT-3, an older model, learned from about three hundred billion tokens.",
-   "bg": "none"
+   "bg": "dots",
+   "dot_label": "1 DOT = 1 BILLION TOKENS"
   },
   {
    "kind": "quiz",
