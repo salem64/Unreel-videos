@@ -65,4 +65,4 @@ Visuals alone are not enough. Every script needs: a hook that is a surprising tr
 
 
 ## DIMI FEEDBACK 2026-10-12 (hard, overrides the structure above)
-Videos were 'null gut, viel zu langweilig, nur vorgelesen, ab und zu ein Quiz, keine Animationen'. Therefore: drop the countdown/quiz block, 25-35 s, narration <= 60 words, a new moving visual every 1-2 s, hook = action in second 1, every sentence has something moving on screen. See state/explainer/learnings.md.
+Videos were 'null gut, viel zu langweilig, nur vorgelesen, ab und zu ein Quiz, keine Animationen'. Therefore: questions are OK but short (max ~2 s) and while things keep moving - no dead countdown block, 25-35 s, narration <= 60 words, a new moving visual every 1-2 s, hook = action in second 1, every sentence has something moving on screen. See state/explainer/learnings.md.
