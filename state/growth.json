@@ -41,5 +41,20 @@
    "followers": 0,
    "views_30d": 381
   }
+ },
+ {
+  "date": "2026-10-12",
+  "tiktok": {
+   "followers": 2,
+   "views_30d": 1221
+  },
+  "youtube": {
+   "subscribers": 0,
+   "shorts_views_90d": 160
+  },
+  "instagram": {
+   "followers": 0,
+   "views_30d": 508
+  }
  }
 ]

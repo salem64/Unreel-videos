@@ -1,0 +1,128 @@
+{
+ "series": "HOW AI WORKS - PART 2",
+ "voice": "af_heart",
+ "speed": 1.07,
+ "theme": "tech",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "chat",
+   "emoji": "🤥",
+   "title": "AI LIES WITH A STRAIGHT FACE",
+   "sub": "and it has no idea it's lying",
+   "say": "Ask AI for a source and it may invent one. Totally fake. Totally confident. Why?",
+   "chat": "Sure! The study was published in the Journal of Applied Moon Cheese, 2019..."
+  },
+  {
+   "kind": "countdown",
+   "title": "WHY DOES IT MAKE STUFF UP?",
+   "count": 3,
+   "options": [
+    [
+     "A",
+     "It lies on purpose",
+     "😈"
+    ],
+    [
+     "B",
+     "It can't say no",
+     "🙅"
+    ],
+    [
+     "C",
+     "Bad internet",
+     "📶"
+    ]
+   ],
+   "say": "Is it lying on purpose, is it bad at saying I don't know, or just a bad connection? Pause and guess."
+  },
+  {
+   "kind": "answer",
+   "letter": "B",
+   "word": "IT GUESSES INSTEAD",
+   "sub": "saying 'I don't know' feels worse to it",
+   "emoji": "🙅",
+   "say": "It's B. It's built to always give an answer, so it guesses instead of saying I don't know."
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "tokens",
+   "title": "It only predicts what sounds right",
+   "prompt": "The study was published in",
+   "candidates": [
+    [
+     "Nature",
+     40
+    ],
+    [
+     "Science",
+     31
+    ],
+    [
+     "the Journal of",
+     18
+    ]
+   ],
+   "pick": 0,
+   "say": "Remember part one? It picks the word that sounds most likely. Not the one it checked. Likely and true are different things."
+  },
+  {
+   "kind": "step",
+   "n": 2,
+   "anim": "claim",
+   "title": "Fake answer, real confidence",
+   "question": "Who proved this? Give me a source.",
+   "answer": "Dr. Alan Fennick, Harvard, 2017. Page 214.",
+   "confidence": 97,
+   "conf_label": "SOUNDS SURE",
+   "verdict": "MADE UP",
+   "at": {
+    "stamp": "invented"
+   },
+   "say": "So when it doesn't know a source, it builds one that sounds right. Name, year, even a page number. All invented."
+  },
+  {
+   "kind": "step",
+   "n": 3,
+   "anim": "split",
+   "word": "I don't know",
+   "parts": [
+    "I",
+    "don't",
+    "know"
+   ],
+   "title": "Guessing often beats saying 'I don't know'",
+   "label": "GUESS = MAYBE RIGHT. SKIP = ZERO.",
+   "say": "Here's the twist. Many AI tests give zero for I don't know, but a lucky guess can score. So guessing gets rewarded."
+  },
+  {
+   "kind": "stat",
+   "value": 5000,
+   "unit": "$",
+   "label": "fine for lawyers who filed fake ChatGPT cases in court",
+   "src": "Bloomberg Law, 2023 (Mata v. Avianca)",
+   "say": "This really happened. Lawyers in New York filed a brief with fake cases that ChatGPT invented. The judge fined them five thousand dollars.",
+   "bg": "none"
+  },
+  {
+   "kind": "quiz",
+   "title": "WOULD YOU HAVE CAUGHT IT?",
+   "options": [
+    [
+     "YES",
+     "🕵️"
+    ],
+    [
+     "NO WAY",
+     "😬"
+    ]
+   ],
+   "next": "PART 3: What is a token, really?",
+   "say": "Would you have caught it? Comment. Part three: what a token really is.",
+   "at": {
+    "part": "part"
+   }
+  }
+ ]
+}

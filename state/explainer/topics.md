@@ -17,5 +17,6 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 14. MONEY: "Why are you broke at the end of the month? (the latte factor vs big costs)" - one-off, theme money
 15. MONEY: "How does a bank make money with your money?" - one-off, theme money
 16. ~~TECH: "How does ChatGPT/AI actually guess the next word?" - one-off, theme tech~~ (done 2026-10-11)
-17. TECH: How AI works PART 2 (promised!): "Why AI makes stuff up with total confidence" (hallucinations) - theme tech, post from 2026-10-12
+17. ~~TECH: How AI works PART 2 (hallucinations)~~ (done 2026-10-12)
+19. TECH: How AI works PART 3 (promised): "What is a token, really?" - theme tech, post from 2026-10-13
 18. TECH: "Why is ChatGPT free? How AI companies pay for it" - one-off, theme tech/money

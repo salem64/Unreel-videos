@@ -1,7 +1,7 @@
 {
  "next_promised": [
   "Black holes PART 4: Can anything ever escape a black hole? (after part 3 on 2026-10-14)",
-  "How AI works PART 2: Why AI makes stuff up with total confidence (hallucinations)"
+  "How AI works PART 3: What is a token, really? (teased at end of part 2)"
  ],
  "posts": [
   {
@@ -13,7 +13,14 @@
    "post_time": "2026-10-10T19:00 Europe/Berlin",
    "metricool_uuid": "-9151368258580365111",
    "caption": "earth as a black hole would fit in your hand 🤯 part 1",
-   "metrics": {}
+   "metrics": {
+    "tiktok": {
+     "views": 327,
+     "likes": 12,
+     "comments": 0,
+     "shares": 2
+    }
+   }
   },
   {
    "date": "2026-10-10",
@@ -47,6 +54,22 @@
    "post_time": "2026-10-11T10:00 Europe/Berlin",
    "metricool_uuid": "-556198298054865602",
    "caption": "so chatgpt is basically really good autocomplete 🎲 part 1",
+   "metrics": {}
+  },
+  {
+   "date": "2026-10-12",
+   "name": "hallucination",
+   "title": "why ai makes stuff up",
+   "series": "how ai works",
+   "part": 2,
+   "category": "ai/tech",
+   "post_time": "2026-10-12T10:00 Europe/Berlin",
+   "times": {
+    "instagram": "2026-10-12T10:00",
+    "youtube": "2026-10-12T16:00 (manual)",
+    "tiktok": "2026-10-13T10:00"
+   },
+   "caption": "ai will invent a source and sound 100% sure about it 💀 part 2",
    "metrics": {}
   }
  ]

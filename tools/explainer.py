@@ -21,6 +21,8 @@ Scene kinds and fields:
               "counter_label", "prefix", "suffix", "n_items" (default 18) - e.g. books into a brain, coins into a piggy bank, gas into a star)
             | "split" (NEW: big "word" gets sliced into "parts" that fly apart as coloured chips, "label" below)
             | "dice" (NEW: dice tumble, the ending of "prompt" changes every roll through "endings" - randomness/luck topics)
+            | "claim" (NEW 2026-10-12: user question bubble + AI answer card + confidence meter climbing to "confidence" % +
+              red "verdict" stamp (e.g. "MADE UP") slams on it; at:{"stamp": word} times the stamp - for hallucination/fact-check topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -728,6 +730,53 @@ class R:
         tag = self.T("dicecnt", "ROLL", F_BLACK, 400, 60, 40, CYAN)
         paste_c(img, self.T(("dk", k), f"ROLL #{k + 1}", F_BLACK, 400, 60, 44, CYAN), CX, 1290)
 
+    def a_claim(self, img, sc, lt, t):
+        """NEW 2026-10-12: chat answer card + confidence meter that climbs to 9x% while a red stamp (verdict) slams on it.
+        Fields: question, answer, confidence (int), verdict (e.g. "MADE UP"), conf_label. Stamp time via at:{"stamp": word}."""
+        d = ImageDraw.Draw(img)
+        q = self.T(("cq", sc["n"]), sc.get("question", "Who wrote this?"), F_BOLD, 640, 110, 50, WHITE)
+        qb = self.cache.get(("cqb", sc["n"]))
+        if qb is None:
+            qb = rrect(q.width + 70, q.height + 50, 36, (96, 165, 250, 235) if CYAN[2] > 200 else CYAN + (235,))
+            paste_c(qb, q, qb.width // 2, qb.height // 2)
+            self.cache[("cqb", sc["n"])] = qb
+        self.slide_in(img, qb, 1010 - qb.width / 2, 640, lt, 0.15)
+        a = self.T(("ca", sc["n"]), sc.get("answer", "It was written by ..."), F_BOLD, 760, 200, 56, WHITE)
+        ab = self.cache.get(("cab", sc["n"]))
+        if ab is None:
+            ab = rrect(900, a.height + 100, 40, (255, 255, 255, 40), outline=(255, 255, 255, 120), width=4)
+            paste_c(ab, a, ab.width // 2, ab.height // 2)
+            self.cache[("cab", sc["n"])] = ab
+        ay = 880
+        self.slide_in(img, ab, CX, ay, lt, 0.7)
+        # confidence meter
+        conf = sc.get("confidence", 97)
+        my = ay + ab.height // 2 + 130
+        if lt > 1.4:
+            p = ease_out_cubic(clamp((lt - 1.4) / 1.6))
+            d.rounded_rectangle((CX - 400, my, CX + 400, my + 52), 26, fill=(255, 255, 255, 40))
+            wbar = max(2, int(800 * conf / 100 * p))
+            col = (int(255 * p + 60 * (1 - p)), int(200 - 140 * p), 70)
+            d.rounded_rectangle((CX - 400, my, CX - 400 + wbar, my + 52), 26, fill=col + (255,))
+            lab = text_sprite([sc.get("conf_label", "CONFIDENCE") + "  %d%%" % int(conf * p)], font(F_BLACK, 46), 46, WHITE + (255,), stroke=3, stroke_fill=(0, 0, 0))
+            paste_c(img, lab, CX, my - 44)
+        # stamp
+        ts = sc["_at"].get("stamp", 3.3) if sc.get("_at") else 3.3
+        sp = (lt - ts)
+        if sp > 0:
+            e = ease_out_back(clamp(sp / 0.28))
+            stamp = self.cache.get(("cst", sc["n"]))
+            if stamp is None:
+                txt = text_sprite([sc.get("verdict", "MADE UP")], font(F_BLACK, 110), 110, RED + (255,), stroke=0)
+                stamp = rrect(txt.width + 80, txt.height + 50, 26, (0, 0, 0, 0), outline=RED + (255,), width=12)
+                paste_c(stamp, txt, stamp.width // 2, stamp.height // 2)
+                self.cache[("cst", sc["n"])] = stamp
+            st = stamp.rotate(-11, resample=Image.BICUBIC, expand=True)
+            shake = 14 * math.sin(sp * 60) * max(0, 1 - sp / 0.4)
+            sy = my + 230
+            paste_c(img, st, CX + shake, sy, scale=2.2 - 1.2 * e, opacity=min(1, sp * 6))
+            self.burst(img, CX, sy, sp, 0.05, 380, 14)
+
     def a_bars(self, img, sc, lt, t):
         # black hole on the left (small), bars of gravity rising towards it
         self.draw_bh(img, 180, 950, 0.55, t)
@@ -1075,6 +1124,8 @@ def main():
             add(fx, sfx_riser(0.7), s0 + max(0, sc["_at"].get("call", 1.2) - 0.7), 0.6)
         if k == "stat":
             add(fx, boom, s0 + 1.8, 0.45)
+        if k == "step" and sc.get("anim") == "claim":
+            add(fx, boom, s0 + sc["_at"].get("stamp", 3.3), 0.7)
         if k == "quiz":
             add(fx, tada, s0 + 0.1, 0.5)
     bed = ambient_bed(total)

@@ -50,7 +50,7 @@
   },
   "metrics": {
    "instagram": {
-    "views": 214,
+    "views": 215,
     "likes": 0,
     "comments": 0,
     "shares": 0,
@@ -60,8 +60,8 @@
     "skip_rate": 34.5
    },
    "tiktok": {
-    "views": 511,
-    "likes": 1,
+    "views": 894,
+    "likes": 4,
     "comments": 0,
     "shares": 0
    },
@@ -93,6 +93,40 @@
    "instagram": "2026-10-11T10:00"
   },
   "metricool_uuid": "-556198298054865602",
+  "metrics": {
+   "instagram": {
+    "views": 130,
+    "likes": 0,
+    "comments": 0,
+    "shares": 0,
+    "saves": 0,
+    "avg_watch_s": 13.8,
+    "watched_pct": 22.9,
+    "skip_rate": 84.2
+   }
+  }
+ },
+ {
+  "date": "2026-10-12",
+  "file": "2026-10-12-explainer-ai-part2.mp4",
+  "format": "explainer",
+  "variant": "tech / series HOW AI WORKS part 2: why AI makes stuff up (hallucinations)",
+  "details": "57s, theme tech",
+  "new_feature": "step anim 'claim' (question bubble + fake answer card + confidence meter + MADE UP stamp)",
+  "hook": "AI LIES WITH A STRAIGHT FACE",
+  "theme": "tech",
+  "caption": "ai will invent a source and sound 100% sure about it 💀 part 2",
+  "first_comment": "would you have caught the fake source",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-13T10:00",
+   "youtube": "2026-10-12T16:00",
+   "instagram": "2026-10-12T10:00"
+  },
   "metrics": {}
  }
 ]
