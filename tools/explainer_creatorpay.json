@@ -1,0 +1,48 @@
+{
+ "series": "",
+ "voice": "af_heart",
+ "speed": 1.07,
+ "theme": "money",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "funnel",
+   "title": "1 MILLION VIEWS = HOW MUCH?",
+   "sub": "≈ $10 - $70",
+   "views": 1000000,
+   "views_label": "VIEWS ON ONE SHORT",
+   "n_items": 40,
+   "keep": 9,
+   "say": "A million views on a YouTube Short. What does it pay? Estimates say ten to seventy dollars.",
+   "pad": 0.6
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "absorb",
+   "emojis": ["👥", "👁️", "⏱️"],
+   "target": "🔓",
+   "n_items": 14,
+   "counter": 10000,
+   "counter_label": "FOLLOWERS, 100K VIEWS/MONTH",
+   "title": "TikTok pays past 3 gates",
+   "say": "TikTok pays only past three gates: ten thousand followers, a hundred thousand views a month, and videos over one minute."
+  },
+  {
+   "kind": "step",
+   "n": 2,
+   "anim": "grow",
+   "values": [10, 70, 500, 2000],
+   "labels": ["SHORTS", "SHORTS", "TIKTOK", "TIKTOK"],
+   "prefix": "$",
+   "title": "Same 1M views, very different pay",
+   "say": "TikTok publishes no rate. Creators report fifty cents to two dollars per thousand views there. Same million: five hundred to two thousand."
+  },
+  {
+   "kind": "quiz",
+   "title": "STILL WOULD POST?",
+   "options": [["YES", "✅"], ["NO", "❌"]],
+   "say": "Most small accounts earn nothing at first. Still posting? Comment yes or no."
+  }
+ ]
+}

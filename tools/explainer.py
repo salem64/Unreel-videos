@@ -23,6 +23,8 @@ Scene kinds and fields:
             | "dice" (NEW: dice tumble, the ending of "prompt" changes every roll through "endings" - randomness/luck topics)
             | "claim" (NEW 2026-10-12: user question bubble + AI answer card + confidence meter climbing to "confidence" % +
               red "verdict" stamp (e.g. "MADE UP") slams on it; at:{"stamp": word} times the stamp - for hallucination/fact-check topics)
+  step/hook anim "funnel" (NEW 2026-10-13: 👀 views rain into a funnel with a live "views" counter, only every "keep"-th view
+            drops out of the spout as a 🪙 coin and stacks up; "payout" text (hook: "sub") under the pile - money/creator-pay/"how much do you really get" topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -404,6 +406,10 @@ class R:
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 70, ORANGE, stroke=4), CX, 1250, lt, 0.5)
             return
+        if sc.get("anim") == "funnel":
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
+            self.funnel_core(img, sc, lt, t, sc.get("sub", ""))
+            return
         if sc.get("anim") == "chat":
             e = emoji_sprite(sc.get("emoji", "🤖"), 230)
             self.glow(img, 230, 1000, 230, t, ORANGE, 80)
@@ -653,6 +659,83 @@ class R:
                     scale=1 + bump * 0.5)
             if sc.get("counter_label"):
                 paste_c(img, self.T(("acl", sc["n"]), sc["counter_label"], F_BLACK, 880, 70, 44, WHITE, stroke=3), CX, 1345)
+
+    def funnel_core(self, img, sc, lt, t, payout):
+        """NEW 2026-10-13 'funnel': lots of views (eyes) rain into a funnel, only a few coins drop out of the spout.
+        Fields: views (int, counter target), views_label, keep (every Nth view becomes a coin, default 9), n_items (default 54), payout (text under the pile)."""
+        N = int(sc.get("n_items", 54))
+        keep = int(sc.get("keep", 9))
+        dur = max(3.0, sc["_dur"] - 1.2)
+        top_y, spout_y, mouth_w, spout_w = 800, 1080, 840, 70
+        # funnel body
+        lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(lay)
+        pts = [(CX - mouth_w / 2, top_y), (CX + mouth_w / 2, top_y), (CX + spout_w / 2, spout_y), (CX + spout_w / 2, spout_y + 70),
+               (CX - spout_w / 2, spout_y + 70), (CX - spout_w / 2, spout_y)]
+        dd.polygon(pts, fill=CYAN + (38,))
+        dd.line(pts + [pts[0]], fill=CYAN + (210,), width=8, joint="curve")
+        img.alpha_composite(lay)
+        rng = random.Random(5)
+        step = dur / N
+        seen = 0
+        coins = []
+        for i in range(N):
+            t0 = 0.25 + i * step
+            x0 = CX + rng.uniform(-mouth_w / 2 + 60, mouth_w / 2 - 60)
+            q = lt - t0
+            if q < 0:
+                continue
+            kept = (i % keep) == keep - 1
+            fall = 0.55
+            if q < fall:
+                y = 715 + (top_y + 40 - 715) * (q / fall) ** 2
+                x = x0
+                a = 1.0
+                sz = 96
+                spr = emoji_sprite("👀", sz).rotate(q * 180, resample=Image.BICUBIC, expand=True)
+                paste_c(img, spr, x, y)
+                continue
+            seen += 1
+            q2 = (q - fall) / 0.75
+            if q2 < 1:
+                # slide down the funnel wall towards the spout
+                e = q2 * q2 * 0.5 + q2 * 0.5
+                yy = top_y + 40 + (spout_y - top_y - 40) * e
+                half = (mouth_w / 2 - (mouth_w / 2 - spout_w / 2) * ((yy - top_y) / (spout_y - top_y))) - 40
+                xx = CX + (x0 - CX) * (half / (mouth_w / 2 - 60))
+                if kept:
+                    paste_c(img, emoji_sprite("👀", 90), xx, yy, scale=1 - 0.25 * q2)
+                else:
+                    paste_c(img, emoji_sprite("👀", 90), xx, yy, scale=1 - 0.55 * q2, opacity=1 - 0.9 * q2 ** 1.5)
+            elif kept:
+                coins.append((i, q - fall - 0.75))
+        # coins dropping out of the spout and stacking up
+        base_y = 1330
+        landed = 0
+        for k, (i, qc) in enumerate(coins):
+            dropt = 0.45
+            if qc < dropt:
+                y = spout_y + 40 + (base_y - spout_y - 40) * (qc / dropt) ** 2
+                paste_c(img, emoji_sprite("🪙", 84), CX, y, scale=1.0)
+                self.burst(img, CX, spout_y + 60, qc, 0.0, 70, 6)
+            else:
+                landed += 1
+                row, col = divmod(landed - 1, 5)
+                cx_ = CX - 120 + col * 60 + (30 if row % 2 else 0)
+                paste_c(img, emoji_sprite("🪙", 76), cx_, base_y - row * 34)
+        # counters
+        frac = seen / N
+        views = int(float(sc.get("views", 1000000)) * frac)
+        vs = f"{views:,}"
+        paste_c(img, text_sprite([vs], font(F_BLACK, 100), 100, WHITE + (255,), stroke=6, stroke_fill=(0, 0, 0)), CX, 575)
+        paste_c(img, self.T(("fvl", sc["_i"]), sc.get("views_label", "VIEWS"), F_BLACK, 600, 50, 36, CYAN, stroke=3), CX, 640)
+        if landed > 0 and payout:
+            pp = clamp((lt - 0.0) / 0.01)
+            paste_c(img, self.T(("fpo", sc["_i"]), payout, F_BLACK, 900, 120, 100, ORANGE, stroke=6), CX, 1400,
+                    scale=1 + 0.06 * math.sin(t * 6))
+
+    def a_funnel(self, img, sc, lt, t):
+        self.funnel_core(img, sc, lt, t, sc.get("payout", ""))
 
     def a_split(self, img, sc, lt, t):
         """A word gets sliced into pieces (e.g. tokens) that fly apart as coloured chips."""
