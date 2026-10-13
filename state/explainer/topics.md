@@ -12,7 +12,7 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 9. "What is the loudest sound ever?" (Krakatoa) - one-off
 10. "If you drop a ball through a hole through Earth" - one-off
 11. MONEY: "Why \$100 a month can become a lot (compound interest)" (show real math, no promises) - one-off, theme money
-12. MONEY: "How do YouTubers/TikTokers actually get paid?" (real payout rules + realistic numbers) - one-off, theme money
+12. ~~MONEY: "How do YouTubers/TikTokers actually get paid?" (real payout rules + realistic numbers) - one-off, theme money~~ (done 2026-10-13; maybe part 2: what actually pays better, e.g. freelancing/selling skills)
 13. MONEY/AI: "3 real ways people make money with AI (and what it actually pays)" - series of 3, theme tech, honest ranges
 14. MONEY: "Why are you broke at the end of the month? (the latte factor vs big costs)" - one-off, theme money
 15. MONEY: "How does a bank make money with your money?" - one-off, theme money
@@ -20,3 +20,6 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 17. ~~TECH: How AI works PART 2 (hallucinations)~~ (done 2026-10-12)
 19. ~~How AI works series~~ DROPPED 2026-10-12 (Dimi: boring)
 18. TECH: "Why is ChatGPT free? How AI companies pay for it" - one-off, theme tech/money
+
+20. MONEY: "What do brands/sponsors really pay small creators?" (honest ranges) - one-off
+21. MONEY: "Why YouTube/TikTok pay so differently per 1,000 views" (ad rates by country) - one-off

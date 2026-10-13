@@ -9,6 +9,7 @@
 - 2026-10-10: powers ability 'shockwave' (PULSE/SHOCKWAVE/EARTHQUAKE: expanding rings, knockback, shake)
 
 - 2026-10-12: explainer step anim 'claim' (question bubble, fake answer card, confidence meter to 9x%, red verdict stamp slam + boom)
+- 2026-10-13: explainer anim 'funnel' (views rain into funnel with counter, few coins drop out; works as hook or step)
 
 ## Ideas to try
 - ball race to the finish line (pick a colour)
@@ -28,7 +29,10 @@
 
 - 2026-10-12 (vidIQ trending shorts, vph): top shorts are 6-20 s reaction/meme clips ('Bro is the twister', 'She had one job', 'It looked better in my head'), a few 40-60 s mystery/story shorts ('The Mysterious Hum Heard Around The World' 8.5M, 'He Fell 60 Feet Into A Well'). Web meme search gave nothing usable. Idea: mystery-style hooks ('the hum nobody can explain') for space/physics explainers; keep money/AI hooks as bold claims.
 
+- 2026-10-13 (vidIQ IG/TikTok outliers 'creators get paid'): top money reels are fast 'I made $X / side hustle / clipping' talking-head+screen-record formats with an income hook in text overlay (0.6-6M views). We copy only the hook idea (a money number in the first 2 s) but stay honest: real ranges, no income claims.
+
 ## Learnings
+- 2026-10-13: TikTok: laser 897, BH p1 359, AI p1 266 -> space > AI so far, money untested (posted today). IG explainers still skip 84%.
 - 2026-10-12: explainers so far: BH part1 327 TikTok views/12 likes, AI part1 130 IG views (84% skip). Battle still hooks better on IG; need first-2s hooks for explainers.
 - 2026-10-11: first real signal: powers battle (shockwave vs laser, 22s) got 511 TikTok views + 214 IG (54% watched, skip 34.5%) vs flags quiz 0 TikTok / 142 IG (10% watched, skip 88%). Physics battles hook ~2.5x better. Do: battles/powers more often, keep 20-35s, hook text = 'A VS B'. Quiz stays retired; explainers still unmeasured (first one posts 2026-10-10 19:00, TikTok numbers pending).
 - 2026-10-10: only 2 posts so far; IG 125 views on flags quiz (skip rate 86%, avg watch 4.8s of 44s) and 29 on halloween quiz; TikTok 0 views on both, YouTube 0. Insight: quizzes are too slow to hook (long, skip rate 86-100%). Do: test short, spectacular physics/powers battles (20-25s) next; keep hook text immediate; make quizzes shorter if used.

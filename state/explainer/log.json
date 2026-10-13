@@ -14,9 +14,9 @@
    "caption": "earth as a black hole would fit in your hand 🤯 part 1",
    "metrics": {
     "tiktok": {
-     "views": 327,
-     "likes": 12,
-     "comments": 0,
+     "views": 359,
+     "likes": 13,
+     "comments": 1,
      "shares": 2
     }
    }
@@ -53,6 +53,31 @@
    "post_time": "2026-10-11T10:00 Europe/Berlin",
    "metricool_uuid": "-556198298054865602",
    "caption": "so chatgpt is basically really good autocomplete 🎲 part 1",
+   "metrics": {
+    "tiktok": {
+     "views": 266,
+     "likes": 1,
+     "comments": 0,
+     "shares": 0
+    },
+    "instagram": {
+     "views": 130,
+     "avg_watch_s": 13.8,
+     "watched_pct": 22.9,
+     "skip_rate": 84.2
+    }
+   }
+  },
+  {
+   "date": "2026-10-13",
+   "name": "creatorpay",
+   "title": "what 1 million views really pays",
+   "series": null,
+   "part": null,
+   "category": "money",
+   "post_time": "2026-10-13T10:00 Europe/Berlin",
+   "metricool_uuid": "-8597646478541501963",
+   "caption": "a million views and you might get pizza money 💀",
    "metrics": {}
   }
  ]

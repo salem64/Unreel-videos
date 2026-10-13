@@ -56,5 +56,22 @@
    "followers": 0,
    "views_30d": 508
   }
+ },
+ {
+  "date": "2026-10-13",
+  "tiktok": {
+   "followers": 2,
+   "views_30d": 1524,
+   "note": "followers carried over from 10-12"
+  },
+  "youtube": {
+   "subscribers": 0,
+   "shorts_views_90d": 160,
+   "note": "carried over, not re-fetched"
+  },
+  "instagram": {
+   "followers": 0,
+   "views_30d": 510
+  }
  }
 ]
