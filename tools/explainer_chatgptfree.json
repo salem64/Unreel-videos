@@ -1,0 +1,80 @@
+{
+ "series": "",
+ "voice": "af_heart",
+ "speed": 1.07,
+ "theme": "tech",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "chat",
+   "emoji": "🤖",
+   "title": "CHATGPT IS FREE. WHO PAYS?",
+   "sub": "it is not charity",
+   "chat": "Sure! Here is your whole essay, no charge...",
+   "say": "ChatGPT is free. So who is paying for it?",
+   "pad": 0.5
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "crowd",
+   "total": 100,
+   "hit": 5,
+   "hit_emoji": "💳",
+   "title": "ONLY ABOUT 5 IN 100 PAY",
+   "label": "PAY FOR A PLAN, FROM $8 A MONTH",
+   "say": "Reports say only about five in a hundred users pay. Plus is twenty dollars a month."
+  },
+  {
+   "kind": "step",
+   "n": 2,
+   "anim": "grow",
+   "values": [
+    8,
+    20,
+    100,
+    200
+   ],
+   "labels": [
+    "GO",
+    "PLUS",
+    "PRO",
+    "PRO"
+   ],
+   "prefix": "$",
+   "suffix": "",
+   "title": "PAID PLANS: $8 TO $200",
+   "say": "Plans start at eight dollars a month and go up to two hundred for the biggest Pro."
+  },
+  {
+   "kind": "step",
+   "n": 3,
+   "anim": "absorb",
+   "emojis": [
+    "📢",
+    "🛍️",
+    "📺",
+    "📢"
+   ],
+   "target": "💰",
+   "n_items": 16,
+   "title": "THE REST PAY WITH ATTENTION",
+   "say": "Everyone else pays with attention. Free users in the US now see ads under answers. OpenAI says ads don't change the answer."
+  },
+  {
+   "kind": "quiz",
+   "title": "PAY $20 OR WATCH ADS?",
+   "options": [
+    [
+     "PAY",
+     "💳"
+    ],
+    [
+     "ADS",
+     "📢"
+    ]
+   ],
+   "say": "And running AI is pricey. So pay twenty, or watch ads? Comment which."
+  }
+ ]
+}

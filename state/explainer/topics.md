@@ -19,7 +19,9 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 16. ~~TECH: "How does ChatGPT/AI actually guess the next word?" - one-off, theme tech~~ (done 2026-10-11)
 17. ~~TECH: How AI works PART 2 (hallucinations)~~ (done 2026-10-12)
 19. ~~How AI works series~~ DROPPED 2026-10-12 (Dimi: boring)
-18. TECH: "Why is ChatGPT free? How AI companies pay for it" - one-off, theme tech/money
+~~18. TECH: "Why is ChatGPT free? How AI companies pay for it"~~ (done 2026-10-14)
+22. TECH: "What does an AI answer really cost (electricity, chips)?" - one-off, theme tech, needs solid source
+23. TECH: "Are AI ads changing answers? How to tell an ad from an answer" - one-off
 
 20. MONEY: "What do brands/sponsors really pay small creators?" (honest ranges) - one-off
 21. MONEY: "Why YouTube/TikTok pay so differently per 1,000 views" (ad rates by country) - one-off

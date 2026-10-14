@@ -25,6 +25,8 @@ Scene kinds and fields:
               red "verdict" stamp (e.g. "MADE UP") slams on it; at:{"stamp": word} times the stamp - for hallucination/fact-check topics)
   step/hook anim "funnel" (NEW 2026-10-13: 👀 views rain into a funnel with a live "views" counter, only every "keep"-th view
             drops out of the spout as a 🪙 coin and stacks up; "payout" text (hook: "sub") under the pile - money/creator-pay/"how much do you really get" topics)
+  step anim "crowd" (NEW 2026-10-14: grid of little people (default 10x10) pops in as a wave, then "hit" of them light up gold one by one
+            with a "hit_emoji" (default 💳) while a live "n / total" counter counts; "label" under it - for "only X of 100 do Y" topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -737,6 +739,63 @@ class R:
     def a_funnel(self, img, sc, lt, t):
         self.funnel_core(img, sc, lt, t, sc.get("payout", ""))
 
+    def a_crowd(self, img, sc, lt, t):
+        """NEW 2026-10-14 'crowd': a grid of little people (default 10x10 = 100) pops in as a wave, then a few of them
+        light up gold one by one (💳 pops above them) while a live counter shows how many of the crowd do it.
+        Fields: total (default 100), cols (default 10), hit (how many light up, default 5), hit_emoji (default 💳),
+        label (text under the counter, e.g. "OF EVERY 100 USERS PAY"), hit_start (seconds, default 1.7), seed."""
+        total = int(sc.get("total", 100))
+        cols = int(sc.get("cols", 10))
+        rows = (total + cols - 1) // cols
+        hit = int(sc.get("hit", 5))
+        cell = min(62, 800 // cols)
+        x0 = CX - cols * cell / 2 + cell / 2
+        y0 = 600 + cell / 2
+        if ("ppl", cell) not in self.cache:
+            for name, body, head in (("g", (110, 125, 150, 255), (140, 155, 180, 255)), ("y", ORANGE + (255,), (255, 214, 140, 255))):
+                S = int(cell * 0.9)
+                sp = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+                dd = ImageDraw.Draw(sp)
+                dd.ellipse((S * 0.32, S * 0.04, S * 0.68, S * 0.40), fill=head)
+                dd.rounded_rectangle((S * 0.16, S * 0.45, S * 0.84, S * 1.0), radius=int(S * 0.26), fill=body)
+                self.cache[("ppl", cell, name)] = sp
+            self.cache[("ppl", cell)] = True
+        rng = random.Random(sc.get("seed", 3))
+        chosen = rng.sample(range(total), hit)
+        t_hit = float(sc.get("hit_start", 1.7))
+        lit = 0
+        order = {idx: k for k, idx in enumerate(sorted(chosen, key=lambda i: (i % cols) * 3 + i // cols))}
+        for i in range(total):
+            r_, c_ = divmod(i, cols)
+            x, y = x0 + c_ * cell, y0 + r_ * cell
+            p = clamp((lt - 0.15 - (r_ + c_) * 0.04) / 0.35)
+            if p <= 0:
+                continue
+            if i in chosen:
+                th = t_hit + order[i] * 0.45
+                q = clamp((lt - th) / 0.4)
+            else:
+                q = 0.0
+            if q > 0:
+                if lt - th < 0.45 * 1.0 and q > 0:
+                    pass
+                lit += 1 if lt >= th else 0
+                self.glow(img, x, y, int(cell * 1.1), t + i, ORANGE, 110)
+                paste_c(img, self.cache[("ppl", cell, "y")], x, y, scale=1.0 + 0.5 * math.sin(math.pi * min(1, q)) + 0.12 * q)
+                self.burst(img, x, y, lt, th, int(cell * 0.9), 6)
+                if q > 0.3:
+                    paste_c(img, emoji_sprite(sc.get("hit_emoji", "💳"), int(cell * 0.62)), x + cell * 0.22, y - cell * 0.42,
+                            scale=ease_out_back(clamp((q - 0.3) / 0.7)))
+            else:
+                dim = 1.0 if lit == 0 else 0.55 + 0.45 * (1 - clamp((lt - t_hit) / 3.0))
+                paste_c(img, self.cache[("ppl", cell, "g")], x, y, scale=ease_out_back(p), opacity=min(1, p * 2) * dim)
+        bump = 0.0
+        txt = f"{lit} / {total}"
+        paste_c(img, text_sprite([txt], font(F_BLACK, 120), 120, ORANGE + (255,), stroke=7, stroke_fill=(0, 0, 0)), CX, 600 + rows * cell + 85,
+                scale=1 + 0.05 * math.sin(t * 6) * (1 if lit else 0))
+        if sc.get("label"):
+            paste_c(img, self.T(("crl", sc["n"]), sc["label"], F_BLACK, 900, 70, 46, WHITE, stroke=3), CX, 600 + rows * cell + 175)
+
     def a_split(self, img, sc, lt, t):
         """A word gets sliced into pieces (e.g. tokens) that fly apart as coloured chips."""
         word = sc.get("word", "unbelievable")
@@ -1209,6 +1268,9 @@ def main():
             add(fx, boom, s0 + 1.8, 0.45)
         if k == "step" and sc.get("anim") == "claim":
             add(fx, boom, s0 + sc["_at"].get("stamp", 3.3), 0.7)
+        if k == "step" and sc.get("anim") == "crowd":
+            for j in range(int(sc.get("hit", 5))):
+                add(fx, correct, s0 + float(sc.get("hit_start", 1.7)) + j * 0.45, 0.35)
         if k == "quiz":
             add(fx, tada, s0 + 0.1, 0.5)
     bed = ambient_bed(total)

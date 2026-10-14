@@ -11,6 +11,8 @@
 - 2026-10-12: explainer step anim 'claim' (question bubble, fake answer card, confidence meter to 9x%, red verdict stamp slam + boom)
 - 2026-10-13: explainer anim 'funnel' (views rain into funnel with counter, few coins drop out; works as hook or step)
 
+- 2026-10-14: explainer step anim 'crowd' (100 little people grid, a few light up gold with a 💳 + live n/100 counter; for 'only X in 100' topics)
+
 ## Ideas to try
 - ball race to the finish line (pick a colour)
 - every bounce = +1 ball
@@ -31,7 +33,10 @@
 
 - 2026-10-13 (vidIQ IG/TikTok outliers 'creators get paid'): top money reels are fast 'I made $X / side hustle / clipping' talking-head+screen-record formats with an income hook in text overlay (0.6-6M views). We copy only the hook idea (a money number in the first 2 s) but stay honest: real ranges, no income claims.
 
+- 2026-10-14 (vidIQ trending shorts, vph): top is roblox/meme skits, family pranks, dashcam karma, kid-story shorts (all 10M+ views, 6-60 s); nothing space/AI/money in the top 20. Web search for viral hooks: generic. Idea: 'Instant karma/payback' and 'Who pays for X' twist hooks; keep claim-style hooks.
+
 ## Learnings
+- 2026-10-14: TikTok views: BH p2 303 (16 likes), money creatorpay 273 (1 like), AI p1 271, BH p1 363, laser 899. IG creatorpay 65 views but only 49% skip / 25% watched (best explainer retention so far, AI p1 was 84% skip). Space still best by likes; money/AI similar. Today AI/tech one-off (series order: BH p3 posts today, so p4 waits).
 - 2026-10-13: TikTok: laser 897, BH p1 359, AI p1 266 -> space > AI so far, money untested (posted today). IG explainers still skip 84%.
 - 2026-10-12: explainers so far: BH part1 327 TikTok views/12 likes, AI part1 130 IG views (84% skip). Battle still hooks better on IG; need first-2s hooks for explainers.
 - 2026-10-11: first real signal: powers battle (shockwave vs laser, 22s) got 511 TikTok views + 214 IG (54% watched, skip 34.5%) vs flags quiz 0 TikTok / 142 IG (10% watched, skip 88%). Physics battles hook ~2.5x better. Do: battles/powers more often, keep 20-35s, hook text = 'A VS B'. Quiz stays retired; explainers still unmeasured (first one posts 2026-10-10 19:00, TikTok numbers pending).
