@@ -158,6 +158,47 @@
    "instagram": "2026-10-13T10:00"
   },
   "metricool_uuid": "-8597646478541501963",
+  "metrics": {
+   "tiktok": {
+    "views": 273,
+    "likes": 1,
+    "comments": 0,
+    "shares": 1
+   },
+   "instagram": {
+    "views": 65,
+    "likes": 0,
+    "comments": 0,
+    "shares": 0,
+    "saves": 0,
+    "avg_watch_s": 7.0,
+    "watched_pct": 25.05,
+    "skip_rate": 49.2
+   }
+  }
+ },
+ {
+  "date": "2026-10-14",
+  "file": "2026-10-14-explainer-chatgptfree.mp4",
+  "format": "explainer",
+  "variant": "tech / one-off: who pays for free ChatGPT (5% pay, ads)",
+  "details": "28s, theme tech, 5 scenes",
+  "new_feature": "step anim 'crowd' (100-people grid, 5 light up gold with a card + live counter)",
+  "hook": "CHATGPT IS FREE. WHO PAYS?",
+  "theme": "tech",
+  "caption": "5% of people pay for chatgpt and the rest of us get ads 💀",
+  "first_comment": "pay or ads, which one are you",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-15T10:00",
+   "youtube": "2026-10-14T16:00",
+   "instagram": "2026-10-14T10:00"
+  },
+  "metricool_uuid": "-5267330857096231399",
   "metrics": {}
  }
 ]

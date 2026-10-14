@@ -73,5 +73,21 @@
    "followers": 0,
    "views_30d": 510
   }
+ },
+ {
+  "date": "2026-10-14",
+  "tiktok": {
+   "followers": 2,
+   "views_30d": 2111,
+   "note": "views summed from per-post analytics since 09-14"
+  },
+  "youtube": {
+   "subscribers": 0,
+   "shorts_views_90d": 162
+  },
+  "instagram": {
+   "followers": 0,
+   "views_30d": 575
+  }
  }
 ]
