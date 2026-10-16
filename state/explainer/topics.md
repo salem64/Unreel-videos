@@ -1,7 +1,7 @@
 # Explainer topic list (space & physics + money / AI / tech)
 Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 
-1. Black holes PART 4: "Can anything ever escape a black hole?" (teased at the end of part 3 -> Hawking radiation, black holes slowly evaporate)
+1. ~~Black holes PART 4 (Hawking radiation)~~ (done 2026-10-16). NEXT: Black holes PART 5: "Where does the stuff inside go?" (information paradox, phrase as open question)
 2. "What if the Moon disappeared?" (tides, Earth's tilt, nights) - series of 2
 3. "Why is space black if there are billions of stars?" (Olbers' paradox) - one-off
 4. "What happens if you fall into Jupiter?" (no surface, pressure) - one-off
@@ -25,3 +25,5 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 
 20. MONEY: "What do brands/sponsors really pay small creators?" (honest ranges) - one-off
 21. MONEY: "Why YouTube/TikTok pay so differently per 1,000 views" (ad rates by country) - one-off
+
+24. SPACE/BODY: everyday "why does X happen" one-offs in trend style (e.g. why do you get carsick reading, why does space feel silent) - 27-35 s

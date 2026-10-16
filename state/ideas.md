@@ -1,6 +1,7 @@
 # Idea log (night task keeps this up to date)
 
 ## Built
+- 2026-10-16: step anim 'hawking' (particle pairs at black hole edge, shrinking hole + 10^N years counter).
 - quiz: classic, flags/picture, emoji puzzle, this-or-that, true/false speed round, mixed
 - physics: escape, multiply, grow, battle (8 weapons), elimination, powers (15 evolving abilities incl. laser, meteor, rocket, tornado)
 
@@ -22,6 +23,7 @@
 - would you rather (poll style)
 
 ## Trend notes
+- 2026-10-16: vidIQ trending shorts: everyday-science 'why X happens' (carsick while reading, water in ear) 27-41 s, 300k+ vph; hooks = short question title + instant visual. Idea: do 'why does X happen' one-offs with our animations (copy only the mechanic).
 
 - 2026-10-09 (vidIQ IG/TikTok outliers, 'satisfying physics'): ball sims with on-screen labels/variables ('Hole 0.1cm', '0% vs 100% soft'), 'will the ball multiply? x1 gate' (2.9M TikTok, 251x median), flag-balls bouncing in a ring (2M), marble through increasingly wide holes (4.6M IG). Ideas for us: labelled-stage sims (hole-size marble drop, 'x1->x1000' gates), flag-ball ring with hook text 'will it multiply?'. Quiz+flags consistent with flag-ball trend; looped endings help.
 
@@ -36,6 +38,7 @@
 - 2026-10-14 (vidIQ trending shorts, vph): top is roblox/meme skits, family pranks, dashcam karma, kid-story shorts (all 10M+ views, 6-60 s); nothing space/AI/money in the top 20. Web search for viral hooks: generic. Idea: 'Instant karma/payback' and 'Who pays for X' twist hooks; keep claim-style hooks.
 
 ## Learnings
+- 2026-10-16: space explainers lead TikTok likes (BH 14/17/18 per part, ~320 views); AI/money ~170-290 views, 0-2 likes; IG best retention = money creatorpay (skip 42%).
 - 2026-10-14: TikTok views: BH p2 303 (16 likes), money creatorpay 273 (1 like), AI p1 271, BH p1 363, laser 899. IG creatorpay 65 views but only 49% skip / 25% watched (best explainer retention so far, AI p1 was 84% skip). Space still best by likes; money/AI similar. Today AI/tech one-off (series order: BH p3 posts today, so p4 waits).
 - 2026-10-13: TikTok: laser 897, BH p1 359, AI p1 266 -> space > AI so far, money untested (posted today). IG explainers still skip 84%.
 - 2026-10-12: explainers so far: BH part1 327 TikTok views/12 likes, AI part1 130 IG views (84% skip). Battle still hooks better on IG; need first-2s hooks for explainers.

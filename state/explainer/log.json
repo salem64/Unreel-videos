@@ -1,6 +1,6 @@
 {
  "next_promised": [
-  "Black holes PART 4: Can anything ever escape a black hole? (after part 3 on 2026-10-14)"
+  "Black holes PART 5: Where does the stuff inside go? (information paradox, open question; allowed from 2026-10-17)"
  ],
  "posts": [
   {
@@ -14,9 +14,9 @@
    "caption": "earth as a black hole would fit in your hand 🤯 part 1",
    "metrics": {
     "tiktok": {
-     "views": 363,
-     "likes": 13,
-     "comments": 1,
+     "views": 366,
+     "likes": 14,
+     "comments": 2,
      "shares": 2
     }
    }
@@ -32,9 +32,9 @@
    "caption": "our sun is basically too small to be scary 😭 part 2",
    "metrics": {
     "tiktok": {
-     "views": 303,
-     "likes": 16,
-     "comments": 0,
+     "views": 328,
+     "likes": 17,
+     "comments": 1,
      "shares": 0
     }
    }
@@ -48,7 +48,14 @@
    "post_time": "2026-10-14T18:00 Europe/Berlin",
    "metricool_uuid": "-4779779059234746944",
    "caption": "turns out the giant one is the \"safe\" option 💀 part 3",
-   "metrics": {}
+   "metrics": {
+    "tiktok": {
+     "views": 270,
+     "likes": 18,
+     "comments": 2,
+     "shares": 0
+    }
+   }
   },
   {
    "date": "2026-10-11",
@@ -62,9 +69,9 @@
    "caption": "so chatgpt is basically really good autocomplete 🎲 part 1",
    "metrics": {
     "tiktok": {
-     "views": 271,
-     "likes": 1,
-     "comments": 0,
+     "views": 273,
+     "likes": 2,
+     "comments": 1,
      "shares": 0
     },
     "instagram": {
@@ -87,9 +94,9 @@
    "caption": "a million views and you might get pizza money 💀",
    "metrics": {
     "tiktok": {
-     "views": 273,
-     "likes": 1,
-     "comments": 0,
+     "views": 287,
+     "likes": 2,
+     "comments": 1,
      "shares": 1
     },
     "instagram": {
@@ -110,6 +117,25 @@
    "post_time": "2026-10-14T18:00 Europe/Berlin (instagram); tiktok 2026-10-15T10:00",
    "metricool_uuid": "-5267330857096231399",
    "caption": "5% of people pay for chatgpt and the rest of us get ads 💀",
+   "metrics": {
+    "tiktok": {
+     "views": 169,
+     "likes": 0,
+     "comments": 0,
+     "shares": 0
+    }
+   }
+  },
+  {
+   "date": "2026-10-16",
+   "name": "blackholes-part4",
+   "title": "can anything escape a black hole (Hawking radiation)",
+   "series": "black holes",
+   "part": 4,
+   "category": "space",
+   "post_time": "2026-10-16T10:00 Europe/Berlin",
+   "metricool_uuid": "1127842719889770172",
+   "caption": "black holes can literally evaporate and nobody told me 💀 part 4",
    "metrics": {}
   }
  ]
