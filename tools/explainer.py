@@ -27,6 +27,8 @@ Scene kinds and fields:
             drops out of the spout as a 🪙 coin and stacks up; "payout" text (hook: "sub") under the pile - money/creator-pay/"how much do you really get" topics)
   step anim "crowd" (NEW 2026-10-14: grid of little people (default 10x10) pops in as a wave, then "hit" of them light up gold one by one
             with a "hit_emoji" (default 💳) while a live "n / total" counter counts; "label" under it - for "only X of 100 do Y" topics)
+  step anim "hawking" (NEW 2026-10-16: particle pairs pop up at a black hole's edge, one escapes (cyan), one falls in (orange);
+            mode "shrink" = hole shrinks + big "10^N YEARS" counter climbs to years_exp, hole pops away at the end; years_label)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -795,6 +797,66 @@ class R:
                 scale=1 + 0.05 * math.sin(t * 6) * (1 if lit else 0))
         if sc.get("label"):
             paste_c(img, self.T(("crl", sc["n"]), sc["label"], F_BLACK, 900, 70, 46, WHITE, stroke=3), CX, 600 + rows * cell + 175)
+
+    def a_hawking(self, img, sc, lt, t):
+        """NEW 2026-10-16 'hawking': particle pairs flicker into existence at the edge of a black hole, one flies away
+        (cyan), its partner falls in (orange).  mode "pairs" (default): hole stays the same size, "ESCAPES" / "FALLS IN"
+        labels.  mode "shrink": the hole shrinks while the escapes keep coming and a big "10^N YEARS" counter climbs to
+        "years_exp" (default 67); at the end the hole pops away (poof).  Fields: mode, years_exp, years_label."""
+        shrink = sc.get("mode", "pairs") == "shrink"
+        cy = 900
+        dur = max(2.0, sc["_dur"])
+        q = clamp((lt - 0.5) / max(1.0, dur - 1.6)) if shrink else 0.0
+        scale = 0.95 - 0.78 * ease_out_cubic(q) if shrink else 0.95
+        gone = shrink and lt > dur - 0.7
+        if shrink and gone:
+            k = clamp((lt - (dur - 0.7)) / 0.5)
+            self.draw_bh(img, CX, cy, max(0.05, scale * (1 - k)), t, 1 - k)
+            self.burst(img, CX, cy, lt, dur - 0.7, 200, 16)
+        else:
+            self.draw_bh(img, CX, cy, scale, t)
+        d = ImageDraw.Draw(img)
+        Rr = self.bh_R * scale * 1.05
+        npair = 14 if shrink else 9
+        life = 1.5
+        rng = random.Random(11)
+        for i in range(npair):
+            t0 = 0.35 + i * (0.38 if not shrink else (dur - 1.8) / npair)
+            ph = (lt - t0) / life
+            ang = -math.pi * (0.1 + 0.8 * rng.random())
+            if gone or not 0 < ph < 1:
+                continue
+            bx, by = CX + math.cos(ang) * Rr, cy + math.sin(ang) * Rr
+            ux, uy = math.cos(ang), math.sin(ang)
+            spark = clamp(ph / 0.15)
+            self.glow(img, bx, by, 55, t + i, WHITE, int(130 * (1 - ph) * spark))
+            # escaping partner (cyan) flies outwards with a trail
+            e = ease_out_cubic(ph)
+            for kk in range(7):
+                pe = ease_out_cubic(max(0.0, ph - kk * 0.03))
+                x, y = bx + ux * 420 * pe, by + uy * 420 * pe
+                r = 14 - kk * 1.6
+                d.ellipse((x - r, y - r, x + r, y + r), fill=CYAN + (int(255 * (1 - ph) * (1 - kk / 8)),))
+            # falling partner (orange) is pulled into the hole
+            for kk in range(5):
+                pf = clamp(ph - kk * 0.03) ** 1.6
+                x, y = bx - ux * 0.0 + (CX - bx) * pf, by + (cy - by) * pf
+                r = 12 - kk * 1.8
+                d.ellipse((x - r, y - r, x + r, y + r), fill=ORANGE + (int(255 * (1 - 0.5 * ph) * (1 - kk / 6)),))
+        if not shrink:
+            self.pop_in(img, self.T("hw1", "ESCAPES", F_BLACK, 400, 70, 56, CYAN, stroke=4), CX + 300, 660, lt, 0.9)
+            self.pop_in(img, self.T("hw2", "FALLS IN", F_BLACK, 400, 70, 56, ORANGE, stroke=4), CX - 280, 1320, lt, 1.4)
+            return
+        n = int(round(float(sc.get("years_exp", 67)) * ease_out_cubic(clamp((lt - 0.4) / max(1.0, dur - 1.3)))))
+        f1, f2 = font(F_BLACK, 170), font(F_BLACK, 90)
+        a = "10"
+        w1, w2 = d.textlength(a, font=f1), d.textlength(str(n), font=f2)
+        x0 = CX - (w1 + w2 + 20) / 2
+        pulse = 1 + 0.03 * math.sin(t * 7)
+        for off, col in (((5, 5), (0, 0, 0)), ((0, 0), ORANGE)):
+            d.text((x0 + off[0], 1190 + off[1]), a, font=f1, fill=col + (255,))
+            d.text((x0 + w1 + 20 + off[0], 1170 + off[1]), str(n), font=f2, fill=(WHITE if off == (0, 0) else col) + (255,))
+        paste_c(img, self.T("hwy", sc.get("years_label", "YEARS FROM NOW"), F_BLACK, 800, 70, 52, WHITE, stroke=4), CX, 1400, opacity=clamp((lt - 0.3) / 0.3))
 
     def a_split(self, img, sc, lt, t):
         """A word gets sliced into pieces (e.g. tokens) that fly apart as coloured chips."""

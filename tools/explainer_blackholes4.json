@@ -1,0 +1,20 @@
+{
+  "series": "BLACK HOLES - PART 4",
+  "voice": "af_heart",
+  "speed": 1.07,
+  "scenes": [
+    {"kind": "hook", "title": "BLACK HOLES CAN DIE", "sub": "wait, how?",
+     "say": "Black holes aren't forever. They slowly evaporate. How?"},
+    {"kind": "step", "n": 1, "anim": "hawking", "title": "Empty space isn't empty",
+     "say": "Empty space keeps making particle pairs right at the edge. One falls in. One escapes.", "pad": 0.5},
+    {"kind": "step", "n": 2, "anim": "hawking", "mode": "shrink", "years_exp": 67, "years_label": "YEARS FOR A SUN-SIZED ONE",
+     "title": "Every escape steals a little mass",
+     "say": "Each escape steals a little mass, so the hole shrinks. A sun-sized one needs ten to the sixty-seven years.", "pad": 0.5},
+    {"kind": "step", "n": 3, "anim": "absorb", "emojis": ["✨"], "target": "⚫", "n_items": 14,
+     "title": "Today they still grow",
+     "say": "Right now they're colder than space, so they take in more than they give off."},
+    {"kind": "quiz", "title": "WHAT HAPPENS TO THE STUFF INSIDE?", "options": [["GONE", "💨"], ["SAVED", "💾"]],
+     "next": "PART 5: Where does it all go?", "at": {"part": "part"},
+     "say": "Is the stuff inside gone, or saved? Comment which. Part five: where does it all go?"}
+  ]
+}
