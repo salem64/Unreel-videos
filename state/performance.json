@@ -18,10 +18,9 @@
     "likes": 1,
     "comments": 0,
     "shares": 0,
-    "saves": 0,
     "avg_watch_s": 4.4,
-    "skip_rate": 87.8,
-    "watched_pct": 9.97
+    "watched_pct": 9.9,
+    "skip_rate": 87.8
    },
    "tiktok": {
     "views": 0,
@@ -55,15 +54,14 @@
     "likes": 0,
     "comments": 0,
     "shares": 0,
-    "saves": 0,
     "avg_watch_s": 11.9,
-    "watched_pct": 54.1,
+    "watched_pct": 53.9,
     "skip_rate": 34.8
    },
    "tiktok": {
-    "views": 897,
-    "likes": 4,
-    "comments": 0,
+    "views": 901,
+    "likes": 5,
+    "comments": 1,
     "shares": 0
    },
    "youtube": {
@@ -100,15 +98,14 @@
     "likes": 0,
     "comments": 0,
     "shares": 0,
-    "saves": 0,
-    "avg_watch_s": 13.8,
-    "watched_pct": 22.9,
+    "avg_watch_s": 13.5,
+    "watched_pct": 22.4,
     "skip_rate": 84.2
    },
    "tiktok": {
-    "views": 266,
-    "likes": 1,
-    "comments": 0,
+    "views": 273,
+    "likes": 2,
+    "comments": 1,
     "shares": 0
    }
   }
@@ -170,9 +167,8 @@
     "likes": 0,
     "comments": 0,
     "shares": 0,
-    "saves": 0,
     "avg_watch_s": 8.8,
-    "watched_pct": 31.5,
+    "watched_pct": 31.3,
     "skip_rate": 42.2
    }
   }
@@ -201,8 +197,8 @@
   "metricool_uuid": "-5267330857096231399",
   "metrics": {
    "tiktok": {
-    "views": 169,
-    "likes": 0,
+    "views": 299,
+    "likes": 1,
     "comments": 0,
     "shares": 0
    }
@@ -230,6 +226,37 @@
    "instagram": "2026-10-16T17:00"
   },
   "metricool_uuid": "1127842719889770172",
+  "metrics": {
+   "tiktok": {
+    "views": 249,
+    "likes": 11,
+    "comments": 0,
+    "shares": 0
+   }
+  }
+ },
+ {
+  "date": "2026-10-17",
+  "file": "2026-10-17-explainer-blackholes5.mp4",
+  "format": "explainer",
+  "variant": "space / series black holes part 5: information paradox (burned book vs black hole)",
+  "details": "29.6s, theme space, 5 scenes",
+  "new_feature": "step anim 'scramble' (letter tiles into flame or black hole, colours kept vs grey + '?')",
+  "hook": "NOTHING CAN BE ERASED",
+  "theme": "space",
+  "caption": "nobody can agree what happens to a book in a black hole 🫠 part 5",
+  "first_comment": "yes or no, does the info come out",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-17T10:00",
+   "youtube": "2026-10-17T16:00",
+   "instagram": "2026-10-17T10:00"
+  },
+  "metricool_uuid": "4825157442400896743",
   "metrics": {}
  }
 ]

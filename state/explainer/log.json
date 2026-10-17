@@ -1,6 +1,6 @@
 {
  "next_promised": [
-  "Black holes PART 5: Where does the stuff inside go? (information paradox, open question; allowed from 2026-10-17)"
+  "Black holes PART 6: What is actually inside? (singularity, we don't know; allowed from 2026-10-18)"
  ],
  "posts": [
   {
@@ -50,8 +50,8 @@
    "caption": "turns out the giant one is the \"safe\" option 💀 part 3",
    "metrics": {
     "tiktok": {
-     "views": 270,
-     "likes": 18,
+     "views": 276,
+     "likes": 19,
      "comments": 2,
      "shares": 0
     }
@@ -119,8 +119,8 @@
    "caption": "5% of people pay for chatgpt and the rest of us get ads 💀",
    "metrics": {
     "tiktok": {
-     "views": 169,
-     "likes": 0,
+     "views": 299,
+     "likes": 1,
      "comments": 0,
      "shares": 0
     }
@@ -136,6 +136,25 @@
    "post_time": "2026-10-16T10:00 Europe/Berlin",
    "metricool_uuid": "1127842719889770172",
    "caption": "black holes can literally evaporate and nobody told me 💀 part 4",
+   "metrics": {
+    "tiktok": {
+     "views": 249,
+     "likes": 11,
+     "comments": 0,
+     "shares": 0
+    }
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "name": "blackholes-part5",
+   "title": "black holes information paradox",
+   "series": "black holes",
+   "part": 5,
+   "category": "space",
+   "post_time": "2026-10-17T10:00 Europe/Berlin",
+   "metricool_uuid": "4825157442400896743",
+   "caption": "nobody can agree what happens to a book in a black hole 🫠 part 5",
    "metrics": {}
   }
  ]

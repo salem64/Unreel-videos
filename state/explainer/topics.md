@@ -1,7 +1,7 @@
 # Explainer topic list (space & physics + money / AI / tech)
 Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 
-1. ~~Black holes PART 4 (Hawking radiation)~~ (done 2026-10-16). NEXT: Black holes PART 5: "Where does the stuff inside go?" (information paradox, phrase as open question)
+1. ~~Black holes PART 4 (Hawking radiation)~~ (done 2026-10-16). ~~PART 5 information paradox~~ (done 2026-10-17). NEXT: Black holes PART 6: "What is actually inside?" (singularity = where our physics breaks, say we do not know) - or wrap the series
 2. "What if the Moon disappeared?" (tides, Earth's tilt, nights) - series of 2
 3. "Why is space black if there are billions of stars?" (Olbers' paradox) - one-off
 4. "What happens if you fall into Jupiter?" (no surface, pressure) - one-off
@@ -27,3 +27,5 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 21. MONEY: "Why YouTube/TikTok pay so differently per 1,000 views" (ad rates by country) - one-off
 
 24. SPACE/BODY: everyday "why does X happen" one-offs in trend style (e.g. why do you get carsick reading, why does space feel silent) - 27-35 s
+
+25. SPACE: "Why does time run slower on GPS satellites?" / "why space looks black" - trend: why-X-happens one-offs with instant visual (2026-10-17 outlier scan: what-if black hole + looping animation + question hook 1.5-3.6M)

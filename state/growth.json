@@ -98,5 +98,15 @@
   "youtube_shorts_views_90d": 164,
   "instagram_followers": 0,
   "instagram_views_30d": 620
+ },
+ {
+  "date": "2026-10-17",
+  "tiktok_followers": 3,
+  "tiktok_views_30d": 2981,
+  "youtube_subscribers": 0,
+  "youtube_shorts_views_90d": 164,
+  "instagram_followers": 0,
+  "instagram_views_30d": 620,
+  "note": "tiktok followers carried over (Metricool shows 0.0 today), views summed from per-post analytics"
  }
 ]
