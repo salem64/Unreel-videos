@@ -1,6 +1,7 @@
 # Idea log (night task keeps this up to date)
 
 ## Built
+- 2026-10-17: step anim 'scramble' (letter tiles fly into flame or black hole, dots keep colours or turn grey + '?'; info-paradox/shredder topics).
 - 2026-10-16: step anim 'hawking' (particle pairs at black hole edge, shrinking hole + 10^N years counter).
 - quiz: classic, flags/picture, emoji puzzle, this-or-that, true/false speed round, mixed
 - physics: escape, multiply, grow, battle (8 weapons), elimination, powers (15 evolving abilities incl. laser, meteor, rocket, tornado)

@@ -29,6 +29,9 @@ Scene kinds and fields:
             with a "hit_emoji" (default 💳) while a live "n / total" counter counts; "label" under it - for "only X of 100 do Y" topics)
   step anim "hawking" (NEW 2026-10-16: particle pairs pop up at a black hole's edge, one escapes (cyan), one falls in (orange);
             mode "shrink" = hole shrinks + big "10^N YEARS" counter climbs to years_exp, hole pops away at the end; years_label)
+  step anim "scramble" (NEW 2026-10-17: coloured letter "tiles" fly into a target and come out as dots; mode "fire" = dots keep
+            the tile colours (info scrambled but recoverable), mode "hole" = black hole, dots all grey + big "?" pops; "label" at bottom,
+            label_col cyan|orange|white, "q" - for information-paradox / shredder / hash / encryption topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -857,6 +860,69 @@ class R:
             d.text((x0 + off[0], 1190 + off[1]), a, font=f1, fill=col + (255,))
             d.text((x0 + w1 + 20 + off[0], 1170 + off[1]), str(n), font=f2, fill=(WHITE if off == (0, 0) else col) + (255,))
         paste_c(img, self.T("hwy", sc.get("years_label", "YEARS FROM NOW"), F_BLACK, 800, 70, 52, WHITE, stroke=4), CX, 1400, opacity=clamp((lt - 0.3) / 0.3))
+
+    def a_scramble(self, img, sc, lt, t):
+        """NEW 2026-10-17 'scramble': coloured letter tiles ("tiles", default 5) fly into a target and come out as dots.
+        mode "fire" (target = flame emoji): the dots keep the tile colours = information scrambled but still there.
+        mode "hole" (target = black hole): the dots come out all the same grey = nothing visible about what went in; a big
+        "?" pops at the end ("q", default "?").  Fields: mode, tiles ["H","I",..], label (shown at the bottom),
+        label_col ("cyan"|"orange"|"white"), q.  For info-paradox / hash / encryption / shredder style topics."""
+        hole = sc.get("mode", "fire") == "hole"
+        tiles = sc.get("tiles", ["B", "O", "O", "K", "S"])
+        pal = [ORANGE, CYAN, (244, 114, 182), (52, 211, 153), (250, 204, 21), (167, 139, 250)]
+        tx, ty = CX, 980
+        dur = max(2.5, sc["_dur"])
+        if hole:
+            self.draw_bh(img, tx, ty, 0.8, t)
+        else:
+            self.glow(img, tx, ty, 260, t, (255, 120, 30), 110)
+            paste_c(img, emoji_sprite("🔥", 250), tx, ty, scale=1 + 0.06 * math.sin(t * 9))
+        n = len(tiles)
+        gap = (dur - 2.4) / max(1, n)
+        gap = clamp(gap, 0.25, 0.5)
+        rng = random.Random(5)
+        d = ImageDraw.Draw(img)
+        arrived = 0
+        for i, ch in enumerate(tiles):
+            col = pal[i % len(pal)]
+            t0 = 0.4 + i * gap
+            q = (lt - t0) / 0.7
+            sx, sy = 150 + (i % 2) * 40, 640 + i * 20
+            if 0 < q < 1:
+                e = q * q
+                x = sx + (tx - sx) * e
+                y = sy + (ty - sy) * e - 110 * math.sin(math.pi * q)
+                spr = self.cache.get(("tile", ch, col))
+                if spr is None:
+                    spr = rrect(120, 120, 26, col + (255,))
+                    dd = ImageDraw.Draw(spr)
+                    f = font(F_BLACK, 78)
+                    dd.text((60 - dd.textlength(ch, font=f) / 2, 12), ch, font=f, fill=INK)
+                    self.cache[("tile", ch, col)] = spr
+                paste_c(img, spr.rotate(q * 200, resample=Image.BICUBIC, expand=True), x, y, scale=1 - 0.6 * q)
+            elif q >= 1:
+                arrived += 1
+                # outgoing dots
+                for k in range(4):
+                    ph = (lt - (t0 + 0.7) - k * 0.1) / 1.3
+                    ang = rng.uniform(-0.9, 0.9) + (-0.35 if k % 2 else 0.35)
+                    if not 0 < ph < 1:
+                        continue
+                    e = ease_out_cubic(ph)
+                    x = tx + 120 + math.cos(ang) * 420 * e
+                    y = ty + math.sin(ang) * 380 * e + 40 * math.sin(t * 5 + k)
+                    r = 17 * (1 - 0.4 * ph)
+                    c = (170, 175, 190) if hole else col
+                    d.ellipse((x - r, y - r, x + r, y + r), fill=c + (int(255 * (1 - ph * 0.6)),))
+                    if q >= 1 and k == 0 and ph < 0.08:
+                        self.burst(img, tx, ty, lt, t0 + 0.7, 120, 8)
+        lab = sc.get("label")
+        if lab:
+            colname = sc.get("label_col", "cyan")
+            c = {"cyan": CYAN, "orange": ORANGE, "white": WHITE}.get(colname, CYAN)
+            self.pop_in(img, self.T(("scl", lab), lab, F_BLACK, 900, 150, 64, c, stroke=5), CX, 1390, lt, 0.4 + n * gap + 0.4)
+        if hole:
+            self.pop_in(img, self.T("scq", sc.get("q", "?"), F_BLACK, 300, 240, 220, WHITE, stroke=8), CX + 280, 700, lt, 0.4 + n * gap + 0.9)
 
     def a_split(self, img, sc, lt, t):
         """A word gets sliced into pieces (e.g. tokens) that fly apart as coloured chips."""

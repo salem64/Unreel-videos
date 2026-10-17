@@ -1,0 +1,23 @@
+{
+  "series": "BLACK HOLES - PART 5",
+  "voice": "af_heart",
+  "speed": 1.07,
+  "scenes": [
+    {"kind": "hook", "title": "NOTHING CAN BE ERASED", "sub": "except maybe in a black hole?",
+     "say": "One rule of physics: nothing is ever truly erased. Black holes might break it."},
+    {"kind": "step", "n": 1, "anim": "scramble", "mode": "fire", "tiles": ["B", "O", "O", "K", "S"],
+     "title": "Burn a book",
+     "label": "SCRAMBLED, NOT GONE", "label_col": "cyan",
+     "say": "Burn a book and the words scramble into smoke and ash. Scrambled, but still in there.", "pad": 0.5},
+    {"kind": "step", "n": 2, "anim": "scramble", "mode": "hole", "tiles": ["B", "O", "O", "K", "S"],
+     "title": "Throw it into a black hole",
+     "label": "SAME GREY HEAT", "label_col": "orange", "q": "?",
+     "say": "Throw it into a black hole, and the heat coming out looks the same every time. No words.", "pad": 0.6},
+    {"kind": "stat", "value": 50, "unit": "", "bg": "none", "label": "YEARS of physicists arguing about it",
+     "src": "posed in 1976 · new math (2019) says the info gets out, but nobody knows how",
+     "say": "Physicists have argued about this for fifty years. New math says the info gets out. Nobody knows how."},
+    {"kind": "quiz", "title": "DOES THE INFO COME OUT?", "options": [["YES", "📤"], ["NO", "🕳️"]],
+     "next": "PART 6: What is actually inside?", "at": {"part": "part"},
+     "say": "Does the information come out? Comment yes or no. Part six: what is actually inside?"}
+  ]
+}
