@@ -1,6 +1,6 @@
 {
  "next_promised": [
-  "Black holes PART 6: What is actually inside? (singularity, we don't know; allowed from 2026-10-18)"
+  "Black holes PART 6 (optional): What is actually inside? singularity - allowed any day now; views drop per part, so one-offs preferred"
  ],
  "posts": [
   {
@@ -14,7 +14,7 @@
    "caption": "earth as a black hole would fit in your hand 🤯 part 1",
    "metrics": {
     "tiktok": {
-     "views": 366,
+     "views": 368,
      "likes": 14,
      "comments": 2,
      "shares": 2
@@ -32,7 +32,7 @@
    "caption": "our sun is basically too small to be scary 😭 part 2",
    "metrics": {
     "tiktok": {
-     "views": 328,
+     "views": 329,
      "likes": 17,
      "comments": 1,
      "shares": 0
@@ -50,7 +50,7 @@
    "caption": "turns out the giant one is the \"safe\" option 💀 part 3",
    "metrics": {
     "tiktok": {
-     "views": 276,
+     "views": 279,
      "likes": 19,
      "comments": 2,
      "shares": 0
@@ -69,7 +69,7 @@
    "caption": "so chatgpt is basically really good autocomplete 🎲 part 1",
    "metrics": {
     "tiktok": {
-     "views": 273,
+     "views": 274,
      "likes": 2,
      "comments": 1,
      "shares": 0
@@ -94,7 +94,7 @@
    "caption": "a million views and you might get pizza money 💀",
    "metrics": {
     "tiktok": {
-     "views": 287,
+     "views": 288,
      "likes": 2,
      "comments": 1,
      "shares": 1
@@ -138,8 +138,8 @@
    "caption": "black holes can literally evaporate and nobody told me 💀 part 4",
    "metrics": {
     "tiktok": {
-     "views": 249,
-     "likes": 11,
+     "views": 315,
+     "likes": 12,
      "comments": 0,
      "shares": 0
     }
@@ -155,6 +155,25 @@
    "post_time": "2026-10-17T10:00 Europe/Berlin",
    "metricool_uuid": "4825157442400896743",
    "caption": "nobody can agree what happens to a book in a black hole 🫠 part 5",
+   "metrics": {
+    "tiktok": {
+     "views": 265,
+     "likes": 7,
+     "comments": 0,
+     "shares": 0
+    }
+   }
+  },
+  {
+   "date": "2026-10-18",
+   "name": "compound",
+   "title": "why $100 a month adds up (compound interest)",
+   "series": null,
+   "part": null,
+   "category": "money",
+   "post_time": "2026-10-18T10:00 Europe/Berlin (tiktok + instagram); youtube manual 16:00",
+   "metricool_uuid": "-5238259792761041112",
+   "caption": "year 25 is when the interest starts doing more work than you #unreel #compoundinterest #moneytok #savings",
    "metrics": {}
   }
  ]

@@ -157,16 +157,13 @@
   "metricool_uuid": "-8597646478541501963",
   "metrics": {
    "tiktok": {
-    "views": 287,
+    "views": 288,
     "likes": 2,
     "comments": 1,
     "shares": 1
    },
    "instagram": {
     "views": 110,
-    "likes": 0,
-    "comments": 0,
-    "shares": 0,
     "avg_watch_s": 8.8,
     "watched_pct": 31.3,
     "skip_rate": 42.2
@@ -228,8 +225,8 @@
   "metricool_uuid": "1127842719889770172",
   "metrics": {
    "tiktok": {
-    "views": 249,
-    "likes": 11,
+    "views": 315,
+    "likes": 12,
     "comments": 0,
     "shares": 0
    }
@@ -257,6 +254,30 @@
    "instagram": "2026-10-17T10:00"
   },
   "metricool_uuid": "4825157442400896743",
+  "metrics": {
+   "tiktok": {
+    "views": 265,
+    "likes": 7,
+    "comments": 0,
+    "shares": 0
+   }
+  }
+ },
+ {
+  "date": "2026-10-18",
+  "file": "2026-10-18-explainer-compound.mp4",
+  "format": "explainer",
+  "variant": "money / one-off: compound interest ($100/month, 5% example)",
+  "details": "28.6 s, hook+grow+stat+yes/no quiz",
+  "new_feature": "compound anim (paid-in vs interest stacked bars, crossover sticker)",
+  "hook": "A hundred dollars a month for thirty years. You pay in 36k, so why do you get back 83k?",
+  "theme": "money",
+  "caption": "year 25 is when the interest starts doing more work than you #unreel #compoundinterest #moneytok #savings",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
   "metrics": {}
  }
 ]

@@ -11,7 +11,7 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 8. "Why does time slow down near a black hole?" (time dilation, GPS satellites) - series of 2
 9. "What is the loudest sound ever?" (Krakatoa) - one-off
 10. "If you drop a ball through a hole through Earth" - one-off
-11. MONEY: "Why \$100 a month can become a lot (compound interest)" (show real math, no promises) - one-off, theme money
+11. ~~MONEY: "Why \$100 a month can become a lot (compound interest)" (show real math, no promises) - one-off, theme money~~ (done 2026-10-18)
 12. ~~MONEY: "How do YouTubers/TikTokers actually get paid?" (real payout rules + realistic numbers) - one-off, theme money~~ (done 2026-10-13; maybe part 2: what actually pays better, e.g. freelancing/selling skills)
 13. MONEY/AI: "3 real ways people make money with AI (and what it actually pays)" - series of 3, theme tech, honest ranges
 14. MONEY: "Why are you broke at the end of the month? (the latte factor vs big costs)" - one-off, theme money
@@ -29,3 +29,6 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 24. SPACE/BODY: everyday "why does X happen" one-offs in trend style (e.g. why do you get carsick reading, why does space feel silent) - 27-35 s
 
 25. SPACE: "Why does time run slower on GPS satellites?" / "why space looks black" - trend: why-X-happens one-offs with instant visual (2026-10-17 outlier scan: what-if black hole + looping animation + question hook 1.5-3.6M)
+
+26. MONEY: "Rule of 72: how long until money doubles?" (follow-up to compound) - one-off
+27. MONEY: "Why starting 10 years earlier beats saving double" (math example, no advice) - one-off, reuse compound anim
