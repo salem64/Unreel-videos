@@ -32,6 +32,9 @@ Scene kinds and fields:
   step anim "scramble" (NEW 2026-10-17: coloured letter "tiles" fly into a target and come out as dots; mode "fire" = dots keep
             the tile colours (info scrambled but recoverable), mode "hole" = black hole, dots all grey + big "?" pops; "label" at bottom,
             label_col cyan|orange|white, "q" - for information-paradox / shredder / hash / encryption topics)
+  hook/step anim "compound" (NEW 2026-10-18: stacked bars grow year by year, cyan = money you paid in, gold = interest, live counters
+            for total / paid in / interest + a "cross_label" sticker when interest passes what you paid in; fields monthly (default 100),
+            rate (% per year, default 5), years (default 30), cross_label; for compound-interest / savings / growth-over-time topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -417,6 +420,11 @@ class R:
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.funnel_core(img, sc, lt, t, sc.get("sub", ""))
             return
+        if sc.get("anim") == "compound":
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
+            self.slide_in(img, self.T("hs", sc["sub"], F_BLACK, 900, 120, 60, ORANGE, stroke=4), CX, 520, lt, 0.4)
+            self.compound_core(img, sc, lt, t)
+            return
         if sc.get("anim") == "chat":
             e = emoji_sprite(sc.get("emoji", "🤖"), 230)
             self.glow(img, 230, 1000, 230, t, ORANGE, 80)
@@ -800,6 +808,62 @@ class R:
                 scale=1 + 0.05 * math.sin(t * 6) * (1 if lit else 0))
         if sc.get("label"):
             paste_c(img, self.T(("crl", sc["n"]), sc["label"], F_BLACK, 900, 70, 46, WHITE, stroke=3), CX, 600 + rows * cell + 175)
+
+    def compound_core(self, img, sc, lt, t):
+        """NEW 2026-10-18 'compound': one stacked bar per year grows left to right. Cyan = money you paid in, gold = interest.
+        Live counters (total / paid in / interest) and a sticker when interest passes the paid-in money.
+        Fields: monthly (default 100), rate (% per year, default 5), years (default 30), cross_label (sticker text)."""
+        monthly = float(sc.get("monthly", 100))
+        years = int(sc.get("years", 30))
+        r = float(sc.get("rate", 5)) / 100 / 12
+        bal = (lambda m: monthly * (((1 + r) ** m - 1) / r)) if r else (lambda m: monthly * m)
+        final = bal(years * 12)
+        dur = max(3.0, sc["_dur"] - 1.4)
+        p = clamp((lt - 0.3) / dur)
+        yc = years * p
+        base_y, maxh = 1380, 460
+        bw = 860.0 / years
+        x0 = CX - 430
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle((x0 - 10, base_y, x0 + 870, base_y + 8), radius=4, fill=(255, 255, 255, 120))
+        cross = None
+        for m_ in range(1, years * 12 + 1):
+            if bal(m_) - monthly * m_ > monthly * m_:
+                cross = m_ / 12.0
+                break
+        for i in range(years):
+            fr = clamp(yc - i)
+            if fr <= 0:
+                break
+            m = (i + fr) * 12
+            tot, paid = bal(m), monthly * m
+            h_t, h_p = maxh * tot / final, maxh * paid / final
+            x = x0 + bw * i
+            d.rectangle((x + 1.5, base_y - h_p, x + bw - 1.5, base_y), fill=CYAN + (255,))
+            if h_t - h_p > 0.5:
+                d.rectangle((x + 1.5, base_y - h_t, x + bw - 1.5, base_y - h_p), fill=ORANGE + (255,))
+        m = yc * 12
+        tot, paid = bal(m), monthly * m
+        paste_c(img, text_sprite([f"${int(round(tot)):,}"], font(F_BLACK, 130), 130, WHITE + (255,), stroke=7, stroke_fill=(0, 0, 0)), CX, 690)
+        paste_c(img, text_sprite([f"YOU PAID IN ${int(round(paid)):,}"], font(F_BLACK, 46), 46, CYAN + (255,), stroke=4, stroke_fill=(0, 0, 0)), CX, 800)
+        paste_c(img, text_sprite([f"INTEREST ${int(round(tot - paid)):,}"], font(F_BLACK, 56), 56, ORANGE + (255,), stroke=5, stroke_fill=(0, 0, 0)), CX, 868,
+                scale=1 + 0.04 * math.sin(t * 6) * (p > 0.02))
+        for yy in (10, 20, 30):
+            if yy <= years:
+                paste_c(img, text_sprite([f"{yy}y"], font(F_BLACK, 34), 34, (200, 210, 230, 255), stroke=3, stroke_fill=(0, 0, 0)), x0 + bw * yy - bw / 2, base_y + 38)
+        if cross and sc.get("cross_label") and yc >= cross:
+            lab = rrect(840, 120, 40, ORANGE + (255,))
+            dd = ImageDraw.Draw(lab)
+            f = font(F_BLACK, 54)
+            tx = sc["cross_label"]
+            dd.text((420 - dd.textlength(tx, font=f) / 2, 28), tx, font=f, fill=INK)
+            self.pop_in(img, lab.rotate(5, resample=Image.BICUBIC, expand=True), CX - 90, 1010, lt, 0.3 + dur * cross / years, 0.35)
+            self.burst(img, CX - 90, 1010, lt, 0.3 + dur * cross / years, 260, 12)
+        if p >= 1:
+            self.burst(img, x0 + 860, base_y - maxh, lt, 0.3 + dur, 200, 12)
+
+    def a_compound(self, img, sc, lt, t):
+        self.compound_core(img, sc, lt, t)
 
     def a_hawking(self, img, sc, lt, t):
         """NEW 2026-10-16 'hawking': particle pairs flicker into existence at the edge of a black hole, one flies away
@@ -1282,7 +1346,7 @@ class R:
             if sc.get("dot_label"):
                 self.slide_in(img, self.T("sdl", sc["dot_label"], F_BLACK, 860, 70, 44, CYAN), CX, 1385, lt, 1.0)
         v = float(sc["value"]) * ease_out_cubic(p)
-        s = "~" + str(int(round(v))) + sc.get("unit", "")
+        s = "~" + sc.get("prefix", "") + str(int(round(v))) + sc.get("unit", "")
         big = text_sprite([s], font(F_BLACK, 260), 260, ORANGE + (255,), stroke=8, stroke_fill=(0, 0, 0))
         paste_c(img, big, CX, 640, scale=1 + 0.05 * math.sin(t * 6) * (p >= 1))
         self.slide_in(img, self.T("sl", sc["label"], F_BLACK, 880, 220, 66, WHITE, stroke=4), CX, 900, lt, 0.6)

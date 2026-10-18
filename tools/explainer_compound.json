@@ -1,0 +1,45 @@
+{
+ "series": "",
+ "voice": "af_heart",
+ "speed": 1.07,
+ "theme": "money",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "compound",
+   "title": "$100 A MONTH",
+   "sub": "30 YEARS, 5% A YEAR (EXAMPLE)",
+   "monthly": 100,
+   "rate": 5,
+   "years": 30,
+   "cross_label": "INTEREST > YOUR MONEY",
+   "say": "A hundred dollars a month for thirty years. You pay in thirty-six thousand. So why do you get back eighty-three thousand?"
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "grow",
+   "values": [1000, 1050, 1103, 1158],
+   "labels": ["START", "YEAR 1", "YEAR 2", "YEAR 3"],
+   "prefix": "$",
+   "title": "Interest earns interest",
+   "say": "Interest earns interest. A thousand at five percent adds fifty, then fifty-two, then fifty-five."
+  },
+  {
+   "kind": "stat",
+   "bg": "none",
+   "value": 47,
+   "prefix": "$",
+   "unit": "K",
+   "label": "OF THE $83K IS INTEREST. ONLY $3.5K CAME IN THE FIRST 10 YEARS",
+   "src": "math: $100/month, 5%/year, 30 years",
+   "say": "Ten years in, interest is just thirty-five hundred. At thirty years it's forty-seven thousand. Time does the work."
+  },
+  {
+   "kind": "quiz",
+   "title": "WOULD YOU START?",
+   "options": [["YES", "✅"], ["NO", "❌"]],
+   "say": "That's a five percent example, not a promise. Real rates vary. Would you start today? Comment yes or no."
+  }
+ ]
+}

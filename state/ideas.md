@@ -1,6 +1,7 @@
 # Idea log (night task keeps this up to date)
 
 ## Built
+- 2026-10-18: hook/step anim 'compound' (stacked paid-in vs interest bars year by year, live counters, crossover sticker) + stat field "prefix".
 - 2026-10-17: step anim 'scramble' (letter tiles fly into flame or black hole, dots keep colours or turn grey + '?'; info-paradox/shredder topics).
 - 2026-10-16: step anim 'hawking' (particle pairs at black hole edge, shrinking hole + 10^N years counter).
 - quiz: classic, flags/picture, emoji puzzle, this-or-that, true/false speed round, mixed
