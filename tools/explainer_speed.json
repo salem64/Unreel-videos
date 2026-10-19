@@ -1,0 +1,92 @@
+{
+ "series": "",
+ "voice": "af_heart",
+ "speed": 1.07,
+ "theme": "space",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "speedstack",
+   "title": "YOU'RE NOT SITTING STILL",
+   "frames": [
+    [
+     "YOUR COUCH",
+     0,
+     "🛋️"
+    ],
+    [
+     "THE SUN",
+     107000,
+     "☀️"
+    ]
+   ],
+   "say": "You think you're sitting still? Ask the Sun. It says you're doing a hundred thousand kilometers an hour."
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "speedstack",
+   "title": "Speed depends on who you ask",
+   "frames": [
+    [
+     "YOUR COUCH",
+     0,
+     "🛋️"
+    ],
+    [
+     "EARTH'S CENTER",
+     1670,
+     "🌍",
+     "~1,670"
+    ],
+    [
+     "THE SUN",
+     107000,
+     "☀️",
+     "~107,000"
+    ],
+    [
+     "THE GALAXY CENTER",
+     800000,
+     "🌌",
+     "~800,000"
+    ],
+    [
+     "BIG BANG GLOW",
+     1330000,
+     "✨",
+     "~1,330,000"
+    ]
+   ],
+   "say": "Ask your couch: zero. Earth's center: sixteen hundred, from the spin. The Sun: a hundred thousand. The galaxy: eight hundred thousand. The leftover Big Bang glow: over a million."
+  },
+  {
+   "kind": "stat",
+   "bg": "none",
+   "value": 370,
+   "unit": "",
+   "label": "KM EVERY SECOND: THE SUN'S SPEED VS THE BIG BANG GLOW. YOU FEEL NOTHING",
+   "src": "Planck 2018: 369.82 km/s vs the cosmic microwave background",
+   "say": "Three hundred seventy kilometers every second, and you feel nothing. Steady speed has no feeling."
+  },
+  {
+   "kind": "quiz",
+   "title": "WHICH SPEED IS REAL?",
+   "options": [
+    [
+     "COUCH",
+     "🛋️"
+    ],
+    [
+     "SUN",
+     "☀️"
+    ],
+    [
+     "NONE",
+     "🤯"
+    ]
+   ],
+   "say": "So which speed is the real one? Comment couch, sun, or none."
+  }
+ ]
+}

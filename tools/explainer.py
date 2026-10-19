@@ -35,6 +35,9 @@ Scene kinds and fields:
   hook/step anim "compound" (NEW 2026-10-18: stacked bars grow year by year, cyan = money you paid in, gold = interest, live counters
             for total / paid in / interest + a "cross_label" sticker when interest passes what you paid in; fields monthly (default 100),
             rate (% per year, default 5), years (default 30), cross_label; for compound-interest / savings / growth-over-time topics)
+  step/hook anim "speedstack" (NEW 2026-10-19: speedometer on a log scale; "frames": [[label, kmh, emoji, shown_text(optional)], ...] -
+            the needle swings to the speed you have compared to each thing in turn (couch, Earth, Sun, galaxy ...), big number counts
+            up, speed streaks fly past, finished frames stay in a list below; for "how fast / how big does it depend on who you ask" topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -419,6 +422,10 @@ class R:
         if sc.get("anim") == "funnel":
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.funnel_core(img, sc, lt, t, sc.get("sub", ""))
+            return
+        if sc.get("anim") == "speedstack":
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
+            self.speedstack_core(img, sc, lt, t, 840)
             return
         if sc.get("anim") == "compound":
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
@@ -864,6 +871,81 @@ class R:
 
     def a_compound(self, img, sc, lt, t):
         self.compound_core(img, sc, lt, t)
+
+    def speedstack_core(self, img, sc, lt, t, cy=900):
+        """NEW 2026-10-19 'speedstack': a speedometer on a log scale. "frames": [[label, kmh, emoji, shown_text(optional)], ...]
+        - one frame after the other the needle swings to the speed you have compared to that thing (couch, Earth, Sun, galaxy ...),
+        the big number counts up, speed streaks fly past (longer = faster) and every finished frame stays in a list below."""
+        fr = sc["frames"]
+        n = len(fr)
+        dur = max(2.5, sc["_dur"])
+        per = (dur - 0.5) / n
+        x_ = max(0.0, lt - 0.3)
+        idx = min(n - 1, int(x_ / per))
+        loc = x_ - idx * per
+        vmax = max(f[1] for f in fr) * 1.2
+        la = lambda v: 0.0 if v <= 0 else min(1.0, math.log10(1 + v) / math.log10(1 + vmax))
+        prev = fr[idx - 1][1] if idx > 0 else 0
+        cur = fr[idx][1]
+        k = clamp(loc / 0.7)
+        a_prev, a_cur = la(prev), la(cur)
+        a_now = a_prev + (a_cur - a_prev) * ease_out_back(k)
+        a_now = max(0.0, min(1.04, a_now))
+        val = prev + (cur - prev) * ease_out_cubic(k)
+        # speed streaks
+        lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        dl = ImageDraw.Draw(lay)
+        rng = random.Random(5)
+        spd = 0.15 + 2.6 * (a_prev + (a_cur - a_prev) * k)
+        for i in range(30):
+            y = 520 + rng.random() * 900
+            ph = rng.random()
+            ln = 40 + 330 * spd * (0.4 + rng.random())
+            x = (ph * (W + 400) - t * (300 + 1500 * spd) * (0.5 + rng.random() * 0.6)) % (W + 400) - 200
+            dl.line((x, y, x + ln, y), fill=(255, 255, 255, int(55 + 40 * rng.random())), width=3)
+        img.alpha_composite(lay)
+        d = ImageDraw.Draw(img)
+        R0 = 270
+        bb = (CX - R0, cy - R0, CX + R0, cy + R0)
+        d.arc(bb, 180, 360, fill=(255, 255, 255, 50), width=38)
+        if a_now > 0.004:
+            d.arc(bb, 180, 180 + 180 * min(1.0, a_now), fill=ORANGE + (255,), width=38)
+        for j in range(0, 11):
+            aa = math.pi * (1 + j / 10.0)
+            r1, r2 = R0 + 30, R0 + (52 if j % 5 == 0 else 42)
+            d.line((CX + math.cos(aa) * r1, cy + math.sin(aa) * r1, CX + math.cos(aa) * r2, cy + math.sin(aa) * r2),
+                   fill=(255, 255, 255, 160), width=4)
+        na = math.pi * (1 + a_now)
+        tipx, tipy = CX + math.cos(na) * (R0 - 40), cy + math.sin(na) * (R0 - 40)
+        d.line((CX, cy, tipx, tipy), fill=WHITE + (255,), width=12)
+        d.ellipse((CX - 26, cy - 26, CX + 26, cy + 26), fill=CYAN + (255,))
+        d.ellipse((CX - 11, cy - 11, CX + 11, cy + 11), fill=(10, 14, 30, 255))
+        # emoji of the current frame orbits the hub
+        em = emoji_sprite(fr[idx][2] if len(fr[idx]) > 2 else "🌍", 120)
+        orb = t * (1.2 + 5 * spd)
+        paste_c(img, em, CX + math.cos(orb) * 150 * 0.0, cy - 150 + 12 * math.sin(t * 5), scale=0.6 + 0.4 * ease_out_back(clamp(loc / 0.4)))
+        # big number
+        shown = fr[idx][3] if len(fr[idx]) > 3 and k >= 1 else f"{int(round(val)):,}"
+        paste_c(img, text_sprite([shown], font(F_BLACK, 118), 118, WHITE + (255,), stroke=7, stroke_fill=(0, 0, 0)), CX, cy + 120,
+                scale=1 + 0.03 * math.sin(t * 7))
+        paste_c(img, text_sprite(["KM/H"], font(F_BLACK, 46), 46, CYAN + (255,), stroke=4, stroke_fill=(0, 0, 0)), CX, cy + 205)
+        # label sticker (what you compare to)
+        lab = fr[idx][0]
+        sp = rrect(860, 96, 34, ORANGE + (255,))
+        dd = ImageDraw.Draw(sp)
+        lines, ff, fs = fit("vs " + lab if False else lab, F_BLACK, 800, 70, 52, 30)
+        dd.text((430 - dd.textlength(lines[0], font=ff) / 2, 48 - fs * 0.6), lines[0], font=ff, fill=INK)
+        paste_c(img, sp, CX, cy + 300, scale=0.8 + 0.2 * ease_out_back(clamp(loc / 0.35)))
+        self.burst(img, CX, cy + 300, loc, 0.0, 260, 10)
+        # finished frames as a list
+        rows = [i for i in range(idx)]
+        for r_, i in enumerate(rows):
+            yy = cy + 375 + r_ * 38
+            txt = fr[i][0] + "  " + (fr[i][3] if len(fr[i]) > 3 else f"{int(fr[i][1]):,}")
+            paste_c(img, self.T(("ssr", txt), txt, F_BOLD, 800, 40, 34, (200, 210, 230)), CX, yy, opacity=0.85)
+
+    def a_speedstack(self, img, sc, lt, t):
+        self.speedstack_core(img, sc, lt, t)
 
     def a_hawking(self, img, sc, lt, t):
         """NEW 2026-10-16 'hawking': particle pairs flicker into existence at the edge of a black hole, one flies away
