@@ -32,3 +32,6 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 
 26. MONEY: "Rule of 72: how long until money doubles?" (follow-up to compound) - one-off
 27. MONEY: "Why starting 10 years earlier beats saving double" (math example, no advice) - one-off, reuse compound anim
+
+28. ~~SPACE/PHYSICS: why doorknobs zap you (static electricity)~~ (done 2026-10-20)
+29. PHYSICS: everyday 'how does X work' one-offs (trend: 'How Electrical Outlets Work' 35M views): why lightning is so hot, why the microwave heats unevenly, how wifi passes walls

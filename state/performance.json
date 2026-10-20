@@ -59,7 +59,7 @@
     "skip_rate": 34.8
    },
    "tiktok": {
-    "views": 901,
+    "views": 903,
     "likes": 5,
     "comments": 1,
     "shares": 0
@@ -157,8 +157,8 @@
   "metricool_uuid": "-8597646478541501963",
   "metrics": {
    "tiktok": {
-    "views": 288,
-    "likes": 2,
+    "views": 289,
+    "likes": 3,
     "comments": 1,
     "shares": 1
    },
@@ -194,8 +194,8 @@
   "metricool_uuid": "-5267330857096231399",
   "metrics": {
    "tiktok": {
-    "views": 299,
-    "likes": 1,
+    "views": 302,
+    "likes": 2,
     "comments": 0,
     "shares": 0
    }
@@ -225,8 +225,8 @@
   "metricool_uuid": "1127842719889770172",
   "metrics": {
    "tiktok": {
-    "views": 315,
-    "likes": 12,
+    "views": 319,
+    "likes": 13,
     "comments": 0,
     "shares": 0
    }
@@ -256,8 +256,8 @@
   "metricool_uuid": "4825157442400896743",
   "metrics": {
    "tiktok": {
-    "views": 265,
-    "likes": 7,
+    "views": 280,
+    "likes": 8,
     "comments": 0,
     "shares": 0
    }
@@ -278,6 +278,53 @@
    "youtube": "manual",
    "instagram": "vidiq"
   },
+  "metrics": {
+   "tiktok": {
+    "views": 244,
+    "likes": 3,
+    "comments": 0,
+    "shares": 0
+   }
+  }
+ },
+ {
+  "date": "2026-10-19",
+  "file": "2026-10-19-explainer-speed.mp4",
+  "format": "explainer",
+  "variant": "space / one-off: how fast are you moving (couch 0 vs Sun 107,000 km/h)",
+  "new_feature": "speedstack anim",
+  "hook": "YOU'RE NOT SITTING STILL",
+  "theme": "space",
+  "caption": "your couch says 0 km/h, the sun says 107,000. both are right",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual (not confirmed)",
+   "instagram": "not posted (run ended before pending/trigger)"
+  },
+  "metrics": {}
+ },
+ {
+  "date": "2026-10-20",
+  "file": "2026-10-20-explainer-static.mp4",
+  "format": "explainer",
+  "variant": "space/physics one-off: why doorknobs zap you (static electricity, 3,000 V per mm)",
+  "details": "29.6 s, theme space, 6 scenes",
+  "new_feature": "static anim (charging finger, volt counter, gap mm, spark)",
+  "hook": "THAT ZAP IS THOUSANDS OF VOLTS",
+  "theme": "space",
+  "caption": "that doorknob zap is thousands of volts and you walk away fine 💀",
+  "first_comment": "doorknob, car door or switch for you",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-20T10:00",
+   "youtube": "2026-10-20T16:00",
+   "instagram": "2026-10-20T10:00"
+  },
+  "metricool_uuid": "6923514790488002202",
   "metrics": {}
  }
 ]

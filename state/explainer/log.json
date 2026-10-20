@@ -1,7 +1,5 @@
 {
- "next_promised": [
-  "Black holes PART 6 (optional): What is actually inside? singularity - allowed any day now; views drop per part, so one-offs preferred"
- ],
+ "next_promised": [],
  "posts": [
   {
    "date": "2026-10-10",
@@ -35,7 +33,7 @@
      "views": 329,
      "likes": 17,
      "comments": 1,
-     "shares": 0
+     "shares": 1
     }
    }
   },
@@ -50,8 +48,8 @@
    "caption": "turns out the giant one is the \"safe\" option 💀 part 3",
    "metrics": {
     "tiktok": {
-     "views": 279,
-     "likes": 19,
+     "views": 281,
+     "likes": 20,
      "comments": 2,
      "shares": 0
     }
@@ -94,8 +92,8 @@
    "caption": "a million views and you might get pizza money 💀",
    "metrics": {
     "tiktok": {
-     "views": 288,
-     "likes": 2,
+     "views": 289,
+     "likes": 3,
      "comments": 1,
      "shares": 1
     },
@@ -119,8 +117,8 @@
    "caption": "5% of people pay for chatgpt and the rest of us get ads 💀",
    "metrics": {
     "tiktok": {
-     "views": 299,
-     "likes": 1,
+     "views": 302,
+     "likes": 2,
      "comments": 0,
      "shares": 0
     }
@@ -138,8 +136,8 @@
    "caption": "black holes can literally evaporate and nobody told me 💀 part 4",
    "metrics": {
     "tiktok": {
-     "views": 315,
-     "likes": 12,
+     "views": 319,
+     "likes": 13,
      "comments": 0,
      "shares": 0
     }
@@ -157,8 +155,8 @@
    "caption": "nobody can agree what happens to a book in a black hole 🫠 part 5",
    "metrics": {
     "tiktok": {
-     "views": 265,
-     "likes": 7,
+     "views": 280,
+     "likes": 8,
      "comments": 0,
      "shares": 0
     }
@@ -174,6 +172,37 @@
    "post_time": "2026-10-18T10:00 Europe/Berlin (tiktok + instagram); youtube manual 16:00",
    "metricool_uuid": "-5238259792761041112",
    "caption": "year 25 is when the interest starts doing more work than you #unreel #compoundinterest #moneytok #savings",
+   "metrics": {
+    "tiktok": {
+     "views": 244,
+     "likes": 3,
+     "comments": 0,
+     "shares": 0
+    }
+   }
+  },
+  {
+   "date": "2026-10-19",
+   "name": "speed",
+   "title": "how fast are you moving rn",
+   "series": null,
+   "part": null,
+   "category": "space",
+   "post_time": "2026-10-19T18:00 Europe/Berlin (tiktok only)",
+   "metricool_uuid": "-1739188235668272073",
+   "caption": "your couch says 0 km/h, the sun says 107,000. both are right #unreel #space #physics #science #astronomy",
+   "metrics": {}
+  },
+  {
+   "date": "2026-10-20",
+   "name": "static",
+   "title": "why doorknobs zap you",
+   "series": null,
+   "part": null,
+   "category": "space/physics",
+   "post_time": "2026-10-20T10:00 Europe/Berlin (tiktok + instagram); youtube manual 16:00",
+   "metricool_uuid": "6923514790488002202",
+   "caption": "that doorknob zap is thousands of volts and you walk away fine 💀 #unreel #staticelectricity #physics #science #physicstok",
    "metrics": {}
   }
  ]

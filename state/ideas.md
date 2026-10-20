@@ -45,6 +45,7 @@
 - 2026-10-14 (vidIQ trending shorts, vph): top is roblox/meme skits, family pranks, dashcam karma, kid-story shorts (all 10M+ views, 6-60 s); nothing space/AI/money in the top 20. Web search for viral hooks: generic. Idea: 'Instant karma/payback' and 'Who pays for X' twist hooks; keep claim-style hooks.
 
 ## Learnings
+- 2026-10-20: explainers all 244-368 TikTok views; space leads likes (avg 14 vs 2-3). Money compound lowest (244). Today: everyday-physics one-off (static zap).
 - 2026-10-18: all explainers 250-370 TikTok views regardless of category (space 311 avg, AI 286, money 288); BH likes/views fall each part (14>7 likes) -> series dead after part 5, one-offs. IG is not posting (BH4/BH5/chatgptfree missing).
 - 2026-10-17: space leads on likes (15 avg vs 1.5-2), views similar (~290-305); BH views drop each part (366>249), so after part 5/6 go back to one-offs. Instagram posting was broken 10-14..16 (trigger not re-armed).
 - 2026-10-16: space explainers lead TikTok likes (BH 14/17/18 per part, ~320 views); AI/money ~170-290 views, 0-2 likes; IG best retention = money creatorpay (skip 42%).
