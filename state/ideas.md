@@ -16,6 +16,8 @@
 
 - 2026-10-14: explainer step anim 'crowd' (100 little people grid, a few light up gold with a 💳 + live n/100 counter; for 'only X in 100' topics)
 
+- 2026-10-20: explainer anim 'static' (finger charges up, volt counter, gap in mm shrinks, spark jumps at 3,000 V/mm; modes dry/build/humid)
+
 ## Ideas to try
 - ball race to the finish line (pick a colour)
 - every bounce = +1 ball
@@ -25,6 +27,7 @@
 - would you rather (poll style)
 
 ## Trend notes
+- 2026-10-20 (vidIQ trending shorts, vph): #1 'How Electrical Outlets Work' 25 s, 35M views, 1M vph (Zack D. Films) = quick 'how an everyday thing works' with instant visual; others are skits/pranks/'In this world...' roblox stories (2+ min). Our take: everyday-physics 'how/why X' one-offs (static zap done today), 25-30 s, big number on screen. Web searches (viral hooks, memes) generic.
 - 2026-10-18 (vidIQ trending shorts, vph): top = roblox/meme rants 2-3 min, "X vs 1000 X" cooking (Egg 1 vs 1000 whisk, 17M), save-the-footballer puzzle games, babies/pranks; nothing space/money/AI in top 20. Idea: "1 vs 1000" scale hooks and a counter-driven puzzle feel; short 6-30 s clips win. Web searches (slang/viral formats) gave nothing usable.
 - 2026-10-17 (vidIQ IG/TikTok outliers 'black hole space explained'): winners = looping CGI/animation + one big question as text hook ('If gravity bends time, does the future already exist?' 1.6M; 'What if a black hole was heading for Earth?' 3.6M, distance counter); 6-30 s; beat-synced montages on TikTok; Hawking facts 3M. Our take: question hook text in first second, counter variable on screen, looping end.
 - 2026-10-16: vidIQ trending shorts: everyday-science 'why X happens' (carsick while reading, water in ear) 27-41 s, 300k+ vph; hooks = short question title + instant visual. Idea: do 'why does X happen' one-offs with our animations (copy only the mechanic).

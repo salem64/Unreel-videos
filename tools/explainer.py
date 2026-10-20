@@ -38,6 +38,10 @@ Scene kinds and fields:
   step/hook anim "speedstack" (NEW 2026-10-19: speedometer on a log scale; "frames": [[label, kmh, emoji, shown_text(optional)], ...] -
             the needle swings to the speed you have compared to each thing in turn (couch, Earth, Sun, galaxy ...), big number counts
             up, speed streaks fly past, finished frames stay in a list below; for "how fast / how big does it depend on who you ask" topics)
+  hook/step anim "static" (NEW 2026-10-20: a finger charges up - minus dots pile up, live volt counter with a "YOU FEEL IT" 3,000 V mark - and moves
+            to a doorknob; the gap label shrinks in mm until the air gives way (3,000 V per mm) and a spark jumps; modes "dry" (default, spark),
+            "build" (charging only), "humid" (charges leak away, no spark); fields volts (default 12000), feet (shoe shuffles on a carpet strip),
+            tag; for static-electricity / spark / lightning / voltage topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
   compare   left {title, sub, emoji, verdict}, right {...}
@@ -422,6 +426,10 @@ class R:
         if sc.get("anim") == "funnel":
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.funnel_core(img, sc, lt, t, sc.get("sub", ""))
+            return
+        if sc.get("anim") == "static":
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 330, lt, 0.05)
+            self.static_core(img, sc, lt, t, 1060)
             return
         if sc.get("anim") == "speedstack":
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
@@ -946,6 +954,133 @@ class R:
 
     def a_speedstack(self, img, sc, lt, t):
         self.speedstack_core(img, sc, lt, t)
+
+    def static_ts(self, sc):
+        """time (in the scene) when the spark of a 'static' animation jumps"""
+        return max(3.0, sc["_dur"]) * 0.64
+
+    def static_core(self, img, sc, lt, t, cy=1060):
+        """NEW 2026-10-20 'static': a finger charges up (minus dots pile up, live volt counter) and moves towards a doorknob.
+        The gap shrinks (mm label) until the air gives way (3,000 V per mm) and a spark jumps across.
+        mode "dry" (default): charges build, spark jumps, counter drops to 0.  mode "build": charges build only (no approach).
+        mode "humid": charges leak away into the air, no spark.  Fields: volts (default 12000), feet (true = shoe shuffles on a carpet strip),
+        tag (small label under the volt counter), scale (meter maximum, default = volts)."""
+        mode = sc.get("mode", "dry")
+        volts = float(sc.get("volts", 12000))
+        dur = max(3.0, sc["_dur"])
+        ts = self.static_ts(sc)
+        d = ImageDraw.Draw(img)
+        knob_x, knob_r = 840, 120
+        gap_end = volts / 3000.0 if mode == "dry" else 0.0
+        gap0 = 14.0 if mode != "build" else 16.0
+        if mode == "build":
+            appr = 0.0
+        else:
+            a0 = ts - 1.1
+            appr = ease_out_cubic(clamp((lt - a0) / 1.1))
+        gap = gap0 + (gap_end - gap0) * appr
+        tipx = knob_x - knob_r - gap * 22
+        fing_x = tipx - 105
+        # door plate + knob
+        d.rounded_rectangle((knob_x - 40, cy - 300, knob_x + 260, cy + 300), 36, fill=(40, 46, 70, 255))
+        self.glow(img, knob_x, cy, 190, t, (150, 170, 220), 60)
+        d.ellipse((knob_x - knob_r, cy - knob_r, knob_x + knob_r, cy + knob_r), fill=(176, 186, 205, 255))
+        d.ellipse((knob_x - knob_r + 24, cy - knob_r + 20, knob_x - 20, cy - 30), fill=(235, 240, 250, 255))
+        # carpet + shoe shuffle
+        if sc.get("feet"):
+            cyy = cy + 330
+            for i in range(16):
+                d.rectangle((60 + i * 62, cyy, 60 + i * 62 + 40, cyy + 54), fill=((224, 82, 99) if i % 2 else (170, 50, 70)) + (255,))
+            sh = emoji_sprite("👟", 120)
+            sx = 330 + 150 * math.sin(t * 3.2)
+            paste_c(img, sh, sx, cyy - 50)
+        # finger
+        fb = 6 * math.sin(t * 6) * (1 if mode != "dry" or lt < ts else 0)
+        paste_c(img, emoji_sprite("👉", 230), fing_x, cy + fb)
+        # charges (minus dots) around the finger
+        rng = random.Random(11)
+        n = 30
+        build_end = ts - 0.2 if mode != "build" else dur - 0.3
+        build = clamp((lt - 0.2) / max(0.5, build_end - 0.2))
+        spark = mode == "dry" and lt >= ts
+        q = clamp((lt - ts) / 0.45) if spark else 0.0
+        shown = int(n * ease_out_cubic(build))
+        if mode == "humid":
+            shown = int(n * 0.55 * ease_out_cubic(build))
+        for i in range(n):
+            ang = rng.uniform(0, 2 * math.pi)
+            rad = rng.uniform(20, 120)
+            ox, oy = math.cos(ang) * rad * 1.15, math.sin(ang) * rad * 0.8
+            if i >= shown:
+                continue
+            x = fing_x + 20 + ox + 6 * math.sin(t * 4 + i)
+            y = cy + oy + 6 * math.cos(t * 5 + i * 2)
+            col = CYAN
+            al = 255
+            if mode == "humid":
+                lk = clamp((lt - (0.5 + i * 0.07)) / 1.6)
+                y -= 260 * lk
+                x += 90 * lk * (1 if i % 2 else -1) * 0.6
+                al = int(255 * (1 - lk))
+            if spark:
+                x += (knob_x - knob_r - x) * q * (0.4 + 0.6 * (i % 5) / 4)
+                y += (cy - y) * q * 0.5
+                al = int(255 * (1 - 0.8 * clamp(q - 0.6) * 2.5))
+            if al <= 0:
+                continue
+            r = 17
+            d.ellipse((x - r, y - r, x + r, y + r), fill=col + (al,))
+            d.line((x - 8, y, x + 8, y), fill=INK + (al,), width=5)
+        # spark
+        if spark and lt < ts + 0.5:
+            fl = 1 - (lt - ts) / 0.5
+            self.glow(img, (tipx + knob_x - knob_r) / 2, cy, 330, t, (200, 240, 255), int(190 * fl))
+            r2 = random.Random(int(lt * 40))
+            x0, x1 = tipx + 8, knob_x - knob_r + 4
+            for w, c in ((14, (90, 200, 255, int(160 * fl))), (5, (255, 255, 255, int(255 * fl)))):
+                pts = [(x0, cy)]
+                segs = 7
+                for k in range(1, segs):
+                    pts.append((x0 + (x1 - x0) * k / segs, cy + r2.uniform(-48, 48)))
+                pts.append((x1, cy))
+                d.line(pts, fill=c, width=w, joint="curve")
+        # volts counter
+        if mode == "dry":
+            v = volts * ease_out_cubic(build) * (1 - clamp((lt - ts) / 0.3))
+        elif mode == "humid":
+            v = volts * ease_out_cubic(build)
+        else:
+            v = volts * ease_out_cubic(build)
+        vcol = ORANGE if v >= 3000 else WHITE
+        paste_c(img, text_sprite([f"{int(round(v / 10) * 10):,} V"], font(F_BLACK, 130), 130, vcol + (255,), stroke=8, stroke_fill=(0, 0, 0)),
+                CX, cy - 430, scale=1 + 0.025 * math.sin(t * 8))
+        # meter with the 3,000 V "you feel it" mark
+        mx0, mw = 140, 800
+        d.rounded_rectangle((mx0, cy - 340, mx0 + mw, cy - 312), 14, fill=(255, 255, 255, 45))
+        vmax = float(sc.get("scale", volts))
+        fw = int(mw * min(1.0, v / vmax))
+        if fw > 6:
+            d.rounded_rectangle((mx0, cy - 340, mx0 + fw, cy - 312), 14, fill=vcol + (255,))
+        fx_ = mx0 + mw * min(1.0, 3000.0 / vmax)
+        d.line((fx_, cy - 356, fx_, cy - 296), fill=(255, 255, 255, 230), width=4)
+        paste_c(img, self.T("stf", "YOU FEEL IT", F_BOLD, 300, 36, 30, (230, 235, 250)), fx_, cy - 378)
+        # gap label
+        if mode != "build" and not (spark and q > 0.2):
+            g = max(0.0, gap)
+            gl = f"GAP {g:0.1f} MM" if mode == "dry" else "NO SPARK"
+            if mode == "humid":
+                gl = f"GAP {g:0.1f} MM"
+            paste_c(img, self.T(("sgl", gl), gl, F_BLACK, 520, 60, 46, CYAN, stroke=4), (fing_x + knob_x) / 2 + 20, cy + 210)
+        if mode == "dry" and lt >= ts:
+            self.pop_in(img, self.T("szap", "ZAP", F_BLACK, 520, 200, 160, ORANGE, stroke=8), CX + 40, cy + 215, lt, ts + 0.05, 0.35)
+            self.burst(img, (tipx + knob_x) / 2, cy, lt, ts, 260, 14)
+        if mode == "humid" and lt > 2.2:
+            self.pop_in(img, self.T("snz", "no zap", F_BLACK, 520, 160, 120, CYAN, stroke=6), CX, cy + 290, lt, 2.2, 0.35)
+        if sc.get("tag"):
+            self.slide_in(img, self.T(("stt", sc["tag"]), sc["tag"], F_BLACK, 880, 90, 54, ORANGE, stroke=4), CX, cy - 275 + 0, lt, 0.5)
+
+    def a_static(self, img, sc, lt, t):
+        self.static_core(img, sc, lt, t)
 
     def a_hawking(self, img, sc, lt, t):
         """NEW 2026-10-16 'hawking': particle pairs flicker into existence at the edge of a black hole, one flies away
@@ -1540,6 +1675,8 @@ def main():
             add(fx, sfx_riser(0.7), s0 + max(0, sc["_at"].get("call", 1.2) - 0.7), 0.6)
         if k == "stat":
             add(fx, boom, s0 + 1.8, 0.45)
+        if k in ("hook", "step") and sc.get("anim") == "static" and sc.get("mode", "dry") == "dry":
+            add(fx, boom, s0 + max(3.0, sc["_dur"]) * 0.64, 0.8)
         if k == "step" and sc.get("anim") == "claim":
             add(fx, boom, s0 + sc["_at"].get("stamp", 3.3), 0.7)
         if k == "step" and sc.get("anim") == "crowd":

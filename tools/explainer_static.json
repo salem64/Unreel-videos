@@ -1,0 +1,74 @@
+{
+ "series": "",
+ "voice": "af_heart",
+ "speed": 1.07,
+ "theme": "space",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "static",
+   "mode": "dry",
+   "volts": 12000,
+   "title": "THAT ZAP IS THOUSANDS OF VOLTS",
+   "say": "That doorknob zap is thousands of volts. So why are you fine?"
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "static",
+   "mode": "build",
+   "volts": 12000,
+   "feet": true,
+   "title": "Your shoes steal electrons",
+   "say": "Shuffle on carpet and electrons jump onto you. They pile up."
+  },
+  {
+   "kind": "step",
+   "n": 2,
+   "anim": "static",
+   "mode": "dry",
+   "volts": 12000,
+   "tag": "3,000 V = 1 MM OF AIR",
+   "title": "Air gives up at 3,000 volts a millimeter",
+   "say": "Air blocks electricity, until about three thousand volts per millimeter. Finger gets close. Zap."
+  },
+  {
+   "kind": "step",
+   "n": 3,
+   "anim": "static",
+   "mode": "humid",
+   "volts": 250,
+   "scale": 12000,
+   "title": "Damp air steals the charge",
+   "say": "Damp air steals the charge, so no zap. That's why dry winters are zap season."
+  },
+  {
+   "kind": "stat",
+   "bg": "none",
+   "value": 3000,
+   "unit": "V",
+   "label": "BUT THE ZAP LASTS LESS THAN A MILLIONTH OF A SECOND",
+   "src": "Air breaks down at ~3 kV per mm (Science Buddies); static discharge lasts ~100s of ns",
+   "say": "Three thousand volts, but it lasts under a millionth of a second. Too short to hurt."
+  },
+  {
+   "kind": "quiz",
+   "title": "WHAT ZAPS YOU MOST?",
+   "options": [
+    [
+     "DOORKNOB",
+     "\ud83d\udeaa"
+    ],
+    [
+     "CAR DOOR",
+     "\ud83d\ude97"
+    ],
+    [
+     "SWITCH",
+     "\ud83d\udca1"
+    ]
+   ],
+   "say": "What zaps you most? Comment doorknob, car door, or switch."
+  }
+ ]
+}
