@@ -1,0 +1,109 @@
+{
+ "series": "",
+ "voice": "af_heart",
+ "speed": 1.07,
+ "theme": "space",
+ "scenes": [
+  {
+   "kind": "hook",
+   "anim": "meteor",
+   "comet": true,
+   "n": 10,
+   "speed": 66,
+   "unit": "KM/S",
+   "sub_label": "= 237,600 KM/H",
+   "title": "THIS WEEK'S SHOOTING STARS ARE COMET DUST",
+   "say": "Those shooting stars this week? That's dust from Halley's Comet, hitting us at sixty six kilometers a second."
+  },
+  {
+   "kind": "step",
+   "n": 1,
+   "anim": "speedstack",
+   "title": "Faster than a bullet. Way faster",
+   "frames": [
+    [
+     "AIRLINER",
+     900,
+     "✈️",
+     "~900 KM/H"
+    ],
+    [
+     "RIFLE BULLET",
+     3200,
+     "🔫",
+     "~3,200 KM/H"
+    ],
+    [
+     "THE DUST",
+     237600,
+     "☄️",
+     "237,600 KM/H"
+    ]
+   ],
+   "say": "A jet does nine hundred an hour. A rifle bullet, about three thousand. This dust? Over two hundred thousand."
+  },
+  {
+   "kind": "step",
+   "n": 2,
+   "anim": "meteor",
+   "meteors": 14,
+   "title": "It burns up before it lands",
+   "speed": 66,
+   "unit": "KM/S",
+   "label": "GONE BEFORE THE GROUND",
+   "say": "At that speed it crushes the air in front of it until it glows. Over a hundred kilometers up, the grain is already gone."
+  },
+  {
+   "kind": "compare",
+   "left": {
+    "title": "THE DUST",
+    "sub": "tiny, like crumbs of ash",
+    "verdict": "you'd barely see it",
+    "visual": "emoji",
+    "emoji": "🪨",
+    "big": "TINY"
+   },
+   "right": {
+    "title": "THE STREAK",
+    "sub": "a glowing trail in the sky",
+    "verdict": "you can see it from the ground",
+    "visual": "emoji",
+    "emoji": "🌠",
+    "big": "BRIGHT"
+   },
+   "say": "The twist: the dust is tiny, like crumbs of ash. Almost all the glow is superheated air.",
+   "at": {
+    "giant": "almost"
+   }
+  },
+  {
+   "kind": "stat",
+   "bg": "none",
+   "value": 2061,
+   "unit": "",
+   "label": "HALLEY'S COMET'S NEXT VISIT. ITS LAP TAKES ABOUT 76 YEARS",
+   "src": "Star Walk / NASA: Halley's period ~76 years, perihelion 28 July 2061",
+   "say": "The comet itself won't be back until twenty sixty one. Its dust shows up every October.",
+   "exact": true
+  },
+  {
+   "kind": "quiz",
+   "title": "SEEN ONE YET?",
+   "options": [
+    [
+     "YES",
+     "🌠"
+    ],
+    [
+     "NOT YET",
+     "👀"
+    ],
+    [
+     "CLOUDS",
+     "☁️"
+    ]
+   ],
+   "say": "Seen one yet? Comment yes, not yet, or clouds."
+  }
+ ]
+}

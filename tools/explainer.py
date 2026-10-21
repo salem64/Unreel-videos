@@ -42,10 +42,14 @@ Scene kinds and fields:
             to a doorknob; the gap label shrinks in mm until the air gives way (3,000 V per mm) and a spark jumps; modes "dry" (default, spark),
             "build" (charging only), "humid" (charges leak away, no spark); fields volts (default 12000), feet (shoe shuffles on a carpet strip),
             tag; for static-electricity / spark / lightning / voltage topics)
+  hook/step anim "meteor" (NEW 2026-10-21: invisible dust grains hit the top of the atmosphere (dashed "alt_label" line) and burn up
+            as glowing streaks before the ground; big speed counter climbs to "speed" (default 66) "unit" (KM/S) + "sub_label";
+            comet:true = a comet at the top sheds the dust (comet_label); n = number of meteors; label = bottom sticker;
+            for shooting-star / meteor-shower / re-entry / atmosphere topics)
   hook anim "chat" (NEW: "chat" text is typed word by word into a chat bubble next to a bouncing "emoji")
   stat bg "dots" (NEW: grid of up to 300 dots fills in sync with the counter, "dot_label" e.g. "1 dot = 1 billion")
-  compare   left {title, sub, emoji, verdict}, right {...}
-  stat      value, unit, label, src
+  compare   left {title, sub, emoji, verdict, visual("stretch"|"calm"|"sun"|"bigstar"|"emoji" NEW 2026-10-21: wobbling "emoji" on a glow, optional "esize"/"big")}, right {...}
+  stat      value, unit, label, src, exact (NEW 2026-10-21: true = no "~" in front of the number)
   quiz      title, options [[text, emoji], ...], next
 Every scene shows auto captions of "say" (word timing estimated from text length).
 MOTION PACK (2026-10-11, applies to every scene automatically): slow camera push-in + punch-zoom on every cut,
@@ -426,6 +430,10 @@ class R:
         if sc.get("anim") == "funnel":
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 380, lt, 0.05)
             self.funnel_core(img, sc, lt, t, sc.get("sub", ""))
+            return
+        if sc.get("anim") == "meteor":
+            self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 330, lt, 0.05)
+            self.meteor_core(img, sc, lt, t, 620)
             return
         if sc.get("anim") == "static":
             self.pop_in(img, self.T("ht", sc["title"], F_BLACK, 900, 260, 96, WHITE, stroke=4), CX, 330, lt, 0.05)
@@ -1079,6 +1087,98 @@ class R:
         if sc.get("tag"):
             self.slide_in(img, self.T(("stt", sc["tag"]), sc["tag"], F_BLACK, 880, 90, 54, ORANGE, stroke=4), CX, cy - 275 + 0, lt, 0.5)
 
+    def meteor_core(self, img, sc, lt, t, top=600):
+        """NEW 2026-10-21 'meteor': dust grains slam into the top of the atmosphere at high speed and burn up as streaks.
+        A big speed counter climbs to "speed" (default 66) "unit" (default KM/S) with "sub_label" (e.g. 237,600 KM/H).
+        Fields: n (number of meteors, default 9), comet (true = a comet drifts at the top and sheds the dust),
+        comet_label, speed, unit, sub_label, label (bottom label, default GONE BEFORE THE GROUND), alt_label (default 130 KM UP).
+        The atmosphere thickness is not to scale."""
+        dur = max(3.0, sc["_dur"])
+        lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        ecy, er = 2420, 1130
+        # atmosphere glow rings + earth limb
+        for i in range(12):
+            rr = er + 260 - i * 22
+            a = int(10 + i * 7)
+            d.ellipse((CX - rr, ecy - rr, CX + rr, ecy + rr), fill=(60, 130, 255, a))
+        d.ellipse((CX - er, ecy - er, CX + er, ecy + er), fill=(14, 28, 60, 255), outline=(120, 190, 255, 255), width=5)
+        y_alt = ecy - er - 260 + 20          # top of the glowing air
+        # dashed altitude line + label
+        for x in range(60, 1020, 60):
+            d.line((x, y_alt, x + 30, y_alt), fill=(255, 255, 255, 140), width=4)
+        img.alpha_composite(lay)
+        paste_c(img, self.T(("mal", sc.get("alt_label", "130 KM UP")), sc.get("alt_label", "130 KM UP"), F_BLACK, 400, 60, 44, CYAN, stroke=4), 210, y_alt - 40)
+        # comet at the top
+        lay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        rng = random.Random(7)
+        if sc.get("comet"):
+            cx0 = 170 + 90 * clamp(lt / dur)
+            cy0 = top + 30
+            for i in range(26):
+                tx = cx0 + 40 + i * 33 + rng.uniform(-14, 14)
+                ty = cy0 + 10 + rng.uniform(-22, 22) + i * 3
+                rr = rng.uniform(3, 7)
+                al = int(200 * (1 - i / 28))
+                d.ellipse((tx - rr, ty - rr, tx + rr, ty + rr), fill=(200, 215, 255, al))
+        n = int(sc.get("meteors", sc.get("n", 9)) if sc.get("kind") != "step" else sc.get("meteors", 9))
+        rng = random.Random(21)
+        life = 1.35
+        gap = (dur - 1.3 - life) / max(1, n - 1) if n > 1 else 0
+        gap = max(0.1, min(0.4, gap))
+        flare = []
+        for i in range(n):
+            t0 = 0.5 + i * gap
+            ph = (lt - t0) / life
+            x0 = rng.uniform(260, 900) if not sc.get("comet") else rng.uniform(420, 940)
+            dx = rng.uniform(-330, -200)
+            y1 = ecy - er - 40 + rng.uniform(-10, 60)       # where it is fully gone
+            ys = top + 140
+            if ph < 0 or ph > 1.25:
+                continue
+            s = clamp(ph)
+            hx, hy = x0 + dx * s, ys + (y1 - ys) * s
+            sy = (y_alt - ys) / (y1 - ys)                 # path fraction where it reaches the air
+            burn = clamp((s - sy) / max(0.05, 1 - sy))
+            if s < sy:                                     # invisible dust grain, tiny dim dot
+                d.ellipse((hx - 4, hy - 4, hx + 4, hy + 4), fill=(190, 200, 230, 150))
+                continue
+            fade = 1.0 if ph <= 1 else max(0.0, 1 - (ph - 1) / 0.25)
+            L = 170 + 120 * burn
+            for k in range(14):
+                f = k / 14
+                tx, ty = hx - dx / (y1 - ys) * 0 + (dx / (y1 - ys)) * (-L * f) * 0.0, hy
+                # trail points go back along the path direction
+                vx, vy = dx, (y1 - ys)
+                nrm = math.hypot(vx, vy)
+                px, py = hx - vx / nrm * L * f, hy - vy / nrm * L * f
+                col = (255, int(255 - 120 * f), int(220 - 190 * f))
+                wd = max(2, int(16 * (1 - f)))
+                d.ellipse((px - wd, py - wd, px + wd, py + wd), fill=col + (int(255 * (1 - f) * fade),))
+            flare.append((hx, hy, fade, burn))
+        img.alpha_composite(lay)
+        for hx, hy, fade, burn in flare:
+            self.glow(img, hx, hy, 90, t, (255, 220, 160), int(190 * fade))
+        if sc.get("comet"):
+            cx0 = 170 + 90 * clamp(lt / dur)
+            paste_c(img, emoji_sprite("☄️", 190), cx0, top + 20, scale=1 + 0.03 * math.sin(t * 4))
+            paste_c(img, self.T(("mcl", sc.get("comet_label", "HALLEY'S COMET")), sc.get("comet_label", "HALLEY'S COMET"), F_BLACK, 520, 60, 40, WHITE, stroke=4), 310, top - 90)
+        # speed counter
+        sp = float(sc.get("speed", 66))
+        v = sp * ease_out_cubic(clamp((lt - 0.3) / 1.4))
+        unit = sc.get("unit", "KM/S")
+        paste_c(img, text_sprite([f"{int(round(v))} {unit}"], font(F_BLACK, 150), 150, (255, 190, 90, 255), stroke=8, stroke_fill=(0, 0, 0)),
+                CX + 40, top + 230, scale=1 + 0.02 * math.sin(t * 8))
+        if sc.get("sub_label"):
+            self.slide_in(img, self.T(("msl", sc["sub_label"]), sc["sub_label"], F_BLACK, 800, 70, 52, WHITE, stroke=4), CX + 40, top + 340, lt, 0.9)
+        lab = sc.get("label", "GONE BEFORE THE GROUND")
+        if lab:
+            self.pop_in(img, self.T(("mlb", lab), lab, F_BLACK, 900, 100, 58, ORANGE, stroke=5), CX, 1395, lt, max(1.2, dur * 0.55))
+
+    def a_meteor(self, img, sc, lt, t):
+        self.meteor_core(img, sc, lt, t, 600)
+
     def a_static(self, img, sc, lt, t):
         self.static_core(img, sc, lt, t)
 
@@ -1520,6 +1620,16 @@ class R:
                 self.draw_sun(img, cx, 860, 140 * (0.8 + 0.2 * q), t, (120, 180, 255), opacity=p)
                 paste_c(img, self.T(("cx", key), side.get("big", ""), F_BLACK, 400, 120, 90, WHITE, stroke=4), cx, 1090, opacity=p)
                 continue
+            if vis == "emoji":
+                # NEW 2026-10-21: any emoji (side "emoji") wobbles on a glow; side "big" = small label under it
+                self.glow(img, cx, 860, 190, t, c, int(90 * p))
+                e = emoji_sprite(side.get("emoji", "❓"), side.get("esize", 200))
+                e = e.rotate(7 * math.sin(t * 2.4 + (0 if key == "l" else 1.7)), resample=Image.BICUBIC, expand=True)
+                paste_c(img, e, cx, 860 + 10 * math.sin(t * 3), scale=0.5 + 0.5 * ease_out_back(clamp(ls / 0.5)), opacity=p)
+                self.burst(img, cx, 860, lt, delay + 0.1, 170, 12)
+                if side.get("big"):
+                    paste_c(img, self.T(("cx", key), side["big"], F_BLACK, 400, 120, 70, WHITE, stroke=4), cx, 1090, opacity=p)
+                continue
             if vis == "stretch":
                 self.draw_bh(img, cx, 900, 0.42, t, p)
                 e = emoji_sprite("🧑‍🚀", 90)
@@ -1563,7 +1673,7 @@ class R:
             if sc.get("dot_label"):
                 self.slide_in(img, self.T("sdl", sc["dot_label"], F_BLACK, 860, 70, 44, CYAN), CX, 1385, lt, 1.0)
         v = float(sc["value"]) * ease_out_cubic(p)
-        s = "~" + sc.get("prefix", "") + str(int(round(v))) + sc.get("unit", "")
+        s = ("" if sc.get("exact") else "~") + sc.get("prefix", "") + str(int(round(v))) + sc.get("unit", "")
         big = text_sprite([s], font(F_BLACK, 260), 260, ORANGE + (255,), stroke=8, stroke_fill=(0, 0, 0))
         paste_c(img, big, CX, 640, scale=1 + 0.05 * math.sin(t * 6) * (p >= 1))
         self.slide_in(img, self.T("sl", sc["label"], F_BLACK, 880, 220, 66, WHITE, stroke=4), CX, 900, lt, 0.6)
