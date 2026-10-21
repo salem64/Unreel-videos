@@ -191,7 +191,14 @@
    "post_time": "2026-10-19T18:00 Europe/Berlin (tiktok only)",
    "metricool_uuid": "-1739188235668272073",
    "caption": "your couch says 0 km/h, the sun says 107,000. both are right #unreel #space #physics #science #astronomy",
-   "metrics": {}
+   "metrics": {
+    "tiktok": {
+     "views": 295,
+     "likes": 7,
+     "comments": 0,
+     "shares": 0
+    }
+   }
   },
   {
    "date": "2026-10-20",
@@ -203,6 +210,30 @@
    "post_time": "2026-10-20T10:00 Europe/Berlin (tiktok + instagram); youtube manual 16:00",
    "metricool_uuid": "6923514790488002202",
    "caption": "that doorknob zap is thousands of volts and you walk away fine 💀 #unreel #staticelectricity #physics #science #physicstok",
+   "metrics": {
+    "tiktok": {
+     "views": 301,
+     "likes": 3,
+     "comments": 0,
+     "shares": 0
+    },
+    "instagram": {
+     "views": 132,
+     "watched_pct": 34.2,
+     "skip_rate": 38.8
+    }
+   }
+  },
+  {
+   "date": "2026-10-21",
+   "name": "orionids",
+   "title": "shooting stars are halley's comet dust",
+   "series": null,
+   "part": null,
+   "category": "space",
+   "post_time": "2026-10-21T10:00 Europe/Berlin (tiktok + instagram); youtube manual 16:00",
+   "metricool_uuid": "-5006949390338931013",
+   "caption": "every shooting star this week is a crumb of halley's comet ☄️ #unreel #orionids #meteorshower #space #astronomy",
    "metrics": {}
   }
  ]

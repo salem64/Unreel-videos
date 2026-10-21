@@ -128,5 +128,15 @@
   "instagram_followers": 0,
   "instagram_views_30d": 620,
   "note": "tiktok views summed from per-post analytics since 09-20; followers/YT carried over"
+ },
+ {
+  "date": "2026-10-21",
+  "tiktok_followers": 3,
+  "tiktok_views_30d": 3885,
+  "youtube_subscribers": 0,
+  "youtube_shorts_views_90d": 164,
+  "instagram_followers": 0,
+  "instagram_views_30d": 751,
+  "note": "tiktok views summed from per-post analytics since 10-10 (+~0 older quizzes); followers/YT carried over, IG from vidIQ 30d summary"
  }
 ]

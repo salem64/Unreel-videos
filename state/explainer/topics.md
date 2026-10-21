@@ -35,3 +35,7 @@ Top = next. Strike done ones (~~like this~~) and add new ideas at the bottom.
 
 28. ~~SPACE/PHYSICS: why doorknobs zap you (static electricity)~~ (done 2026-10-20)
 29. PHYSICS: everyday 'how does X work' one-offs (trend: 'How Electrical Outlets Work' 35M views): why lightning is so hot, why the microwave heats unevenly, how wifi passes walls
+
+30. ~~SPACE: Orionid shooting stars = Halley's dust~~ (done 2026-10-21)
+31. SPACE: 'What if a spoonful of neutron star landed in your backyard?' (trend 'what if' hook; verify ~1 billion tonnes/teaspoon-type numbers carefully) - one-off
+32. SPACE: 'Why Halley's Comet has a 76-year lap' / Eta Aquariids in May (follow-up to orionids)

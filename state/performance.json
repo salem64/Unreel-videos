@@ -301,7 +301,14 @@
    "youtube": "manual (not confirmed)",
    "instagram": "not posted (run ended before pending/trigger)"
   },
-  "metrics": {}
+  "metrics": {
+   "tiktok": {
+    "views": 295,
+    "likes": 7,
+    "comments": 0,
+    "shares": 0
+   }
+  }
  },
  {
   "date": "2026-10-20",
@@ -325,6 +332,43 @@
    "instagram": "2026-10-20T10:00"
   },
   "metricool_uuid": "6923514790488002202",
+  "metrics": {
+   "tiktok": {
+    "views": 301,
+    "likes": 3,
+    "comments": 0,
+    "shares": 0
+   },
+   "instagram": {
+    "views": 132,
+    "saves": 1,
+    "avg_watch_s": 9.9,
+    "watched_pct": 34.2,
+    "skip_rate": 38.8
+   }
+  }
+ },
+ {
+  "date": "2026-10-21",
+  "file": "2026-10-21-explainer-orionids.mp4",
+  "format": "explainer",
+  "variant": "space one-off: Orionid shooting stars = Halley's Comet dust (66 km/s)",
+  "details": "37 s, theme space, 6 scenes",
+  "new_feature": "meteor anim (dust grains burn up at the atmosphere edge, speed counter, comet), compare visual 'emoji', stat 'exact'",
+  "hook": "THIS WEEK'S SHOOTING STARS ARE COMET DUST",
+  "theme": "space",
+  "caption": "every shooting star this week is a crumb of halley's comet ☄️ #unreel #orionids #meteorshower #space #astronomy",
+  "first_comment": "orionids peak this week, best after the moon sets around 2am",
+  "posted_via": {
+   "tiktok": "metricool",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-21T10:00",
+   "youtube": "2026-10-21T16:00 (manual)",
+   "instagram": "2026-10-21T10:02"
+  },
   "metrics": {}
  }
 ]

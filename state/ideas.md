@@ -18,6 +18,8 @@
 
 - 2026-10-20: explainer anim 'static' (finger charges up, volt counter, gap in mm shrinks, spark jumps at 3,000 V/mm; modes dry/build/humid)
 
+- 2026-10-21: explainer anim 'meteor' (dust grains burn up at atmosphere edge, speed counter, comet), compare visual 'emoji', stat 'exact'.
+
 ## Ideas to try
 - ball race to the finish line (pick a colour)
 - every bounce = +1 ball
@@ -27,6 +29,7 @@
 - would you rather (poll style)
 
 ## Trend notes
+- 2026-10-21 (vidIQ IG/TikTok outliers 'space facts meteor'): winners = 'What if X (neutron star spoonful / star exploding / neutron star flyby) happened to Earth' CGI sims 1-2M with a 'What if...' text hook in the first second; astronaut-eye-flash / JWST lens / Saturn storm talking heads 1.3-2.6M. Timely news hook: Orionids peak 21-22 Oct (Halley's dust). Our take: 'what if' hooks with a counter + timely sky events (done today); next: 'what if a spoonful of neutron star' one-off (check numbers). Memes search: nothing usable.
 - 2026-10-20 (vidIQ trending shorts, vph): #1 'How Electrical Outlets Work' 25 s, 35M views, 1M vph (Zack D. Films) = quick 'how an everyday thing works' with instant visual; others are skits/pranks/'In this world...' roblox stories (2+ min). Our take: everyday-physics 'how/why X' one-offs (static zap done today), 25-30 s, big number on screen. Web searches (viral hooks, memes) generic.
 - 2026-10-18 (vidIQ trending shorts, vph): top = roblox/meme rants 2-3 min, "X vs 1000 X" cooking (Egg 1 vs 1000 whisk, 17M), save-the-footballer puzzle games, babies/pranks; nothing space/money/AI in top 20. Idea: "1 vs 1000" scale hooks and a counter-driven puzzle feel; short 6-30 s clips win. Web searches (slang/viral formats) gave nothing usable.
 - 2026-10-17 (vidIQ IG/TikTok outliers 'black hole space explained'): winners = looping CGI/animation + one big question as text hook ('If gravity bends time, does the future already exist?' 1.6M; 'What if a black hole was heading for Earth?' 3.6M, distance counter); 6-30 s; beat-synced montages on TikTok; Hawking facts 3M. Our take: question hook text in first second, counter variable on screen, looping end.
@@ -45,6 +48,7 @@
 - 2026-10-14 (vidIQ trending shorts, vph): top is roblox/meme skits, family pranks, dashcam karma, kid-story shorts (all 10M+ views, 6-60 s); nothing space/AI/money in the top 20. Web search for viral hooks: generic. Idea: 'Instant karma/payback' and 'Who pays for X' twist hooks; keep claim-style hooks.
 
 ## Learnings
+- 2026-10-21: explainers 244-368 TikTok views whatever the category (space avg ~310, ~12 likes; AI 288; money 267). IG static 34% watched / skip 38.8% = best explainer retention. Today timely space one-off (Orionids).
 - 2026-10-20: explainers all 244-368 TikTok views; space leads likes (avg 14 vs 2-3). Money compound lowest (244). Today: everyday-physics one-off (static zap).
 - 2026-10-18: all explainers 250-370 TikTok views regardless of category (space 311 avg, AI 286, money 288); BH likes/views fall each part (14>7 likes) -> series dead after part 5, one-offs. IG is not posting (BH4/BH5/chatgptfree missing).
 - 2026-10-17: space leads on likes (15 avg vs 1.5-2), views similar (~290-305); BH views drop each part (366>249), so after part 5/6 go back to one-offs. Instagram posting was broken 10-14..16 (trigger not re-armed).
