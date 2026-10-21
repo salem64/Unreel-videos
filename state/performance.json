@@ -370,5 +370,27 @@
    "instagram": "2026-10-21T10:02"
   },
   "metrics": {}
+ },
+ {
+  "date": "2026-10-22",
+  "file": "2026-10-22-pixel-venus.mp4",
+  "format": "pixel-fact",
+  "variant": "space fact: venus day (243 d spin) longer than year (225 d)",
+  "details": "32.5 s retro pixel style, no voice, chiptune, made in chat (tools/pixel/venus_reel.py)",
+  "new_feature": "new retro pixel format (typewriter captions, HUD bars, iris transitions)",
+  "hook": "ON VENUS, ONE DAY IS LONGER THAN ONE YEAR.",
+  "theme": "pixel",
+  "caption": "venus spins so slow your birthday comes before tomorrow 💀 #unreel #venus #space #astronomy #spacefacts",
+  "first_comment": "knew it or no way",
+  "posted_via": {
+   "tiktok": "metricool",
+   "instagram": "vidiq",
+   "youtube": "not posted (metricool budget)"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-22T18:00",
+   "instagram": "2026-10-21T20:45"
+  },
+  "metrics": {}
  }
 ]
