@@ -11,7 +11,7 @@
 - rollercoaster loop: why you don't fall out
 - ~~helmet cracks in space~~ (2026-10-23)
 - what if all the air vanished for 5 seconds (ears, sunburn, buildings, oceans boil? check facts)
-- what if you fell into a hole through the earth (42 min fall, gravity tunnel)
+- ~~what if you fell into a hole through the earth~~ (2026-10-23, made in chat, posting today)
 - what if the moon disappeared (tides, nights, wobbling axis)
 - never hide in a car trunk/bathtub during X? -> pick only safe, correct advice topics
 - never pour water on a grease fire, here's why (steam explosion, use a lid)
