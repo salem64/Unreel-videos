@@ -1,4 +1,4 @@
-# Explainer videos (Unreel) – runbook for the scheduled task
+# Explainer videos (Unreel) – RETIRED 2026-10-23, see PIXEL.md (kept for reference)
 
 Short explainer videos for the Unreel channel (1080×1920, 30 fps, 35–55 s, English). Topics (Dimi 2026-10-10: "whatever performs better"): **space & physics** (theme space) and **money / side hustles / AI tools / tech** (theme money or tech), same style. The nightly analysis decides the mix by views/shares/comments per topic category. Since 2026-10-10 explainers REPLACE the quiz format in the nightly task "Unreel Daily Short" (Dimi's decision). That task alternates EXPLAINER and PHYSICS days and posts directly (no approval). When run from the nightly task: do steps 2–6 and 8 here, but posting (platforms, budget, best times, captions, hosting, cleanup, report) follows the nightly task prompt instead of step 7/9.
 

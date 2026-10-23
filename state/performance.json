@@ -392,5 +392,24 @@
    "instagram": "2026-10-21T20:45"
   },
   "metrics": {}
+ },
+ {
+  "date": "2026-10-23",
+  "file": "2026-10-23-pixel-helmet.mp4",
+  "format": "pixel-story",
+  "variant": "space survival: helmet cracks during spacewalk",
+  "details": "30 s retro pixel, no voice, live meters, magnifier cut-ins, rescue, choice prompt",
+  "new_feature": "pixel story template (helmet_reel.py)",
+  "hook": "HIS HELMET JUST CRACKED. HOW LONG DOES HE HAVE?",
+  "theme": "pixel",
+  "caption": "holding your breath is literally the worst move here 💀 #unreel #space #astronaut #spacefacts #science",
+  "first_comment": "i'd 100% hold it ngl",
+  "posted_via": {
+   "tiktok": "metricool"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-23T10:00"
+  },
+  "metrics": {}
  }
 ]

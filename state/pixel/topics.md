@@ -1,0 +1,12 @@
+# Pixel story topic ideas (strike when used)
+- fighter pilot pulls 9 G and blacks out (G-LOC), G-suit + breathing strain save him
+- astronaut's tether snaps, drifts away from the ISS, SAFER jetpack brings him back
+- diver shoots up too fast: the bends (nitrogen bubbles), decompression chamber
+- climber in the 8,000 m death zone: oxygen meter, confused brain, descending saves him
+- lightning storm: why sitting in a car protects you (Faraday cage), not the rubber tyres
+- stranded at sea: why drinking seawater makes thirst worse (kidneys, salt)
+- capsule re-entry: heat shield at ~1,600 °C, plasma radio blackout
+- falls through ice: cold shock, 1-10-1 rule, how to get out
+- brain freeze: why ice cream hurts your head
+- rollercoaster loop: why you don't fall out
+- ~~helmet cracks in space~~ (2026-10-23)
