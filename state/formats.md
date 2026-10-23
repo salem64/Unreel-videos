@@ -23,3 +23,12 @@ Hottest faceless science formats (views, x creator median):
 Takeaways: keep animated pixel stories, but hooks/topics should be "WHAT IF ...?" hypotheticals and
 "never do X, here's why" myth busts; test a narrator voice; test one > 61 s video per week.
 Note: vidIQ credits ran out on 2026-10-23 (renew 2026-11-07) – until then scan with WebSearch/WebFetch.
+
+## Scan 2026-10-23 night run (WebSearch only; vidIQ credits 1, no paid call)
+Own data: TikTok views of all explainers 244-368 (avg ~300, outlier laser battle 903); IG skip rate sim3d 28% (best so far),
+pixel venus 50% / 42% watched, explainers 39-84%. Pixel + sim3d TikTok numbers not in analytics yet (posted today).
+Web scan (anijam, opus.pro, orbitalradar): no new >=5x outlier format found. Generic 2026 notes: POV scenario, narrated
+faceless explainers, numbered episodic series, open on the most interesting moment in 2-3 s, on-screen text carries the story
+(muted viewing), 15-60 s with completion rate weighted heavily. Halloween costume/pumpkin trends are not our niche.
+Verdict: NO format switch. Stay SIM3D (what-if + narrator voice). Adopted: "numbered what-if" feel, silence/contrast gimmick,
+myth-stamp + choice question with a correct answer. Next scan: when vidIQ credits renew 2026-11-07 run the paid outlier search.

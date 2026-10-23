@@ -79,7 +79,7 @@
   "new_feature": "motion pack + new anims tokens, absorb, split, dice, chat hook, dots stat",
   "hook": "EVERY WORD IT WRITES IS A GUESS",
   "theme": "tech",
-  "caption": "so chatgpt is basically really good autocomplete 🎲 part 1",
+  "caption": "so chatgpt is basically really good autocomplete \ud83c\udfb2 part 1",
   "first_comment": "thinking or guessing, pick one",
   "posted_via": {
    "tiktok": "metricool",
@@ -119,7 +119,7 @@
   "new_feature": "step anim 'claim' (question bubble + fake answer card + confidence meter + MADE UP stamp)",
   "hook": "AI LIES WITH A STRAIGHT FACE",
   "theme": "tech",
-  "caption": "ai will invent a source and sound 100% sure about it 💀 part 2",
+  "caption": "ai will invent a source and sound 100% sure about it \ud83d\udc80 part 2",
   "first_comment": "would you have caught the fake source",
   "posted_via": {
    "tiktok": "metricool",
@@ -142,7 +142,7 @@
   "new_feature": "anim 'funnel' (hook + step): views rain into funnel, few coins drop out",
   "hook": "1 MILLION VIEWS = HOW MUCH?",
   "theme": "money",
-  "caption": "a million views and you might get pizza money 💀",
+  "caption": "a million views and you might get pizza money \ud83d\udc80",
   "first_comment": "would you post for pennies",
   "posted_via": {
    "tiktok": "metricool",
@@ -179,7 +179,7 @@
   "new_feature": "step anim 'crowd' (100-people grid, 5 light up gold with a card + live counter)",
   "hook": "CHATGPT IS FREE. WHO PAYS?",
   "theme": "tech",
-  "caption": "5% of people pay for chatgpt and the rest of us get ads 💀",
+  "caption": "5% of people pay for chatgpt and the rest of us get ads \ud83d\udc80",
   "first_comment": "pay or ads, which one are you",
   "posted_via": {
    "tiktok": "metricool",
@@ -210,7 +210,7 @@
   "new_feature": "step anim 'hawking' (particle pairs at the edge + shrinking hole + 10^N years counter)",
   "hook": "BLACK HOLES CAN DIE",
   "theme": "space",
-  "caption": "black holes can literally evaporate and nobody told me 💀 part 4",
+  "caption": "black holes can literally evaporate and nobody told me \ud83d\udc80 part 4",
   "first_comment": "gone or saved, what happens to the stuff inside",
   "posted_via": {
    "tiktok": "metricool",
@@ -241,7 +241,7 @@
   "new_feature": "step anim 'scramble' (letter tiles into flame or black hole, colours kept vs grey + '?')",
   "hook": "NOTHING CAN BE ERASED",
   "theme": "space",
-  "caption": "nobody can agree what happens to a book in a black hole 🫠 part 5",
+  "caption": "nobody can agree what happens to a book in a black hole \ud83e\udee0 part 5",
   "first_comment": "yes or no, does the info come out",
   "posted_via": {
    "tiktok": "metricool",
@@ -303,7 +303,7 @@
   },
   "metrics": {
    "tiktok": {
-    "views": 295,
+    "views": 307,
     "likes": 7,
     "comments": 0,
     "shares": 0
@@ -319,7 +319,7 @@
   "new_feature": "static anim (charging finger, volt counter, gap mm, spark)",
   "hook": "THAT ZAP IS THOUSANDS OF VOLTS",
   "theme": "space",
-  "caption": "that doorknob zap is thousands of volts and you walk away fine 💀",
+  "caption": "that doorknob zap is thousands of volts and you walk away fine \ud83d\udc80",
   "first_comment": "doorknob, car door or switch for you",
   "posted_via": {
    "tiktok": "metricool",
@@ -334,17 +334,17 @@
   "metricool_uuid": "6923514790488002202",
   "metrics": {
    "tiktok": {
-    "views": 301,
-    "likes": 3,
-    "comments": 0,
+    "views": 323,
+    "likes": 4,
+    "comments": 1,
     "shares": 0
    },
    "instagram": {
-    "views": 132,
+    "views": 134,
     "saves": 1,
-    "avg_watch_s": 9.9,
-    "watched_pct": 34.2,
-    "skip_rate": 38.8
+    "avg_watch_s": 10.0,
+    "watched_pct": 34.5,
+    "skip_rate": 39
    }
   }
  },
@@ -357,7 +357,7 @@
   "new_feature": "meteor anim (dust grains burn up at the atmosphere edge, speed counter, comet), compare visual 'emoji', stat 'exact'",
   "hook": "THIS WEEK'S SHOOTING STARS ARE COMET DUST",
   "theme": "space",
-  "caption": "every shooting star this week is a crumb of halley's comet ☄️ #unreel #orionids #meteorshower #space #astronomy",
+  "caption": "every shooting star this week is a crumb of halley's comet \u2604\ufe0f #unreel #orionids #meteorshower #space #astronomy",
   "first_comment": "orionids peak this week, best after the moon sets around 2am",
   "posted_via": {
    "tiktok": "metricool",
@@ -369,7 +369,14 @@
    "youtube": "2026-10-21T16:00 (manual)",
    "instagram": "2026-10-21T10:02"
   },
-  "metrics": {}
+  "metrics": {
+   "tiktok": {
+    "views": 326,
+    "likes": 6,
+    "comments": 0,
+    "shares": 0
+   }
+  }
  },
  {
   "date": "2026-10-22",
@@ -380,7 +387,7 @@
   "new_feature": "new retro pixel format (typewriter captions, HUD bars, iris transitions)",
   "hook": "ON VENUS, ONE DAY IS LONGER THAN ONE YEAR.",
   "theme": "pixel",
-  "caption": "venus spins so slow your birthday comes before tomorrow 💀 #unreel #venus #space #astronomy #spacefacts",
+  "caption": "venus spins so slow your birthday comes before tomorrow \ud83d\udc80 #unreel #venus #space #astronomy #spacefacts",
   "first_comment": "knew it or no way",
   "posted_via": {
    "tiktok": "metricool",
@@ -391,7 +398,16 @@
    "tiktok": "2026-10-22T18:00",
    "instagram": "2026-10-21T20:45"
   },
-  "metrics": {}
+  "metrics": {
+   "instagram": {
+    "views": 157,
+    "likes": 2,
+    "saves": 1,
+    "avg_watch_s": 13.6,
+    "watched_pct": 42.6,
+    "skip_rate": 50
+   }
+  }
  },
  {
   "date": "2026-10-23",
@@ -402,7 +418,7 @@
   "new_feature": "pixel story template (helmet_reel.py)",
   "hook": "HIS HELMET JUST CRACKED. HOW LONG DOES HE HAVE?",
   "theme": "pixel",
-  "caption": "holding your breath is literally the worst move here 💀 #unreel #space #astronaut #spacefacts #science",
+  "caption": "holding your breath is literally the worst move here \ud83d\udc80 #unreel #space #astronaut #spacefacts #science",
   "first_comment": "i'd 100% hold it ngl",
   "posted_via": {
    "tiktok": "metricool"
@@ -421,7 +437,7 @@
   "new_feature": "new format: own 3D ray tracer (earth cutaway, tunnel POV, 3D cartoon character, surface scene)",
   "hook": "What if you fell into a hole, straight through the Earth?",
   "theme": "sim3d",
-  "caption": "38 minutes of falling and you still have to catch the edge 😭 #unreel #whatif #earth #physics #science",
+  "caption": "38 minutes of falling and you still have to catch the edge \ud83d\ude2d #unreel #whatif #earth #physics #science",
   "posted_via": {
    "tiktok": "metricool",
    "instagram": "vidiq",
@@ -431,7 +447,13 @@
    "tiktok": "2026-10-23T18:00",
    "instagram": "2026-10-23T03:21"
   },
-  "metrics": {},
+  "metrics": {
+   "instagram": {
+    "views": 97,
+    "likes": 1,
+    "skip_rate": 28
+   }
+  },
   "first_comment": "no way or i'd jump?"
  }
 ]

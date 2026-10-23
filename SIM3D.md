@@ -19,3 +19,11 @@ New video: copy earth_tunnel.py to <name>.py, write <name>_lines.json, adapt sce
 `python3 tts_lines.py <name>_lines.json /tmp/<name>_vo`, then `python3 <name>.py sheet /tmp/s.png <times> --vo /tmp/<name>_vo`
 (look once, fix), then `python3 <name>.py render ../../videos/<date>-sim3d-<name>.mp4 --vo /tmp/<name>_vo` (~9 min).
 Note: the template reads `tunnel_lines.json` – change that filename in the copy.
+
+## Second template: tools/sim3d/air_gone.py (street scene, 2026-10-23)
+Use it for any "what if X happens in a normal city street" idea. New pieces: `street(t, air, cam, ch, extra, dim, vig)` renders road +
+AABB buildings (`trace_boxes`, window pattern, fog that vanishes when air=0) + sky_color(D, air) (blue <-> star sky) + the 3D character;
+`extra` takes world-space prims (sph/cap) e.g. `plane_prims`, `bird_prims`, bubbles; `cam_for(i,t)` holds one camera per line;
+`overlays()` draws streaks, rings, MYTH stamp, BOOM; `hud()` pills; `build_audio()` mutes everything except the narrator between TA and TB
+(silence gimmick) and adds `sfx_boom()`. Copy the file, change lines JSON name + `air_at`/TA/TB logic. Render ~12 min (1170 frames).
+Check frames with `python3 air_gone.py sheet /tmp/s.png t1,t2,... --vo /tmp/air_vo` (~40 s for 21 frames).

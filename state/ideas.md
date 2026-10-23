@@ -48,6 +48,7 @@
 - 2026-10-14 (vidIQ trending shorts, vph): top is roblox/meme skits, family pranks, dashcam karma, kid-story shorts (all 10M+ views, 6-60 s); nothing space/AI/money in the top 20. Web search for viral hooks: generic. Idea: 'Instant karma/payback' and 'Who pays for X' twist hooks; keep claim-style hooks.
 
 ## Learnings
+- 2026-10-23 (night): TikTok explainers cluster 244-368 views (avg ~300) no matter the topic; only the laser battle broke out (903). IG: sim3d earth tunnel has the lowest skip rate so far (28%) but only 97 views; pixel venus 157 views / 42% watched. Too early to rank sim3d vs pixel on TikTok (posts of 10-22/10-23 not measured yet). Do: keep sim3d, put the strongest visual change in the first 2 s, test one >61 s sim3d once TikTok has 8k followers.
 - 2026-10-21: explainers 244-368 TikTok views whatever the category (space avg ~310, ~12 likes; AI 288; money 267). IG static 34% watched / skip 38.8% = best explainer retention. Today timely space one-off (Orionids).
 - 2026-10-20: explainers all 244-368 TikTok views; space leads likes (avg 14 vs 2-3). Money compound lowest (244). Today: everyday-physics one-off (static zap).
 - 2026-10-18: all explainers 250-370 TikTok views regardless of category (space 311 avg, AI 286, money 288); BH likes/views fall each part (14>7 likes) -> series dead after part 5, one-offs. IG is not posting (BH4/BH5/chatgptfree missing).
@@ -58,3 +59,6 @@
 - 2026-10-12: explainers so far: BH part1 327 TikTok views/12 likes, AI part1 130 IG views (84% skip). Battle still hooks better on IG; need first-2s hooks for explainers.
 - 2026-10-11: first real signal: powers battle (shockwave vs laser, 22s) got 511 TikTok views + 214 IG (54% watched, skip 34.5%) vs flags quiz 0 TikTok / 142 IG (10% watched, skip 88%). Physics battles hook ~2.5x better. Do: battles/powers more often, keep 20-35s, hook text = 'A VS B'. Quiz stays retired; explainers still unmeasured (first one posts 2026-10-10 19:00, TikTok numbers pending).
 - 2026-10-10: only 2 posts so far; IG 125 views on flags quiz (skip rate 86%, avg watch 4.8s of 44s) and 29 on halloween quiz; TikTok 0 views on both, YouTube 0. Insight: quizzes are too slow to hook (long, skip rate 86-100%). Do: test short, spectacular physics/powers battles (20-25s) next; keep hook text immediate; make quizzes shorter if used.
+
+## Built
+- 2026-10-23 (night run): tools/sim3d/air_gone.py - new street scene (AABB buildings with windows, road, sidewalk), air-dependent sky (blue -> black star sky, sun stays), toy plane + bird primitives falling, bubble prims (boiling spit), ear-pop rings, MYTH stamp, BOOM shock ring, HUD AIR/PRESSURE/TIMER/SOUND/AWAKE pills + flat sound line, audio silence gate (everything but the narrator is muted while the air is gone) + synthesized boom, new choice cards "HOLD IT / BREATHE OUT".
