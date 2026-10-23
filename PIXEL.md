@@ -31,6 +31,11 @@ Dimi's feedback that defines the format:
   (alarm beeps, crack, hiss, pops, heartbeat, whoosh on cut-ins, clang, success arpeggio, typing blips).
 
 ## Topic rules
+- Follow `state/formats.md` (format radar, updated nightly). Since the 2026-10-23 scan the hottest hooks in
+  this niche are **"WHAT IF ...?" hypotheticals** (what if all air vanished for 5 s, what if you were
+  10x faster, what if a spoonful of neutron star landed here) and **"NEVER DO X, HERE'S WHY"** survival
+  myth busts (never cover a grenade with a mattress). Prefer these hook types; keep the formula above
+  (a person facing it, live meters, magnifier cut-ins, payoff, choice prompt).
 - Survival / body / space / physics situations with a real mechanism and a correct "what to do".
   Ideas: fighter pilot pulls 9 G and blacks out (G-suit + strain), astronaut drifts off the ISS (SAFER
   jetpack), diver comes up too fast (the bends), climber in the 8,000 m death zone, lightning storm
