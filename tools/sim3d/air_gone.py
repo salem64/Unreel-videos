@@ -33,10 +33,12 @@ for i, a in enumerate(sys.argv):
         VO_DIR = sys.argv[i + 1]
 LINES = json.load(open(os.path.join(HERE, 'air_gone_lines.json')))['lines']
 DURS = json.load(open(os.path.join(VO_DIR, 'durs.json')))
-GAP, START0, TAIL = 0.22, 0.3, 2.9
+GAP, START0, TAIL = 0.22, 0.3, 1.8
+EXTRA_GAP = {10: 1.4}   # thinking pause (3-2-1) before the answer reveal
 STARTS = []
 _t = START0
-for d in DURS:
+for _i, d in enumerate(DURS):
+    _t += EXTRA_GAP.get(_i, 0.0)
     STARTS.append(_t)
     _t += d + GAP
 DUR = STARTS[-1] + DURS[-1] + TAIL
@@ -654,7 +656,7 @@ TB = L(8) + 0.25           # air slams back
 AIR_DROP, AIR_BACK = 0.35, 0.22
 SLOW5 = 5.0
 SPLIT = {0: TA, 3: L(3) + DURS[3] * 0.45, 5: L(5) + DURS[5] * 0.55, 6: L(6) + DURS[6] * 0.5,
-         7: L(7) + DURS[7] * 0.55, 8: L(8) + DURS[8] * 0.5}
+         7: L(7) + DURS[7] * 0.55}
 CUTS = sorted(list(STARTS[1:]) + [v for k, v in SPLIT.items() if k != 0])
 
 
@@ -725,7 +727,7 @@ def cam_for(i, h, t):
 POSE_OF = {(0, 0): ('up', 0.2, 0.5), (0, 1): ('cower', 1.5, 0.1), (1, 0): ('ears', 1.6, 0.1), (2, 0): ('point', 1.0, 0.1),
            (3, 0): ('ears', 1.2, 0.05), (3, 1): ('ears', 1.7, 0.05), (4, 0): ('cower', 1.0, 0.1), (5, 0): ('point', 0.9, 0.1),
            (5, 1): ('up', 1.2, 0.6), (6, 0): ('up', 0.8, 0.4), (6, 1): ('flex', 0.2, 0.1), (7, 0): ('down', 0.5, 0.1),
-           (7, 1): ('down', 0.4, 0.1), (8, 0): ('cower', 1.2, 0.2), (8, 1): ('mouth', 0.1, 0.05), (9, 0): ('down', 0.3, 0.1)}
+           (7, 1): ('down', 0.4, 0.1), (8, 0): ('cower', 1.2, 0.2), (9, 0): ('down', 0.3, 0.1), (10, 0): ('flex', 0.2, 0.1)}
 
 
 def render_frame(fi):
@@ -773,7 +775,7 @@ def render_frame(fi):
         k = (t - L(7)) / DURS[7]
         vig = 0.9 * smooth(0.1, 1.0, k)
         ch['roll'] = 0.12 * math.sin(t * 2.4)
-    elif i == 9:
+    elif i >= 9:
         dim = min(0.5, (t - L(9)) * 1.5)
     if TB <= t < TB + 0.9:
         a = 0.16 * math.exp(-(t - TB) * 4)
@@ -874,8 +876,10 @@ def overlays(img, t, i, h, cam):
         d.ellipse([cx - r * 0.8, cy - r * 0.64, cx + r * 0.8, cy + r * 0.64], outline=(255, 220, 140, int(al * 0.6)), width=10)
         if p < 0.7:
             _sticker(img, 'BOOM', 190, (255, 225, 90), W / 2, 560, 0, ease(p / 0.25))
-    if i == 8 and h == 1:
-        _sticker(img, "DON'T HOLD IT", 96, REDC, W / 2, 600, -6, ease((t - SPLIT[8] - 0.1) / 0.15), sub='lungs can rupture')
+    if L(9) + DURS[9] <= t < L(10):   # 3-2-1 thinking countdown
+        k = (t - L(9) - DURS[9]) / (L(10) - L(9) - DURS[9])
+        n_ = 3 - int(k * 3)
+        _sticker(img, str(max(1, n_)), 200, YEL, W / 2, 1180, 0, ease(((k * 3) % 1.0) / 0.2))
 
 
 def timer5(t):
@@ -930,6 +934,13 @@ def choice_cards(img, t, t0):
         d.rounded_rectangle([x, y, x + w_, y + h_], 40, fill=(10, 14, 30, int(220 * kk)), outline=col + (int(255 * kk),), width=8)
         tw_ = d.textlength(txt, font=f)
         d.text((x + (w_ - tw_) / 2, y + (h_ - 80) / 2), txt, font=f, fill=col + (int(255 * kk),))
+    if t >= L(10):
+        k = ease((t - L(10)) / 0.25)
+        y0, y1 = 640, 830
+        d.line([(W - 760) / 2 + 30, y0 + 75, (W + 760) / 2 - 30, y0 + 75], fill=REDC + (int(255 * k),), width=14)
+        cx, cy, r = (W + 760) / 2 - 20, y1 + 75, 70 * (1.4 - 0.4 * k)
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(30, 170, 80, int(255 * k)), outline=(255, 255, 255, int(255 * k)), width=6)
+        d.line([(cx - r * 0.45, cy), (cx - r * 0.1, cy + r * 0.38), (cx + r * 0.5, cy - r * 0.4)], fill=(255, 255, 255, int(255 * k)), width=14, joint='curve')
 
 
 # ----------------------------------------------------------------------------- audio
@@ -990,6 +1001,10 @@ def build_audio(path):
     add(SPLIT[6] + 0.1, Q.sfx_tada(), 0.5)
     add(L(9) + 0.15, Q.sfx_tick(True), 0.6)
     add(L(9) + 0.27, Q.sfx_tick(False), 0.6)
+    pause0 = L(9) + DURS[9]
+    for q in range(3):
+        add(pause0 + q * (L(10) - pause0) / 3, Q.sfx_tick(q % 2 == 0), 0.7)
+    add(L(10) - 0.05, Q.sfx_tada(), 0.7)
     # heartbeat in the silence (you still hear your own body)
     hb = heartbeat()
     tb_ = TA + 0.4

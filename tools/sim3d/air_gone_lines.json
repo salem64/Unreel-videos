@@ -1,4 +1,7 @@
-{"voice": "am_michael", "speed": 1.22, "lines": [
+{
+"voice": "am_michael",
+"speed": 1.1,
+"lines": [
 "What if all the air on Earth vanished, right now?",
 "Instant silence. Sound needs air.",
 "The sky goes black, even at noon.",
@@ -7,5 +10,8 @@
 "Planes and birds drop out of the sky. Every fire goes out.",
 "Myth: your body explodes. Nope. Your skin holds you together.",
 "You'd stay awake for about ten seconds. Five is survivable.",
-"Then the air slams back. Boom. Never hold your breath.",
-"So, hold it, or breathe out?"]}
+"Then the air slams back. Boom.",
+"So, would you hold your breath, or breathe out?",
+"Breathe out. Holding it can rupture your lungs."
+]
+}
