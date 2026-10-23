@@ -27,7 +27,7 @@ W, H, FPS, SR = 1080, 1920, 30, 44100
 RW, RH = 540, 960
 ASP = RW / RH
 
-VO_DIR = '/tmp/air_vo'
+VO_DIR = '/tmp/air_vo2'
 for i, a in enumerate(sys.argv):
     if a == '--vo':
         VO_DIR = sys.argv[i + 1]
@@ -508,10 +508,17 @@ def street(t, air, cam, ch=None, extra=None, dim=0.0, vig=0.0):
     if ch is not None:
         Rw = np.array([[1, 0, 0], [0, 0, 1], [0, 1, 0]], np.float32)
         yaw = ch.get('yaw', 0.0)
-        cp = char_prims(t, scream=ch.get('scream', 0.3), flail=ch.get('flail', 0.2), wave=ch.get('wave', 0.0))
-        prims += place(cp, Rw @ rotm(0, yaw, 0), np.array([0, 0, 0.58], np.float32))
+        cp = char_pose(t, ch.get('pose', 'up'), scream=ch.get('scream', 0.3), flail=ch.get('flail', 0.2))
+        if ch.get('puff', 1.0) != 1.0:
+            cp = scale_prims(cp, ch['puff'])
+        prims += place(cp, Rw @ rotm(ch.get('lean', 0.0), yaw, ch.get('roll', 0.0)),
+                       np.array([0, 0, 0.58 + ch.get('lift', 0.0)], np.float32))
     if extra:
-        prims += extra
+        for k_, d_, c_ in extra:
+            if k_ == 'sph':
+                prims.append((k_, (np.asarray(d_[0], np.float32), float(d_[1])), c_))
+            else:
+                prims.append((k_, (np.asarray(d_[0], np.float32), np.asarray(d_[1], np.float32), float(d_[2])), c_))
     if prims:
         hitc, tt, nn, cb = trace_prims(O, D, prims, tb)
         if hitc.any():
@@ -547,11 +554,108 @@ def bird_prims(p, ph, scale=1.0):
             ('cap', (np.array(p, np.float32), np.array([p[0] + 0.22 * scale, p[1], p[2] + fl * scale], np.float32), 0.03 * scale), B_)]
 
 
+# ----------------------------------------------------------------------------- poses + props (NEW 2026-10-23 v2)
+POSES = {  # (elbow, hand) per side in local coords (x mirrored), y up, face toward -z
+    'ears':  ((0.36, 0.36, -0.02), (0.21, 0.5, -0.02)),
+    'mouth': ((0.26, 0.2, -0.2), (0.06, 0.4, -0.24)),
+    'flex':  ((0.44, 0.24, 0.0), (0.4, 0.52, -0.04)),
+    'down':  ((0.25, 0.02, 0.0), (0.27, -0.2, -0.02)),
+    'cower': ((0.33, 0.5, -0.12), (0.1, 0.74, -0.08)),
+}
+
+
+def char_pose(t, pose, scream=0.5, flail=0.2):
+    """char_prims with arm poses: up (flailing), ears, mouth, flex, down, cower, point (right arm up, left down)"""
+    P = char_prims(t, scream=scream, flail=flail)
+    if pose == 'up':
+        return P
+    out = [p for p in P if not (p[0] == 'cap' and abs(p[1][0][1] - 0.2) < 1e-6 and p[2] is SHIRT and p[1][0][0] != 0)]
+    # drop old arm pieces: upper arm caps start at shoulder (±0.19,0.2,0); forearm/hand follow them
+    keep = []
+    skip = 0
+    for p in P:
+        if skip:
+            skip -= 1
+            continue
+        if p[0] == 'cap' and tuple(np.round(p[1][0], 3)) in ((0.19, 0.2, 0), (-0.19, 0.2, 0)):
+            skip = 2  # forearm + hand
+            continue
+        keep.append(p)
+    jit = 0.015 * math.sin(t * 13)
+    for sx in (-1, 1):
+        if pose == 'point':
+            el, hd = ((0.3, 0.55, -0.05), (0.32, 0.92, -0.1)) if sx > 0 else POSES['down']
+        else:
+            el, hd = POSES[pose]
+        sh = (0.19 * sx, 0.2, 0.0)
+        el = (el[0] * sx, el[1] + jit, el[2])
+        hd = (hd[0] * sx, hd[1] + jit, hd[2])
+        keep.append(('cap', (sh, el, 0.06), SHIRT))
+        keep.append(('cap', (el, hd, 0.052), SKIN))
+        keep.append(('sph', (hd, 0.07), SKIN))
+    return keep
+
+
+def scale_prims(P, s):
+    out = []
+    for k, d, c in P:
+        if k == 'sph':
+            out.append((k, (tuple(np.array(d[0]) * s), d[1] * s), c))
+        else:
+            out.append((k, (tuple(np.array(d[0]) * s), tuple(np.array(d[1]) * s), d[2] * s), c))
+    return out
+
+
+BAL_POS = [(0.95, 0.45, 2.0), (1.25, 0.6, 2.25), (0.75, 0.75, 2.35), (1.15, 0.2, 2.5)]
+BAL_COL = [C('ff3b5c'), C('ffd23f'), C('3bb5ff'), C('7cff6b')]
+HYD = np.array([1.0, 0.45, 0.0], np.float32)
+
+
+def balloon_state(t):
+    """radius per balloon (0 = popped) - swell + pop during line 4"""
+    out = []
+    for j in range(4):
+        tp = L(4) + 0.25 + j * 0.28
+        if t < TA:
+            r = 0.2
+        elif t < L(4):
+            r = 0.2 + 0.05 * ease((t - TA) / 1.0)
+        elif t < tp:
+            r = 0.25 + 0.2 * ease((t - L(4)) / (tp - L(4)))
+        else:
+            r = 0.0
+        out.append((r, tp))
+    return out
+
+
+def props(t):
+    P = [('cap', (tuple(HYD), tuple(HYD + np.array([0, 0, 0.36], np.float32)), 0.11), C('d92b2b')),
+         ('sph', (tuple(HYD + np.array([0, 0, 0.38], np.float32)), 0.12), C('d92b2b'))]
+    for (r, tp), p, c in zip(balloon_state(t), BAL_POS, BAL_COL):
+        if r <= 0:
+            continue
+        sway = 0.04 * math.sin(t * 2 + p[0] * 5)
+        bp = np.array([p[0] + sway, p[1], p[2]], np.float32)
+        P.append(('sph', (tuple(bp), r), c))
+        P.append(('cap', (tuple(bp - np.array([0, 0, r], np.float32)), tuple(HYD + np.array([0, 0, 0.4], np.float32)), 0.008), C('eeeeee')))
+    # trash can with fire (fire only while there is air)
+    can = np.array([-1.15, 1.0, 0.0], np.float32)
+    P.append(('cap', (tuple(can), tuple(can + np.array([0, 0, 0.55], np.float32)), 0.24), C('6b7380')))
+    if air_at(t) > 0.5:
+        for j in range(5):
+            fl = 0.08 * math.sin(t * 17 + j * 2.1)
+            P.append(('sph', ((can[0] + 0.1 * math.sin(j * 1.3), can[1] + 0.08 * math.cos(j * 2.0), 0.8 + 0.12 * j + fl), 0.17 - 0.025 * j), C('ff8a1a') if j % 2 else C('ffd23f')))
+    return P
+
+
 # ----------------------------------------------------------------------------- timeline
-TA = L(0) + 2.3            # air vanishes
-TB = L(7) + 0.35           # air slams back
-AIR_DROP, AIR_BACK = 0.55, 0.25
+TA = L(0) + 1.15           # air vanishes (on "vanished")
+TB = L(8) + 0.25           # air slams back
+AIR_DROP, AIR_BACK = 0.35, 0.22
 SLOW5 = 5.0
+SPLIT = {0: TA, 3: L(3) + DURS[3] * 0.45, 5: L(5) + DURS[5] * 0.55, 6: L(6) + DURS[6] * 0.5,
+         7: L(7) + DURS[7] * 0.55, 8: L(8) + DURS[8] * 0.5}
+CUTS = sorted(list(STARTS[1:]) + [v for k, v in SPLIT.items() if k != 0])
 
 
 def air_at(t):
@@ -571,147 +675,196 @@ def scene_of(t):
     return 0
 
 
-def cam_for(i, t):
-    k = (t - L(i)) / max(0.1, DURS[i])
-    if i == 0:
-        return Cam((2.2 - 1.2 * ease(k), -6.2 + 2.4 * ease(k), 1.5 - 0.3 * ease(k)), (0, 0, 0.95), fov=52)
-    if i == 1:
-        az = -1.45 + 0.9 * k
-        return Cam((3.2 * math.cos(az), 3.2 * math.sin(az), 1.2), (0, 0, 0.9), fov=50)
-    if i == 2:
-        return Cam((0.5, -1.7, 0.55), (-0.2 + 0.4 * k, 4.0, 3.4 + 2.2 * k), fov=70)
-    if i == 3:
-        return Cam((0.1, -1.6 + 0.2 * k, 1.1), (0, 0, 1.0), fov=40)
-    if i == 4:
-        return Cam((0.0, -3.0, 1.4), (1.0, 14.0, 7.5 - 1.5 * k), fov=66)
-    if i == 5:
-        return Cam((1.1 - 0.3 * k, -3.0 + 0.5 * k, 0.95), (0, 0, 0.75), fov=46)
-    if i == 6:
-        return Cam((0.5 - 0.35 * k, -2.3 + 0.9 * k, 1.1), (0, 0, 0.98), fov=44)
+def half_of(i, t):
+    return 1 if (i in SPLIT and t >= SPLIT[i]) else 0
+
+
+def cam_for(i, h, t):
+    if i in SPLIT and h == 1:
+        t0, t1 = SPLIT[i], (STARTS[i + 1] if i + 1 < len(STARTS) else DUR)
+    elif i in SPLIT:
+        t0, t1 = L(i), SPLIT[i]
+    else:
+        t0, t1 = L(i), (STARTS[i + 1] if i + 1 < len(STARTS) else DUR)
+    k = min(1.0, max(0.0, (t - t0) / max(0.2, t1 - t0)))
+    e = ease(k)
+    if i == 0 and h == 0:      # fast dolly-in from far down the street
+        return Cam((2.4 - 1.5 * e, -8.5 + 5.0 * e, 1.9 - 0.7 * e), (0.2, 0.4, 1.05), fov=56)
+    if i == 0:                 # low angle up: sky turns black
+        return Cam((0.35, -1.4, 0.35), (0.1, 2.5, 4.2), fov=74, roll=0.15 - 0.1 * e)
+    if i == 1:                 # fast orbit
+        az = -1.9 + 1.4 * e
+        return Cam((2.6 * math.cos(az), 2.6 * math.sin(az), 1.15), (0, 0, 0.95), fov=52)
+    if i == 2:                 # look up between buildings, rolling
+        return Cam((0.2, -1.6, 0.4), (-0.3 + 0.5 * e, 5.0, 4.0 + 1.5 * e), fov=80, roll=-0.25 + 0.4 * e)
+    if i == 3 and h == 0:      # face close-up (ears)
+        return Cam((0.25 - 0.1 * e, -1.25, 1.15), (0, 0, 1.08), fov=42)
+    if i == 3:                 # mouth extreme close-up (boiling spit)
+        return Cam((-0.12, -0.95 + 0.12 * e, 0.98), (0, 0, 1.0), fov=34)
+    if i == 4:                 # balloons
+        return Cam((0.15, -2.2 + 0.4 * e, 1.7), (1.0, 0.5, 2.15), fov=50)
+    if i == 5 and h == 0:      # plane tumbling over the street
+        return Cam((0.0, -2.5, 0.8), (0.6, 10.0, 7.0 - 2.0 * e), fov=72, roll=0.1 * math.sin(t * 3))
+    if i == 5:                 # birds drop past camera, fire out
+        return Cam((-2.4 + 0.4 * e, -2.0, 1.3), (-0.8, 1.0, 1.0 + 0.6 * (1 - e)), fov=60)
+    if i == 6 and h == 0:      # puffing body, warning
+        return Cam((0.7, -2.4 + 0.5 * e, 1.0), (0, 0, 0.9), fov=46)
+    if i == 6:                 # hero low angle, flex
+        return Cam((-0.8, -2.0, 0.25), (0, 0, 1.0), fov=58)
+    if i == 7 and h == 0:      # dizzy push-in
+        return Cam((0.5 - 0.3 * e, -2.3 + 0.9 * e, 1.1), (0, 0, 1.0), fov=44, roll=0.12 * math.sin(t * 2.3))
     if i == 7:
-        return Cam((0.0, -4.0, 1.3), (0, 0, 1.0), fov=58)
+        return Cam((-0.9, -1.8 + 0.3 * e, 1.25), (0, 0, 0.95), fov=46, roll=-0.1 * math.sin(t * 2.1))
+    if i == 8 and h == 0:      # wide: BOOM
+        return Cam((0.0, -4.6 + 0.6 * e, 1.4), (0, 0, 1.1), fov=60)
+    if i == 8:                 # hands over mouth close-up
+        return Cam((0.3, -1.6 + 0.2 * e, 1.05), (0, 0, 0.95), fov=42)
     return Cam((1.5, -4.4, 1.3), (0, 0, 0.95), fov=50)
+
+
+POSE_OF = {(0, 0): ('up', 0.2, 0.5), (0, 1): ('cower', 1.5, 0.1), (1, 0): ('ears', 1.6, 0.1), (2, 0): ('point', 1.0, 0.1),
+           (3, 0): ('ears', 1.2, 0.05), (3, 1): ('ears', 1.7, 0.05), (4, 0): ('cower', 1.0, 0.1), (5, 0): ('point', 0.9, 0.1),
+           (5, 1): ('up', 1.2, 0.6), (6, 0): ('up', 0.8, 0.4), (6, 1): ('flex', 0.2, 0.1), (7, 0): ('down', 0.5, 0.1),
+           (7, 1): ('down', 0.4, 0.1), (8, 0): ('cower', 1.2, 0.2), (8, 1): ('mouth', 0.1, 0.05), (9, 0): ('down', 0.3, 0.1)}
 
 
 def render_frame(fi):
     t = fi / FPS
     i = scene_of(t)
+    h = half_of(i, t)
     air = air_at(t)
-    cam = cam_for(i, t)
+    cam = cam_for(i, h, t)
     red, flash, zoom = 0.0, 0.0, 1.0
-    ch = dict(yaw=0.0, scream=0.3, flail=0.15, wave=0.0)
-    extra = None
-    vig = 0.0
-    dim = 0.0
+    pose, scream, flail = POSE_OF.get((i, h), POSE_OF.get((i, 0), ('up', 0.3, 0.2)))
+    ch = dict(pose=pose, scream=scream, flail=flail)
+    extra = props(t)
+    vig = dim = 0.0
     if i == 0:
-        ch.update(wave=1.0 if t < TA else 0.0, scream=0.2 if t < TA else 1.4, flail=0.5)
-        red = 0.15 + 0.25 * (0.5 + 0.5 * math.sin(t * 9)) * ease((t - 0.3) / 1.0)
+        red = 0.15 + 0.3 * (0.5 + 0.5 * math.sin(t * 11))
     elif i == 1:
-        ch.update(scream=1.5, flail=0.3)
-    elif i == 2:
-        ch.update(scream=1.0, flail=0.2)
+        ch['lift'] = 0.08 * abs(math.sin(t * 7))
+        red = 0.15
     elif i == 3:
-        k = t - L(3)
-        ch.update(scream=1.6, flail=0.05)
-        extra = []
-        for b in range(12):
-            ph = (k * 0.8 + b * 0.231) % 1.0
-            ang = b * 2.4
-            rr = 0.010 + 0.022 * (1 - ph) * (0.6 + 0.4 * math.sin(b * 1.7))
-            extra.append(('sph', (np.array([0.07 * math.sin(ang) * (0.3 + ph), -0.19 - 0.12 * ph, 0.97 + 0.22 * ph + 0.03 * math.cos(ang)], np.float32), rr + 0.006), C('d8f4ff')))
-        red = 0.2
-    elif i == 4:
-        k = t - L(4)
-        extra = []
-        gv = 1.7
-        extra += plane_prims((-6.0 + 3.2 * k, 14.0, 17.0 - 0.5 * gv * k * k), 0.25 + 0.5 * k, scale=1.7)
-        extra += plane_prims((6.0 - 2.4 * k, 20.0, 21.0 - 0.5 * gv * k * k), -0.2 - 0.3 * k + math.pi, scale=1.5)
-        for b in range(6):
-            extra += bird_prims((-3 + b * 1.3, 8 + (b % 3) * 2.0, 12 + (b % 2) * 2 - 0.5 * gv * k * k), 0.0, scale=1.6)
-        ch.update(flail=0.1)
-        red = 0.1
+        red = 0.25
+        if h == 1:
+            k = t - SPLIT[3]
+            for b in range(12):
+                ph = (k * 1.1 + b * 0.231) % 1.0
+                ang = b * 2.4
+                rr = 0.010 + 0.022 * (1 - ph) * (0.6 + 0.4 * math.sin(b * 1.7))
+                extra.append(('sph', ((0.07 * math.sin(ang) * (0.3 + ph), -0.19 - 0.12 * ph, 0.97 + 0.22 * ph + 0.03 * math.cos(ang)), rr + 0.006), C('d8f4ff')))
     elif i == 5:
-        ch.update(scream=0.7, flail=0.2)
-    elif i == 6:
-        k = (t - L(6)) / DURS[6]
-        vig = 0.9 * smooth(0.3, 1.0, k)
-        ch.update(scream=0.4, flail=0.1)
+        k = t - L(5)
+        gv = 2.4
+        if h == 0:
+            extra += plane_prims((-3.0 + 2.6 * k, 6.0, 8.5 - 0.5 * gv * k * k), 0.3 + 0.9 * k, scale=2.6)
+            for b in range(4):
+                extra += bird_prims((-1.5 + b * 1.2, 3.5 + (b % 2) * 1.5, 6.5 + (b % 2) * 1.2 - 0.5 * gv * k * k), t * 9 + b, scale=2.0)
+        else:
+            k2 = t - SPLIT[5]
+            for b in range(5):
+                extra += bird_prims((-1.6 + b * 0.55, 0.2 + (b % 2) * 0.8, 3.2 + (b % 3) * 0.5 - 0.5 * 5.0 * k2 * k2), t * 11 + b, scale=1.2)
+        red = 0.12
+    elif i == 6 and h == 0:
+        k = (t - L(6)) / (SPLIT[6] - L(6))
+        ch['puff'] = 1.0 + 0.18 * ease(k) + 0.03 * math.sin(t * 30)
+        red = 0.35 * ease(k)
     elif i == 7:
-        ch.update(scream=0.5, flail=0.3)
-    else:
-        ch.update(flail=0.2)
-        dim = min(0.5, (t - L(8)) * 1.5)
-    # camera shake when air slams back
+        k = (t - L(7)) / DURS[7]
+        vig = 0.9 * smooth(0.1, 1.0, k)
+        ch['roll'] = 0.12 * math.sin(t * 2.4)
+    elif i == 9:
+        dim = min(0.5, (t - L(9)) * 1.5)
     if TB <= t < TB + 0.9:
-        a = 0.14 * math.exp(-(t - TB) * 4)
+        a = 0.16 * math.exp(-(t - TB) * 4)
         cam.pos = cam.pos + np.array([a * math.sin(t * 61), 0, a * math.cos(t * 53)], np.float32)
     col, _ = street(t, air, cam, ch=ch, extra=extra, dim=dim, vig=vig)
-    for b in STARTS[1:]:
+    for b in CUTS:
         if b - 0.11 <= t < b + 0.12:
             p = (t - (b - 0.11)) / 0.23
-            flash = max(flash, 0.55 * (1 - abs(p * 2 - 1)))
-            zoom = 1 + 0.1 * (1 - ease(p))
-    if TA <= t < TA + 0.5:
-        p = (t - TA) / 0.5
-        flash = max(flash, 0.7 * (1 - p))
-        zoom = max(zoom, 1 + 0.12 * (1 - ease(p)))
-    if TB <= t < TB + 0.5:
-        p = (t - TB) / 0.5
-        flash = max(flash, 0.9 * (1 - p))
-        zoom = max(zoom, 1 + 0.16 * (1 - ease(p)))
+            flash = max(flash, 0.5 * (1 - abs(p * 2 - 1)))
+            zoom = max(zoom, 1 + 0.12 * (1 - ease(p)))
+    if i not in (7, 9):   # constant slow push so nothing is ever static
+        zoom *= 1 + 0.04 * ((t * 1.7) % 1.0)
+    for tt0, fl, zz in ((TA, 0.75, 0.16), (TB, 0.9, 0.18)):
+        if tt0 <= t < tt0 + 0.45:
+            p = (t - tt0) / 0.45
+            flash = max(flash, fl * (1 - p))
+            zoom = max(zoom, 1 + zz * (1 - ease(p)))
     img = post(col, red=red, flash=flash, zoom=zoom).convert('RGBA')
-    overlays(img, t, i, cam)
+    overlays(img, t, i, h, cam)
     hud(img, t, i)
-    if t >= L(8):
-        choice_cards(img, t, L(8))
+    if t >= L(9):
+        choice_cards(img, t, L(9))
     caption(img, t)
     return img.convert('RGB')
 
 
-def overlays(img, t, i, cam):
+def _sticker(img, txt, size, col, cx, cy, rot, k, sub=None):
+    f = Q.font(Q.F_BLACK, size)
+    d0 = ImageDraw.Draw(img)
+    tw_ = d0.textlength(txt, font=f)
+    if sub:
+        tw_ = max(tw_, d0.textlength(sub, font=Q.font(Q.F_BOLD, 40)))
+    lay = Image.new('RGBA', (int(tw_) + 80, int(size * 1.6) + (60 if sub else 0)), (0, 0, 0, 0))
+    ld = ImageDraw.Draw(lay)
+    ld.text(((lay.width - d0.textlength(txt, font=f)) / 2, 10), txt, font=f, fill=col + (255,), stroke_width=12, stroke_fill=(0, 0, 0, 255))
+    if sub:
+        fs = Q.font(Q.F_BOLD, 40)
+        ld.text(((lay.width - ld.textlength(sub, font=fs)) / 2, size * 1.35), sub, font=fs, fill=(255, 255, 255, 255), stroke_width=6, stroke_fill=(0, 0, 0, 255))
+    sc = 1.5 - 0.5 * k
+    lay = lay.rotate(rot, expand=True, resample=Image.BICUBIC)
+    lay = lay.resize((max(1, int(lay.width * sc)), max(1, int(lay.height * sc))), Image.BICUBIC)
+    img.alpha_composite(lay, (int(cx - lay.width / 2), int(cy - lay.height / 2)))
+
+
+def overlays(img, t, i, h, cam):
     d = ImageDraw.Draw(img, 'RGBA')
     hp = cam.project((0, 0, 1.0))
-    # air rushing out streaks in the hook
-    if i == 0 and t < TA + 0.6:
-        k = ease((t - 0.2) / 1.8)
+    if t < TA + 0.5:   # air rushing out
+        k = ease(t / max(0.3, TA))
         cx, cy = W / 2, H * 0.45
         rng = np.random.default_rng(2)
-        for j in range(46):
+        for j in range(60):
             a = rng.random() * 2 * math.pi
-            r0 = 120 + ((t * (500 + 700 * rng.random()) + rng.random() * 900) % 1100) * (0.3 + k)
-            r1 = r0 + 60 + 180 * k * rng.random()
-            al = int(150 * (0.2 + 0.8 * k))
-            d.line([cx + r0 * math.cos(a), cy + r0 * math.sin(a), cx + r1 * math.cos(a), cy + r1 * math.sin(a)], fill=(255, 255, 255, al), width=5)
-    # ear-pop rings on the face close-up
-    if i == 3 and hp is not None:
+            r0 = 100 + ((t * (700 + 900 * rng.random()) + rng.random() * 900) % 1200) * (0.4 + k)
+            r1 = r0 + 80 + 220 * k * rng.random()
+            d.line([cx + r0 * math.cos(a), cy + r0 * math.sin(a), cx + r1 * math.cos(a), cy + r1 * math.sin(a)], fill=(255, 255, 255, int(170 * (0.3 + 0.7 * k))), width=6)
+    if i == 3 and h == 0 and hp is not None:
         for e in range(3):
-            ph = ((t - L(3)) * 1.1 + e / 3.0) % 1.0
+            ph = ((t - L(3)) * 1.6 + e / 3.0) % 1.0
             r = 90 + 480 * ph
-            al = int(220 * (1 - ph))
-            d.ellipse([hp[0] - r, hp[1] - r * 1.1, hp[0] + r, hp[1] + r * 1.1], outline=(255, 235, 120, al), width=10)
-    # myth stamp
-    if i == 5:
-        k = ease((t - L(5) - 1.1) / 0.18)
-        if k > 0:
-            f = Q.font(Q.F_BLACK, 120)
-            txt = 'MYTH'
-            tw_ = d.textlength(txt, font=f)
-            lay = Image.new('RGBA', (int(tw_) + 120, 240), (0, 0, 0, 0))
-            ld = ImageDraw.Draw(lay)
-            ld.rounded_rectangle([0, 20, lay.width - 1, 220], 30, outline=(255, 70, 80, 255), width=14, fill=(40, 0, 6, 190))
-            ld.text((60, 40), txt, font=f, fill=(255, 70, 80, 255))
-            sc = 1.5 - 0.5 * k
-            lay = lay.rotate(-10, expand=True, resample=Image.BICUBIC)
-            lay = lay.resize((int(lay.width * sc), int(lay.height * sc)), Image.BICUBIC)
-            img.alpha_composite(lay, (int(W / 2 - lay.width / 2), 560))
-        k2 = ease((t - L(5) - 2.6) / 0.2)
-        if k2 > 0:
-            f = Q.font(Q.F_BLACK, 84)
-            txt = 'SKIN HOLDS ✓'.replace(' ✓', '')
-            tw_ = d.textlength(txt, font=f)
-            d.rounded_rectangle([(W - tw_) / 2 - 40, 800, (W + tw_) / 2 + 40, 920], 34, fill=(20, 140, 70, int(235 * k2)))
-            d.text(((W - tw_) / 2, 812), txt, font=f, fill=(255, 255, 255, int(255 * k2)))
-    # shock ring when air returns
+            d.ellipse([hp[0] - r, hp[1] - r * 1.1, hp[0] + r, hp[1] + r * 1.1], outline=(255, 235, 120, int(220 * (1 - ph))), width=10)
+        _sticker(img, 'POP!', 120, YEL, 760, 640, -12, ease((t - L(3) - 0.15) / 0.15))
+    if i == 3 and h == 1:
+        _sticker(img, 'BOILING', 100, CYAN, W / 2, 600, 8, ease((t - SPLIT[3] - 0.2) / 0.15), sub='at body temperature')
+    if i == 4:
+        for j, ((r, tp), p) in enumerate(zip(balloon_state(t), BAL_POS)):
+            if tp <= t < tp + 0.45:
+                q = cam.project(p)
+                if q is None:
+                    continue
+                pp = (t - tp) / 0.45
+                for m in range(14):
+                    a = m * 2 * math.pi / 14 + j
+                    r0, r1 = 40 + 260 * ease(pp), 80 + 320 * ease(pp)
+                    d.line([q[0] + r0 * math.cos(a), q[1] + r0 * math.sin(a), q[0] + r1 * math.cos(a), q[1] + r1 * math.sin(a)], fill=tuple(int(x) for x in BAL_COL[j]) + (int(255 * (1 - pp)),), width=9)
+        last = max(tp for _, tp in balloon_state(t))
+        first = min(tp for _, tp in balloon_state(t))
+        if t >= first:
+            _sticker(img, 'POP', 130, YEL, W / 2, 560, -8, ease((t - first) / 0.15), sub='(no sound in a vacuum)')
+    if i == 5 and h == 1:
+        _sticker(img, 'FIRE: OUT', 90, (255, 140, 60), W / 2, 600, 6, ease((t - SPLIT[5] - 0.3) / 0.15), sub='no oxygen')
+    if i == 6 and h == 0:
+        _sticker(img, 'EXPLODE?', 100, REDC, W / 2, 560, -6, ease((t - L(6) - 0.1) / 0.15))
+        _sticker(img, 'MYTH', 130, (255, 255, 255), W / 2, 820, 10, ease((t - L(6) - 0.75) / 0.15))
+    if i == 6 and h == 1:
+        k2 = ease((t - SPLIT[6] - 0.1) / 0.2)
+        f = Q.font(Q.F_BLACK, 84)
+        txt = 'SKIN HOLDS'
+        tw_ = d.textlength(txt, font=f)
+        d.rounded_rectangle([(W - tw_) / 2 - 40, 560, (W + tw_) / 2 + 40, 680], 34, fill=(20, 140, 70, int(235 * k2)))
+        d.text(((W - tw_) / 2, 572), txt, font=f, fill=(255, 255, 255, int(255 * k2)))
     if TB <= t < TB + 0.8:
         p = (t - TB) / 0.8
         r = 80 + 1500 * ease(p)
@@ -719,53 +872,42 @@ def overlays(img, t, i, cam):
         cx, cy = (hp if hp else (W / 2, H * 0.5))
         d.ellipse([cx - r, cy - r * 0.8, cx + r, cy + r * 0.8], outline=(255, 255, 255, al), width=int(40 * (1 - p)) + 6)
         d.ellipse([cx - r * 0.8, cy - r * 0.64, cx + r * 0.8, cy + r * 0.64], outline=(255, 220, 140, int(al * 0.6)), width=10)
-        if p < 0.6:
-            f = Q.font(Q.F_BLACK, 190)
-            tw_ = d.textlength('BOOM', font=f)
-            sc = 1 + 0.4 * (1 - ease(p / 0.6))
-            lay = Image.new('RGBA', (int(tw_) + 60, 260), (0, 0, 0, 0))
-            ImageDraw.Draw(lay).text((30, 20), 'BOOM', font=f, fill=(255, 225, 90, 255), stroke_width=14, stroke_fill=(0, 0, 0, 255))
-            lay = lay.resize((int(lay.width * sc), int(lay.height * sc)), Image.BICUBIC)
-            img.alpha_composite(lay, (int(W / 2 - lay.width / 2), 470))
+        if p < 0.7:
+            _sticker(img, 'BOOM', 190, (255, 225, 90), W / 2, 560, 0, ease(p / 0.25))
+    if i == 8 and h == 1:
+        _sticker(img, "DON'T HOLD IT", 96, REDC, W / 2, 600, -6, ease((t - SPLIT[8] - 0.1) / 0.15), sub='lungs can rupture')
 
 
 def timer5(t):
-    return min(SLOW5, max(0.0, (t - L(1)) / (TB - L(1)) * SLOW5)) if t < TB else SLOW5
+    if t < TA:
+        return 0.0
+    return min(SLOW5, (t - TA) / (TB - TA) * SLOW5)
 
 
 def hud(img, t, i):
     d = ImageDraw.Draw(img, 'RGBA')
-    if t < 0.15 or t > L(8) - 0.05:
+    if t > L(9) - 0.05:
         return
     air = air_at(t)
     y = 190
     y = pill(d, 50, y, 'AIR', f'{air * 100:.0f}%', GRN if air > 0.6 else (REDC if air < 0.3 else YEL), w=520)
     y = pill(d, 50, y, 'PRESSURE', f'{air * 101.3:.0f} kPa', (255, 255, 255) if air > 0.6 else REDC, w=520)
-    if t >= L(1) - 0.1 and t < TB + 0.4:
-        y = pill(d, 50, y, 'TIMER ×0.25', f'{timer5(t):.1f} s', CYAN, w=520)
+    if TA <= t < TB + 0.4:
+        y = pill(d, 50, y, 'NO AIR', f'{timer5(t):.1f} s', CYAN, w=520)
     if i == 1:
-        k = ease((t - L(1)) / 0.7)
+        k = ease((t - L(1)) / 0.4)
         db = 60 * (1 - k)
         y = pill(d, 50, y, 'SOUND', f'{db:.0f} dB', GRN if db > 20 else REDC, w=520)
-        amp = max(0.0, 1 - (t - L(1)) / 0.6)
-        pts = []
-        for xx in range(0, 760, 8):
-            pts.append((160 + xx, 560 + amp * 70 * math.sin(xx * 0.09 + t * 40) * math.sin(xx * 0.012)))
+        amp = max(0.0, 1 - (t - L(1)) / 0.4)
+        pts = [(160 + xx, 640 + amp * 70 * math.sin(xx * 0.09 + t * 40) * math.sin(xx * 0.012)) for xx in range(0, 760, 8)]
         d.line(pts, fill=(95, 230, 255, 255) if amp > 0.05 else (255, 80, 90, 255), width=8)
-        if amp <= 0.05:
-            f = Q.font(Q.F_BLACK, 56)
-            d.text((W / 2 - d.textlength('NO SOUND', font=f) / 2, 610), 'NO SOUND', font=f, fill=(255, 80, 90, 255))
-    if i == 4:
-        k = t - L(4)
-        y = pill(d, 50, y, 'FALLING', f'{1.7 * k * 4.0:.0f} m/s', REDC, w=520)
-    if i == 6:
-        k = (t - L(6)) / DURS[6]
-        rem = max(0.0, 10.0 - timer5(t) * 1.0)
-        frac = rem / 10.0
-        y = bar_pill(d, 50, y, 'AWAKE', frac, f'{rem:.0f}s', GRN if frac > 0.6 else YEL)
-        if k > 0.45:
-            kk = ease((k - 0.45) / 0.12)
-            y = pill(d, 50, y, 'NASA 1965', '14 s awake', (255, 210, 63), w=520)
+    if i == 5:
+        y = pill(d, 50, y, 'FALLING', f'{4.0 * (t - L(5)) * 3.0:.0f} m/s', REDC, w=520)
+    if i == 7:
+        rem = max(0.0, 10.0 - timer5(t))
+        y = bar_pill(d, 50, y, 'AWAKE', rem / 10.0, f'{rem:.0f}s', GRN if rem > 6 else YEL)
+        if t >= SPLIT[7]:
+            y = pill(d, 50, y, 'NASA 1965', '14 s awake', YEL, w=520)
 
 
 # ----------------------------------------------------------------------------- choice cards (override)
@@ -803,6 +945,15 @@ def sfx_boom():
     return (sig * 1.0 + nz * 1.6).astype(np.float32)
 
 
+def heartbeat():
+    n = int(0.45 * SR)
+    tt = np.arange(n) / SR
+    def thump(t0, a):
+        x = np.clip(tt - t0, 0, None)
+        return a * np.sin(2 * np.pi * 52 * x) * np.exp(-x * 22) * (tt >= t0)
+    return (thump(0.0, 1.0) + thump(0.17, 0.7)).astype(np.float32) * 0.9
+
+
 def build_audio(path):
     from scipy.signal import lfilter
     n = int((DUR + 0.5) * SR)
@@ -815,11 +966,14 @@ def build_audio(path):
         voice[i0:i0 + len(a)] += a[: n - i0]
     fx = np.zeros(n, np.float32)
 
-    def add(t0, sig, vol):
+    hbt = np.zeros(n, np.float32)
+
+    def add(t0, sig, vol, buf=None):
+        b_ = fx if buf is None else buf
         i0 = int(t0 * SR)
         if 0 <= i0 < n:
             seg = sig[: n - i0]
-            fx[i0:i0 + len(seg)] += seg * vol
+            b_[i0:i0 + len(seg)] += seg * vol
     rng = np.random.default_rng(3)
     # city hum / wind before the air vanishes
     noise = rng.uniform(-1, 1, n).astype(np.float32)
@@ -827,16 +981,21 @@ def build_audio(path):
     live = ((tt < TA) | (tt >= TB + 0.1)).astype(np.float32)
     live = np.convolve(live, np.ones(int(SR * 0.05)) / int(SR * 0.05), mode='same')
     fx += hum * 0.22 * live * (np.clip((tt) / 0.2, 0, 1))
-    for b in STARTS[1:]:
+    for b in CUTS:
         if b < TA or b > TB:
             add(b - 0.2, Q.sfx_whoosh(0.35), 0.5)
     add(TA - 0.15, Q.sfx_whoosh(0.5)[::-1].copy(), 0.3)
     add(TB, sfx_boom(), 1.3)
     add(TB, Q.sfx_whoosh(0.5), 0.5)
-    add(L(5) + 1.1, Q.sfx_pop(), 0.9)
-    add(L(5) + 2.6, Q.sfx_tada(), 0.5)
-    add(L(8) + 0.15, Q.sfx_tick(True), 0.6)
-    add(L(8) + 0.27, Q.sfx_tick(False), 0.6)
+    add(SPLIT[6] + 0.1, Q.sfx_tada(), 0.5)
+    add(L(9) + 0.15, Q.sfx_tick(True), 0.6)
+    add(L(9) + 0.27, Q.sfx_tick(False), 0.6)
+    # heartbeat in the silence (you still hear your own body)
+    hb = heartbeat()
+    tb_ = TA + 0.4
+    while tb_ < TB - 0.3:
+        add(tb_, hb, 1.0, hbt)
+        tb_ += 0.62
     bed = Q.music_bed(DUR + 0.5, seed=11)[:n]
     if len(bed) < n:
         bed = np.pad(bed, (0, n - len(bed)))
@@ -845,7 +1004,7 @@ def build_audio(path):
     env = np.convolve(np.abs(voice), np.ones(int(SR * 0.08)) / int(SR * 0.08), mode='same')
     duck = 1 - 0.55 * np.clip(env / 0.05, 0, 1)
     silent = ((tt >= TA + 0.1) & (tt < TB)).astype(np.float32)
-    fxg = fx * (1 - silent * 0.97)
+    fxg = fx * (1 - silent * 0.97) + hbt
     mix_ = voice * 1.0 + fxg * 0.55 + bed * 0.9 * duck * gate
     mix_ *= np.clip((DUR - tt) / 0.8, 0, 1)
     mix_ /= max(1e-6, np.abs(mix_).max()) / 0.9
@@ -890,6 +1049,6 @@ if __name__ == '__main__':
     if sys.argv[1] == 'sheet':
         sheet(sys.argv[2], [float(x) for x in sys.argv[3].split(',')])
     elif sys.argv[1] == 'info':
-        print('DUR', round(DUR, 2), 'starts', [round(s, 2) for s in STARTS], 'TA', TA, 'TB', TB)
+        print('DUR', round(DUR, 2), 'starts', [round(x, 2) for x in STARTS], 'TA', round(TA, 2), 'TB', round(TB, 2), 'cuts', [round(x, 2) for x in CUTS])
     else:
         render_video(sys.argv[2])

@@ -5,6 +5,9 @@ Template: `tools/sim3d/earth_tunnel.py` (own numpy ray tracer, no GPU/Blender ne
 Cycles takes ~5 s/frame on this machine, too slow). Voice: free local kokoro (`bash tools/setup.sh`),
 lines in `tools/sim3d/<name>_lines.json`, generated with `tools/sim3d/tts_lines.py`; durations drive the timeline.
 
+PACING RULES (Dimi 2026-10-23, v1 of air-gone was "nicht spannend"): big visual event within 1-1.5 s, a cut or sub-shot every
+1.5-2 s (SPLIT dict in air_gone.py), voice speed 1.2, ~30 s, a different pose/prop/sticker per line, never a static frame.
+
 Formula: hook question with the person already in danger in the first second (voice + big word-pop
 captions with yellow keywords), live HUD pills (depth/speed/time/gravity/heat …) + mini-map, a cut every
 3–5 s alternating wide sim shot ↔ POV close-up, whip flash + zoom punch on cuts, red edge pulse when it
