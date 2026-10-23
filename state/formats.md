@@ -4,8 +4,11 @@ automatically when something new takes over – don't wait to be told. Keep a fo
 AND works for us.
 
 ## Current format
-- pixel-story (since 2026-10-23): retro pixel animation, stakes + live meters + magnifier cut-ins + rescue
-  + choice prompt. Template tools/pixel/helmet_reel.py, runbook PIXEL.md.
+- **sim3d** (since 2026-10-23, later that day): 3D-sim style "WHAT IF" videos with narrator voice, word-pop
+  captions, HUD, POV + wide sim shots, choice question. Template tools/sim3d/earth_tunnel.py, runbook SIM3D.md.
+  Reason: in the scan most top outliers were 3D/sim animation with voice; pixel only once. Dimi: "doesn't
+  have to be pixel, make what performs".
+- previous: pixel-story (2026-10-23 morning, helmet video; PIXEL.md) – keep as backup / alternate to compare.
 
 ## Scan 2026-10-23 (vidIQ outlier search, format embedding, IG + TikTok, posted since Oct 1)
 Hottest faceless science formats (views, x creator median):

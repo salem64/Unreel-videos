@@ -411,5 +411,19 @@
    "tiktok": "2026-10-23T10:00"
   },
   "metrics": {}
+ },
+ {
+  "date": "2026-10-23",
+  "file": "2026-10-23-sim3d-earth-tunnel.mp4",
+  "format": "sim3d",
+  "variant": "what-if: falling through a hole through the earth",
+  "details": "33 s 3D sim, narrator voice am_michael, HUD depth/speed/time/gravity/heat, mini-map, choice question",
+  "new_feature": "new format: own 3D ray tracer (earth cutaway, tunnel POV, 3D cartoon character, surface scene)",
+  "hook": "What if you fell into a hole, straight through the Earth?",
+  "theme": "sim3d",
+  "caption": "",
+  "posted_via": {},
+  "times_berlin": {},
+  "metrics": {}
  }
 ]
