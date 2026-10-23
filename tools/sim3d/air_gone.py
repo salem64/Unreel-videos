@@ -826,11 +826,11 @@ def build_audio(path):
     hum = lfilter([0.05], [1, -0.95], noise).astype(np.float32)
     live = ((tt < TA) | (tt >= TB + 0.1)).astype(np.float32)
     live = np.convolve(live, np.ones(int(SR * 0.05)) / int(SR * 0.05), mode='same')
-    fx += hum * 2.2 * live * (np.clip((tt) / 0.2, 0, 1))
+    fx += hum * 0.22 * live * (np.clip((tt) / 0.2, 0, 1))
     for b in STARTS[1:]:
         if b < TA or b > TB:
             add(b - 0.2, Q.sfx_whoosh(0.35), 0.5)
-    add(TA - 0.15, Q.sfx_whoosh(0.5)[::-1].copy(), 0.9)
+    add(TA - 0.15, Q.sfx_whoosh(0.5)[::-1].copy(), 0.3)
     add(TB, sfx_boom(), 1.3)
     add(TB, Q.sfx_whoosh(0.5), 0.5)
     add(L(5) + 1.1, Q.sfx_pop(), 0.9)
