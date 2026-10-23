@@ -1,6 +1,6 @@
 {
  "month": "2026-10",
- "count": 48,
+ "count": 49,
  "limit": 50,
- "note": "Metricool free plan: 50 posts/month. Increment by 1 per platform post scheduled via Metricool. 2026-10-08: Dimi saw only 19 left in the Metricool app (deleted/failed test posts from the setup also count), so count was corrected to 31. If createScheduledPost ever returns a plan/limit error, set count to 50 for the rest of the month. 2026-10-20: count 45 (speed 10-19 was scheduled but not counted by the previous run; static 10-20 added). 2026-10-21: count 46 (orionids TikTok). 2026-10-21 (chat): count 47 (pixel venus TikTok for 10-22 18:00). 2026-10-23 (chat): count 48 (pixel helmet TikTok 10-23 10:00)."
+ "note": "Metricool free plan: 50 posts/month. Increment by 1 per platform post scheduled via Metricool. 2026-10-08: Dimi saw only 19 left in the Metricool app (deleted/failed test posts from the setup also count), so count was corrected to 31. If createScheduledPost ever returns a plan/limit error, set count to 50 for the rest of the month. 2026-10-20: count 45 (speed 10-19 was scheduled but not counted by the previous run; static 10-20 added). 2026-10-21: count 46 (orionids TikTok). 2026-10-21 (chat): count 47 (pixel venus TikTok for 10-22 18:00). 2026-10-23 (chat): count 48 (pixel helmet TikTok 10-23 10:00). 2026-10-23 (chat): count 49 (sim3d earth tunnel TikTok 10-23 18:00)."
 }
