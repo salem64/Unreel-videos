@@ -12,7 +12,7 @@
 - ~~helmet cracks in space~~ (2026-10-23)
 - ~~what if all the air vanished for 5 seconds~~ (2026-10-23 night, sim3d air_gone)
 - ~~what if you fell into a hole through the earth~~ (2026-10-23, made in chat, posting today)
-- what if the moon disappeared (tides, nights, wobbling axis)
+- ~~what if the moon disappeared~~ (2026-10-24, sim3d moon_gone)
 - never hide in a car trunk/bathtub during X? -> pick only safe, correct advice topics
 - never pour water on a grease fire, here's why (steam explosion, use a lid)
 - never touch a person getting electrocuted, here's why

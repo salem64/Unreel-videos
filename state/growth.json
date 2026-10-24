@@ -148,5 +148,20 @@
   "instagram_followers": 0,
   "instagram_views_30d": 906,
   "note": "tiktok views summed from per-post analytics (posts up to 10-21 measured; 10-22/23 posts not yet in analytics); YT from vidIQ channel list (162 total views); IG from owner insights"
+ },
+ {
+  "date": "2026-10-24",
+  "tiktok": {
+   "followers": 4,
+   "views_30d": 5067
+  },
+  "youtube": {
+   "subscribers": 0,
+   "shorts_views_90d": 162
+  },
+  "instagram": {
+   "followers": 0,
+   "views_30d": 1047
+  }
  }
 ]

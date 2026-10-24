@@ -32,3 +32,12 @@ faceless explainers, numbered episodic series, open on the most interesting mome
 (muted viewing), 15-60 s with completion rate weighted heavily. Halloween costume/pumpkin trends are not our niche.
 Verdict: NO format switch. Stay SIM3D (what-if + narrator voice). Adopted: "numbered what-if" feel, silence/contrast gimmick,
 myth-stamp + choice question with a correct answer. Next scan: when vidIQ credits renew 2026-11-07 run the paid outlier search.
+
+## Scan 2026-10-24 night run (WebSearch/WebFetch only; vidIQ credits 1, no paid call - renew 2026-11-07)
+Web scan (anijam TikTok trends page refreshed 2026-10-09, shortgenius, revid): current TikTok trend formats are comedy/lip-sync/costume
+(Two Fishes, Ramalama costume walk, pumpkin illusion) - nothing in science/space/survival; generic rules unchanged (hook in 2-3 s,
+captions for muted viewing, 15-60 s, contrast/deadpan reveals). No >=5x outlier format found for our niche in 2 independent sources.
+Own data: TikTok views flat at 244-368 for every format (laser battle 903 is the only outlier); likes per view best for pixel stories
+(helmet 18 likes/254 views = 7%, venus 11/261) vs explainers 1-5%; IG skip rate sim3d 39% (earth tunnel) vs pixel venus 50%.
+Verdict: NO format switch, stay SIM3D what-if (backup pixel). Adopted: "numbered fact stickers + HUD number that changes" every 2 s,
+myth stamp, choice question with a clear correct answer, light-delay style micro-facts as hook follow-up.

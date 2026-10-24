@@ -30,3 +30,10 @@ AABB buildings (`trace_boxes`, window pattern, fog that vanishes when air=0) + s
 `overlays()` draws streaks, rings, MYTH stamp, BOOM; `hud()` pills; `build_audio()` mutes everything except the narrator between TA and TB
 (silence gimmick) and adds `sfx_boom()`. Copy the file, change lines JSON name + `air_at`/TA/TB logic. Render ~12 min (1170 frames).
 Check frames with `python3 air_gone.py sheet /tmp/s.png t1,t2,... --vo /tmp/air_vo` (~40 s for 21 frames).
+
+## Third template: tools/sim3d/moon_gone.py (night / sky / ocean / space, 2026-10-24)
+Use for "what if the Moon/Sun/Earth ..." ideas. New pieces: `night_sky(D, moon)` (textured moon disc + halo, stars), `night_street` (moon-dependent
+ambient, lit windows, lamp pools; pass moon 0..1), `harbor(t, level, moon, cam, ch)` (quay + tide ruler + water at animated `level`; wet band under HIGH_MARK),
+`space(t, cam, tilt, spin, moon_pos)` (Earth globe via iss_reel LAND/CLOUD textures, axis line, optional Moon sphere), `beetle_prims`, `draw_clock`.
+Keep the street canyon open: lower BOXES[-1] and put MOON_D along the street axis (x=0) or the moon is hidden behind buildings.
+Per-scene HUD pills in `hud()`, stickers in `overlays()`, cards in `choice_cards()` (correct answer = first card). Render ~12 min, 1110 frames.
