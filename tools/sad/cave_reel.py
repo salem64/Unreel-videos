@@ -232,7 +232,7 @@ def post(img, t):
     bl = np.asarray(Image.fromarray(br.clip(0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(6)).resize((W, H), Image.BILINEAR), np.float32)
     out = np.asarray(a, np.float32) + bl * 0.8
     out = out * VIG[..., None]
-    g = np.random.default_rng(int(t * 1000)).normal(0, 5, (H // 2, W // 2)).astype(np.float32)
+    g = np.random.default_rng(int(t * 1000)).normal(0, 2.5, (H // 2, W // 2)).astype(np.float32)
     g = np.asarray(Image.fromarray(g).resize((W, H), Image.NEAREST))
     out = out + g[..., None]
     out = out * np.array([0.95, 0.97, 1.05], np.float32)
@@ -367,7 +367,7 @@ def render_video(out):
     wav = out.rsplit('.', 1)[0] + '.wav'
     build_audio(wav)
     cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-',
-           '-i', wav, '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-c:v', 'libx264', '-preset', 'medium', '-crf', '19',
+           '-i', wav, '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-c:v', 'libx264', '-preset', 'medium', '-crf', '23',
            '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-shortest', '-movflags', '+faststart', out]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     with Pool(2) as pool:
