@@ -54,6 +54,7 @@
     "likes": 0,
     "comments": 0,
     "saves": 0,
+    "shares": 0,
     "avg_watch_s": 11.9,
     "watched_pct": 53.9,
     "skip_rate": 34.8
@@ -99,6 +100,7 @@
     "likes": 0,
     "comments": 0,
     "saves": 0,
+    "shares": 0,
     "avg_watch_s": 13.5,
     "watched_pct": 22.4,
     "skip_rate": 84.2
@@ -170,6 +172,7 @@
     "likes": 0,
     "comments": 0,
     "saves": 0,
+    "shares": 0,
     "avg_watch_s": 8.7,
     "watched_pct": 31.0,
     "skip_rate": 42.2
@@ -345,7 +348,7 @@
   "metricool_uuid": "6923514790488002202",
   "metrics": {
    "tiktok": {
-    "views": 323,
+    "views": 325,
     "likes": 4,
     "comments": 1,
     "shares": 0,
@@ -356,8 +359,9 @@
     "likes": 0,
     "comments": 0,
     "saves": 1,
-    "avg_watch_s": 10.0,
-    "watched_pct": 34.5,
+    "shares": 0,
+    "avg_watch_s": 9.9,
+    "watched_pct": 34.3,
     "skip_rate": 39
    }
   }
@@ -385,7 +389,7 @@
   },
   "metrics": {
    "tiktok": {
-    "views": 329,
+    "views": 331,
     "likes": 6,
     "comments": 0,
     "shares": 0,
@@ -419,13 +423,14 @@
     "likes": 2,
     "comments": 0,
     "saves": 1,
-    "avg_watch_s": 13.6,
-    "watched_pct": 42.6,
+    "shares": 0,
+    "avg_watch_s": 13.5,
+    "watched_pct": 42.3,
     "skip_rate": 50
    },
    "tiktok": {
-    "views": 261,
-    "likes": 11,
+    "views": 275,
+    "likes": 12,
     "comments": 0,
     "shares": 0,
     "duration_s": 32
@@ -451,8 +456,8 @@
   },
   "metrics": {
    "tiktok": {
-    "views": 254,
-    "likes": 18,
+    "views": 1154,
+    "likes": 35,
     "comments": 0,
     "shares": 0,
     "duration_s": 30
@@ -484,9 +489,17 @@
     "likes": 2,
     "comments": 0,
     "saves": 0,
+    "shares": 0,
     "avg_watch_s": 11.8,
     "watched_pct": 36.8,
     "skip_rate": 39
+   },
+   "tiktok": {
+    "views": 464,
+    "likes": 16,
+    "comments": 0,
+    "shares": 0,
+    "duration_s": 32
    }
   },
   "first_comment": "no way or i'd jump?"
@@ -513,7 +526,25 @@
    "instagram": "2026-10-24T10:02"
   },
   "metricool_uuid": "7013549934806188823",
-  "metrics": {}
+  "metrics": {
+   "tiktok": {
+    "views": 292,
+    "likes": 17,
+    "comments": 0,
+    "shares": 0,
+    "duration_s": 34
+   },
+   "instagram": {
+    "views": 160,
+    "likes": 0,
+    "comments": 0,
+    "saves": 0,
+    "shares": 0,
+    "avg_watch_s": 10.8,
+    "watched_pct": 31.8,
+    "skip_rate": 50.8
+   }
+  }
  },
  {
   "date": "2026-10-24",

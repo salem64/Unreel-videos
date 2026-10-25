@@ -14,6 +14,6 @@
 - ~~what if you fell into a hole through the earth~~ (2026-10-23, made in chat, posting today)
 - ~~what if the moon disappeared~~ (2026-10-24, sim3d moon_gone)
 - never hide in a car trunk/bathtub during X? -> pick only safe, correct advice topics
-- never pour water on a grease fire, here's why (steam explosion, use a lid)
+- ~~never pour water on a grease fire, here's why~~ (2026-10-25, sim3d kitchen_fire)
 - never touch a person getting electrocuted, here's why
 - what if you stood on the sun / on jupiter (no surface)

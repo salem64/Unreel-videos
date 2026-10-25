@@ -37,3 +37,8 @@ ambient, lit windows, lamp pools; pass moon 0..1), `harbor(t, level, moon, cam, 
 `space(t, cam, tilt, spin, moon_pos)` (Earth globe via iss_reel LAND/CLOUD textures, axis line, optional Moon sphere), `beetle_prims`, `draw_clock`.
 Keep the street canyon open: lower BOXES[-1] and put MOON_D along the street axis (x=0) or the moon is hidden behind buildings.
 Per-scene HUD pills in `hud()`, stickers in `overlays()`, cards in `choice_cards()` (correct answer = first card). Render ~12 min, 1110 frames.
+
+## Fourth template: tools/sim3d/kitchen_fire.py (indoor kitchen / "NEVER do X", 2026-10-25)
+Use it for indoor cooking/home-safety "never do X" ideas. Pieces: `ROOM` tagged boxes + `trace_room`/`room_color` (checker floor, backsplash tiles, window, soot on ceiling, fire-light that follows `st['firelight']`), `trace_pan` (analytic pan walls, oil disc, optional lid {'x','z'}),
+`add_blob(img, cam, P, r, color, k, mode='add'|'mix', ay)` screen-space glow blobs used for `flame_blobs`, `steam_blobs`, `eruption_blobs` (fireball up to the ceiling + burning droplets + smoke), `state_at(t, i)` builds fire/heat/lid/blobs per time,
+`inset()` side-view explainer card (sinking drop, steam bubble, x1,700 counter), char `grab` target (hand follows cup/lid). Keep blob k small (0.15-0.5) or the bloom washes the frame out. Render ~15 min, 1230 frames.

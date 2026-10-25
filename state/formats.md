@@ -41,3 +41,8 @@ Own data: TikTok views flat at 244-368 for every format (laser battle 903 is the
 (helmet 18 likes/254 views = 7%, venus 11/261) vs explainers 1-5%; IG skip rate sim3d 39% (earth tunnel) vs pixel venus 50%.
 Verdict: NO format switch, stay SIM3D what-if (backup pixel). Adopted: "numbered fact stickers + HUD number that changes" every 2 s,
 myth stamp, choice question with a clear correct answer, light-delay style micro-facts as hook follow-up.
+
+## Scan 2026-10-25 night run (WebSearch/WebFetch only; vidIQ credits 1, no paid call - renew 2026-11-07)
+Own data (all TikTok now measured): pixel helmet 1154 views/35 likes (best ever, 4x median), sim3d earth tunnel 464, sim3d air-gone 292, pixel venus 275, explainers 244-331. IG sim3d air-gone skip 51%, earth tunnel 39%.
+Web scan: revid.ai trend finder (measured 2026-10-24) lists no science/animation style in its top-10 topics; faceless.so benchmark 2026 (single source, small samples): stick-figure/meme explainer view-index 212 vs narrated AI story 88, <30 s videos 110 vs 45-59 s 88, evening posts (17-23 h) best; on-screen hook titles no difference. No >=5x outlier format found in 2 independent sources.
+Verdict: NO format switch, stay SIM3D (backup pixel story). Adopted: "NEVER do X" survival hook with danger visible in frame 1 (the helmet pattern), tested inside sim3d (kitchen_fire). Watch: stick-figure/meme explainer as a possible next test when vidIQ credits renew.
