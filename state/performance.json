@@ -568,5 +568,29 @@
    "instagram": "2026-10-25T10:00"
   },
   "metrics": {}
+ },
+ {
+  "date": "2026-10-25",
+  "file": "2026-10-25-sim3d-kitchen-fire.mp4",
+  "format": "sim3d",
+  "variant": "never-do-X: never pour water on a grease fire",
+  "details": "41 s, narrator am_michael x1.2, kitchen scene, steam inset (x1,700), fireball, myth stamp, lid/baking soda fix, choice lid vs water",
+  "new_feature": "kitchen scene engine (room, pan+oil+lid, glow-blob flames/steam/fireball, side-view inset)",
+  "hook": "A pan of oil is on fire. Never pour water on it!",
+  "hook_type": "never-do-X",
+  "theme": "sim3d",
+  "caption": "water on a grease fire is basically a steam bomb 💀 #unreel #greasefire #kitchensafety #physics #sciencetok",
+  "first_comment": "do you even own baking soda",
+  "posted_via": {
+   "tiktok": "manual (metricool budget used up)",
+   "youtube": "manual",
+   "instagram": "vidiq"
+  },
+  "times_berlin": {
+   "tiktok": "2026-10-26T10:00",
+   "youtube": "2026-10-25T16:00",
+   "instagram": "2026-10-26T10:02"
+  },
+  "metrics": {}
  }
 ]
